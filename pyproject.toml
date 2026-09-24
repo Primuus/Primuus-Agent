@@ -1,0 +1,10 @@
+[project]
+name = "long-horizon-coding-agent"
+version = "0.1.0"
+description = "A verifiable coding agent research baseline"
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"

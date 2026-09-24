@@ -1,0 +1,86 @@
+"""Shared data contracts for the first-stage agent pipeline.
+
+This module defines shapes only. Loading tasks, executing actions, and writing
+results belong to later implementation nodes.
+"""
+
+from dataclasses import dataclass
+from typing import Any, Literal
+
+
+ToolStatus = Literal["completed", "error", "timeout"]
+StopReason = Literal[
+    "verified",
+    "final_unverified",
+    "max_steps",
+    "timeout",
+    "invalid_model_action",
+    "model_error",
+    "tool_error",
+    "verifier_error",
+]
+
+
+@dataclass(frozen=True)
+class VerifierSpec:
+    kind: str
+    entrypoint: str
+
+
+@dataclass(frozen=True)
+class TaskSpec:
+    schema_version: int
+    task_id: str
+    title: str
+    tags: list[str]
+    verifier: VerifierSpec
+
+
+@dataclass(frozen=True)
+class ToolCall:
+    call_id: str
+    name: str
+    arguments: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class ModelResponse:
+    """Exactly one tool call or one final message per model turn."""
+
+    tool_call: ToolCall | None = None
+    final_message: str | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+
+    def __post_init__(self) -> None:
+        if (self.tool_call is None) == (self.final_message is None):
+            raise ValueError("A model response must have one tool call or one final message")
+        if self.final_message is not None and not self.final_message.strip():
+            raise ValueError("A final message cannot be empty")
+
+
+@dataclass(frozen=True)
+class ToolResult:
+    call_id: str
+    name: str
+    status: ToolStatus
+    output: str
+    error: str | None
+    exit_code: int | None
+    duration_ms: int
+
+
+@dataclass(frozen=True)
+class RunResult:
+    run_id: str
+    task_id: str
+    model_id: str
+    success: bool
+    stop_reason: StopReason
+    steps: int
+    tool_calls: int
+    failed_tool_calls: int
+    retries: int
+    tokens: int | None
+    latency_seconds: float
+    trace_path: str
