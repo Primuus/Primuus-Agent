@@ -20,6 +20,9 @@ class SessionRunner:
         max_steps: int,
         timeout_seconds: int,
         tool_specs: list[dict] = TOOL_SPECS,
+        max_tokens: int | None = None,
+        context_max_chars: int | None = None,
+        context_keep_messages: int = 12,
     ) -> None:
         self.model = model
         self.execute = execute
@@ -27,15 +30,27 @@ class SessionRunner:
         self.max_steps = max_steps
         self.timeout_seconds = timeout_seconds
         self.tool_specs = tool_specs
+        self.max_tokens = max_tokens
+        self.context_max_chars = context_max_chars
+        self.context_keep_messages = context_keep_messages
 
     def run(self, spec: SessionSpec, state: SessionState | None = None) -> SessionState:
         state = state or SessionState(spec.session_id)
-        state.add_user_message(spec.instructions)
+        if spec.instructions is not None:
+            state.add_user_message(spec.instructions)
+        else:
+            state.emit("session_resumed", {})
+            state.stop_reason = None
         started = monotonic()
         for _ in range(max(0, self.max_steps - state.steps)):
             if monotonic() - started >= self.timeout_seconds:
                 state.finish("timeout")
                 return state
+            if self.max_tokens is not None and state.tokens is not None and state.tokens >= self.max_tokens:
+                state.finish("token_budget")
+                return state
+            if self.context_max_chars is not None:
+                state.compact(self.context_max_chars, self.context_keep_messages)
             try:
                 model_started = monotonic()
                 response = self.model.generate(build_context(state), self.tool_specs)
@@ -58,6 +73,7 @@ class SessionRunner:
                 state.finish("verified" if turn.verification.passed else "final_unverified")
                 return state
             for call in response.tool_calls:
+                state.start_tool(call)
                 state.add_observation(turn, self.execute(call))
             if self.verify is not None:
                 try:

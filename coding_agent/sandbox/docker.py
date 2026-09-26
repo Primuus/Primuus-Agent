@@ -18,6 +18,7 @@ class DockerSandbox:
         network_enabled: bool,
         tool_timeout_seconds: int,
         persistent: bool = False,
+        container_name: str | None = None,
     ) -> None:
         self.repository = repository
         self.image = image
@@ -26,11 +27,16 @@ class DockerSandbox:
         self.network_enabled = network_enabled
         self.tool_timeout_seconds = tool_timeout_seconds
         self.persistent = persistent
-        self.container_name = f"coding-agent-{uuid4().hex[:12]}"
+        self.container_name = container_name or f"coding-agent-{uuid4().hex[:12]}"
         self._temporary: TemporaryDirectory[str] | None = None
         self.workspace: Path | None = None
 
     def __enter__(self) -> "DockerSandbox":
+        if self.persistent:
+            subprocess.run(
+                ["docker", "rm", "--force", self.container_name],
+                capture_output=True, text=True,
+            )
         if self.persistent:
             self.workspace = self.repository
         else:

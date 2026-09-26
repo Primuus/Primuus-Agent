@@ -67,7 +67,7 @@ tasks/task_001/
 ```
 
 - `call_id` 标识一次调用，供工具结果与 Trace 对应；后端没有提供时由适配器生成。
-- 只支持 `read_file`、`write_file`、`run_shell`。参数分别为 `{ "path": string }`、`{ "path": string, "content": string }`、`{ "command": string }`。缺失、多余或类型错误的参数均无效。
+- 第一阶段评测只暴露 `read_file`、`write_file`、`run_shell`。参数分别为 `{ "path": string }`、`{ "path": string, "content": string }`、`{ "command": string }`。普通仓库会话还提供文件发现、文本搜索、分段读取、精确编辑、Git 状态与差异、计划更新。缺失、多余或类型错误的参数均无效。
 - 没有动作、同时有工具调用和最终回复、或最终回复为空，视为无效模型动作，终止原因记为 `invalid_model_action`。
 - 同轮多个工具调用按返回顺序执行，全部结果一起加入下一轮 Context；该轮仅进行一次 Verifier 检查。
 - 工具名或参数无效时，Harness 不执行该调用，而是生成 `ToolResult(status="error")` 反馈模型；该轮仍计入步数和失败工具调用次数。
@@ -104,6 +104,9 @@ Harness 在工具动作后调用任务 Verifier，并在模型最终回复时再
 
 | `stop_reason` | 含义 |
 |---|---|
+| `completed` | 普通仓库会话收到模型最终回复；项目检查结果单独记录 |
+| `paused` | 普通仓库会话暂停，可从事件记录恢复 |
+| `token_budget` | 会话达到 Token 预算 |
 | `max_steps` | 达到模型轮次上限 |
 | `timeout` | 整个任务超过时间限制 |
 | `invalid_model_action` | 模型回复无法归一化为一个动作 |
@@ -149,7 +152,7 @@ runs/<run_id>/
 - `tokens` 是可获得的输入与输出 token 之和；模型服务未提供用量时为 `null`，不能用 `0` 代替。
 - `latency_seconds` 是从任务启动到清理完成的总耗时。
 - `trace.jsonl` 每行是一个带 `run_id`、`step`、`event_type`、`timestamp` 和事件数据的 JSON 对象。
-- `event_type` 目前为 `model_action`、`tool_result`、`verification_result` 或 `task_finished`。`config.json` 记录不含密钥的运行参数与任务文件 SHA-256 摘要。
+- 评测 Trace 包含 `user_message`、`model_action`、`tool_started`、`tool_result`、`verification_result` 和 `task_finished`。普通仓库会话还会记录计划、快照、上下文压缩、项目检查与恢复事件。`config.json` 记录不含密钥的运行参数与任务文件 SHA-256 摘要。
 
 ## 6. 默认配置
 

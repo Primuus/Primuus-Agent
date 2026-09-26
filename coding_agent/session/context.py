@@ -12,4 +12,9 @@ SYSTEM_PROMPT = (
 
 
 def build_context(state: SessionState) -> list[dict[str, Any]]:
-    return [{"role": "system", "content": SYSTEM_PROMPT}, *state.messages]
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    if state.plan:
+        messages.append({"role": "system", "content": "Current plan: " + str(state.plan)})
+    if state.summary:
+        messages.append({"role": "system", "content": "Earlier session summary: " + state.summary})
+    return [*messages, *state.messages]

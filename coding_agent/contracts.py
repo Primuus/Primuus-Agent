@@ -12,6 +12,8 @@ ToolStatus = Literal["completed", "error", "timeout"]
 StopReason = Literal[
     "verified",
     "completed",
+    "paused",
+    "token_budget",
     "final_unverified",
     "max_steps",
     "timeout",

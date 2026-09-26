@@ -91,3 +91,27 @@ REPOSITORY_TOOL_SPECS = TOOL_SPECS + [
         "parameters": {"type": "object", "properties": {}, "required": [], "additionalProperties": False},
     },
 ]
+
+REPOSITORY_TOOL_SPECS.append({
+    "name": "update_plan",
+    "description": "Set or update a short milestone plan for a multi-step task",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "items": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "description": {"type": "string"},
+                        "status": {"type": "string", "enum": ["pending", "in_progress", "completed"]},
+                    },
+                    "required": ["description", "status"],
+                    "additionalProperties": False,
+                },
+            },
+        },
+        "required": ["items"],
+        "additionalProperties": False,
+    },
+})
