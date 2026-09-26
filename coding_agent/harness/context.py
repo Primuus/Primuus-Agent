@@ -20,8 +20,7 @@ def build_context(task: LoadedTask, state: RunState) -> list[dict[str, Any]]:
         {"role": "user", "content": task.instructions},
     ]
     for turn in state.turns:
-        call = turn.response.tool_call
-        if call is None:
+        if not turn.response.tool_calls:
             messages.append({"role": "assistant", "content": turn.response.final_message or ""})
         else:
             messages.append(
@@ -35,14 +34,15 @@ def build_context(task: LoadedTask, state: RunState) -> list[dict[str, Any]]:
                             "name": call.name,
                             "arguments": json.dumps(call.arguments),
                         },
-                    }],
+                    } for call in turn.response.tool_calls],
                 }
             )
-            messages.append(
-                {
-                    "role": "tool",
-                    "tool_call_id": call.call_id,
-                    "content": json.dumps(asdict(turn.result)),
-                }
-            )
+            for result, _ in turn.observations:
+                messages.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": result.call_id,
+                        "content": json.dumps(asdict(result)),
+                    }
+                )
     return messages

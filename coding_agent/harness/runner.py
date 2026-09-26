@@ -45,7 +45,7 @@ class Runner:
                 state.stop_reason = "model_error"
                 return state
             turn = state.add_turn(response, int((monotonic() - model_started) * 1000))
-            if response.tool_call is None:
+            if not response.tool_calls:
                 try:
                     turn.verification = self.verify()
                     turn.verification_at = datetime.now(timezone.utc).isoformat()
@@ -54,8 +54,9 @@ class Runner:
                     return state
                 state.stop_reason = "verified" if turn.verification.passed else "final_unverified"
                 return state
-            turn.result = self.execute(response.tool_call)
-            turn.tool_at = datetime.now(timezone.utc).isoformat()
+            for call in response.tool_calls:
+                result = self.execute(call)
+                turn.observations.append((result, datetime.now(timezone.utc).isoformat()))
             try:
                 turn.verification = self.verify()
                 turn.verification_at = datetime.now(timezone.utc).isoformat()

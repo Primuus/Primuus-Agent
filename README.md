@@ -2,7 +2,7 @@
 
 本仓库用于实现一个可运行、可验证、可评测的 Coding / Terminal Agent。
 
-当前已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～C、E、F，并建立了 10 个任务。OpenAI 兼容模型后端已实现；实际模型服务联通和真实模型评测仍待完成。
+当前已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～F，并建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；已完成真实模型的单任务闭环验证，批量评测结果将在节点 G 记录。
 
 ## 目前的文件
 
@@ -39,7 +39,7 @@ docker build -t coding-agent-sandbox:local -f coding_agent/sandbox/Dockerfile .
 
 ## 运行任务
 
-接入支持 Chat Completions 工具调用的模型服务后，在运行环境中设置 `OPENAI_MODEL`、`OPENAI_API_KEY`（无密钥的本地服务可不设）和可选的 `OPENAI_BASE_URL`。密钥不会写入仓库或运行结果。
+默认使用 DeepSeek 的 `deepseek-flash` 与 `https://api.deepseek.com`。在运行环境中设置 `DEEPSEEK_API_KEY` 后即可执行；密钥不会写入仓库或运行结果。若使用其他兼容 Chat Completions 工具调用的服务，可通过 `--model` 和 `--base-url` 覆盖默认值，并使用 `OPENAI_API_KEY`。
 
 ```bash
 python3 -m coding_agent run tasks/task_001

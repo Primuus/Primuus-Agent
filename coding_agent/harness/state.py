@@ -13,8 +13,7 @@ class Turn:
     response: ModelResponse
     model_at: str
     model_duration_ms: int
-    result: ToolResult | None = None
-    tool_at: str | None = None
+    observations: list[tuple[ToolResult, str]] = field(default_factory=list)
     verification: VerificationResult | None = None
     verification_at: str | None = None
 
@@ -33,14 +32,14 @@ class RunState:
 
     @property
     def tool_calls(self) -> int:
-        return sum(turn.response.tool_call is not None for turn in self.turns)
+        return sum(len(turn.response.tool_calls) for turn in self.turns)
 
     @property
     def failed_tool_calls(self) -> int:
         return sum(
-            turn.result is not None
-            and (turn.result.status != "completed" or turn.result.exit_code not in (None, 0))
+            result.status != "completed" or result.exit_code not in (None, 0)
             for turn in self.turns
+            for result, _ in turn.observations
         )
 
     def add_turn(self, response: ModelResponse, model_duration_ms: int) -> Turn:

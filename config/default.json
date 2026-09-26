@@ -4,8 +4,9 @@
   "tool_timeout_seconds": 30,
   "verifier_timeout_seconds": 60,
   "model": {
-    "backend": null,
-    "name": null
+    "backend": "openai_compatible",
+    "name": "deepseek-flash",
+    "base_url": "https://api.deepseek.com"
   },
   "sandbox": {
     "image": "coding-agent-sandbox:local",

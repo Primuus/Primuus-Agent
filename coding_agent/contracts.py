@@ -45,16 +45,16 @@ class ToolCall:
 
 @dataclass(frozen=True)
 class ModelResponse:
-    """Exactly one tool call or one final message per model turn."""
+    """One or more tool calls, or one final message per model turn."""
 
-    tool_call: ToolCall | None = None
+    tool_calls: tuple[ToolCall, ...] = ()
     final_message: str | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
 
     def __post_init__(self) -> None:
-        if (self.tool_call is None) == (self.final_message is None):
-            raise ValueError("A model response must have one tool call or one final message")
+        if bool(self.tool_calls) == (self.final_message is not None):
+            raise ValueError("A model response must have tool calls or one final message")
         if self.final_message is not None and not self.final_message.strip():
             raise ValueError("A final message cannot be empty")
 

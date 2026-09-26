@@ -14,25 +14,30 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("command", choices=["run", "batch"])
     parser.add_argument("path", type=Path, help="Task directory or tasks root")
-    parser.add_argument("--model", default=os.getenv("OPENAI_MODEL"))
-    parser.add_argument(
-        "--base-url", default=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-    )
+    parser.add_argument("--model")
+    parser.add_argument("--base-url")
     parser.add_argument("--config", type=Path, default=Path("config/default.json"))
     arguments = parser.parse_args()
-    if not arguments.model:
-        parser.error("Set --model or OPENAI_MODEL")
     config = json.loads(arguments.config.read_text(encoding="utf-8"))
+    model_id = (
+        arguments.model or os.getenv("DEEPSEEK_MODEL")
+        or os.getenv("OPENAI_MODEL") or config["model"]["name"]
+    )
+    base_url = (
+        arguments.base_url or os.getenv("DEEPSEEK_BASE_URL")
+        or os.getenv("OPENAI_BASE_URL") or config["model"]["base_url"]
+    )
     config["model"] = {
         "backend": "openai_compatible",
-        "name": arguments.model,
-        "endpoint_host": urlsplit(arguments.base_url).hostname,
+        "name": model_id,
+        "endpoint_host": urlsplit(base_url).hostname,
     }
     results_dir = Path(config["results_dir"])
 
     def make_model() -> OpenAICompatibleBackend:
         return OpenAICompatibleBackend(
-            arguments.model, arguments.base_url, os.getenv("OPENAI_API_KEY")
+            model_id, base_url,
+            os.getenv("DEEPSEEK_API_KEY") or os.getenv("OPENAI_API_KEY"),
         )
 
     if arguments.command == "run":

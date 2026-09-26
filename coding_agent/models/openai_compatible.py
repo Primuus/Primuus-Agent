@@ -58,14 +58,14 @@ class OpenAICompatibleBackend:
         usage = completion.get("usage") or {}
         calls = message.get("tool_calls") or []
         if calls:
-            if len(calls) != 1:
-                raise ValueError("Expected exactly one tool call")
-            function = calls[0]["function"]
             return ModelResponse(
-                tool_call=ToolCall(
-                    call_id=calls[0].get("id") or uuid4().hex,
-                    name=function["name"],
-                    arguments=json.loads(function["arguments"]),
+                tool_calls=tuple(
+                    ToolCall(
+                        call_id=call.get("id") or uuid4().hex,
+                        name=call["function"]["name"],
+                        arguments=json.loads(call["function"]["arguments"]),
+                    )
+                    for call in calls
                 ),
                 input_tokens=usage.get("prompt_tokens"),
                 output_tokens=usage.get("completion_tokens"),

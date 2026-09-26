@@ -98,13 +98,13 @@ def write_trace(path: Path, result: RunResult, turns: list) -> None:
                 "duration_ms": turn.model_duration_ms,
             },
         })
-        if turn.result is not None:
+        for tool_result, tool_at in turn.observations:
             events.append({
                 "run_id": result.run_id,
                 "step": index,
                 "event_type": "tool_result",
-                "timestamp": turn.tool_at,
-                "data": asdict(turn.result),
+                "timestamp": tool_at,
+                "data": asdict(tool_result),
             })
         if turn.verification is not None:
             events.append({

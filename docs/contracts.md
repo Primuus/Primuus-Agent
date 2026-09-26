@@ -38,17 +38,17 @@ tasks/task_001/
 
 ## 2. 模型如何交付动作
 
-`ModelBackend.generate(messages, tools)` 未来应返回一个标准化的 `ModelResponse`。一次模型回复**恰好**包含一个工具调用，或一个最终回复；模型服务自己的响应格式由后端适配器转换。
+`ModelBackend.generate(messages, tools)` 返回一个标准化的 `ModelResponse`。一次模型回复包含一个或多个工具调用，或一个最终回复；模型服务自己的响应格式由后端适配器转换。
 
 工具调用示例：
 
 ```json
 {
-  "tool_call": {
+  "tool_calls": [{
     "call_id": "call_001",
     "name": "read_file",
     "arguments": {"path": "calculator.py"}
-  },
+  }],
   "final_message": null,
   "input_tokens": 120,
   "output_tokens": 18
@@ -59,7 +59,7 @@ tasks/task_001/
 
 ```json
 {
-  "tool_call": null,
+  "tool_calls": [],
   "final_message": "I have applied the fix.",
   "input_tokens": 205,
   "output_tokens": 10
@@ -69,6 +69,7 @@ tasks/task_001/
 - `call_id` 标识一次调用，供工具结果与 Trace 对应；后端没有提供时由适配器生成。
 - 只支持 `read_file`、`write_file`、`run_shell`。参数分别为 `{ "path": string }`、`{ "path": string, "content": string }`、`{ "command": string }`。缺失、多余或类型错误的参数均无效。
 - 没有动作、同时有工具调用和最终回复、或最终回复为空，视为无效模型动作，终止原因记为 `invalid_model_action`。
+- 同轮多个工具调用按返回顺序执行，全部结果一起加入下一轮 Context；该轮仅进行一次 Verifier 检查。
 - 工具名或参数无效时，Harness 不执行该调用，而是生成 `ToolResult(status="error")` 反馈模型；该轮仍计入步数和失败工具调用次数。
 - 最终回复只表示模型决定结束；**成功必须由 Verifier 判定**。
 
@@ -152,4 +153,4 @@ runs/<run_id>/
 
 ## 6. 默认配置
 
-[`config/default.json`](../config/default.json) 放步数、超时、容器资源、结果目录等初始值。`model.backend` 和 `model.name` 目前为 `null`，表示尚未选择与接入服务。密钥不写入任务包、配置文件或 Trace；模型接入时从运行环境读取。
+[`config/default.json`](../config/default.json) 放步数、超时、容器资源、结果目录等初始值。当前默认服务为 DeepSeek，模型 ID 为 `deepseek-flash`，基础地址为 `https://api.deepseek.com`。密钥不写入任务包、配置文件或 Trace；运行时从 `DEEPSEEK_API_KEY` 或 `OPENAI_API_KEY` 读取。
