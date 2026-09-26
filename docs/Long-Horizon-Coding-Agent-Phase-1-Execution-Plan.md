@@ -1,6 +1,6 @@
 # Long-Horizon Coding Agent：第一阶段执行方案
 
-> 本文细化《Long-Horizon Coding Agent 项目执行方案（初稿）》的第一阶段任务。按可验证的工作节点推进，不按时间安排。节点 A～G 已完成，实验结果见[第一阶段基线记录](experiments/2026-09-26-deepseek-flash/README.md)。
+> 本文记录已完成的第一阶段任务。节点 A～G 已完成，实验结果见[第一阶段基线记录](experiments/2026-09-26-deepseek-flash/README.md)。后续工作以[总体方案](方案.md)为准。
 
 ## 1. 第一阶段要完成什么
 

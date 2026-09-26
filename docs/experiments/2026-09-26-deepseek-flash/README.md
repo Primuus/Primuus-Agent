@@ -12,20 +12,20 @@
 
 ## 结果
 
-10 个任务全部通过，成功率 **10/10**。每题平均 **3.8 步**、**4.5 次工具调用**、**5.4569 秒**；总计 **35,517 tokens**。汇总原始文件：[batch-20260926T082513.json](batch-20260926T082513.json)。
+10 个任务全部通过，成功率 **10/10**。每题平均 **3.8 步**、**4.5 次工具调用**、**5.4569 秒**；总计 **35,517 tokens**。汇总原始文件：[batch-20260926T082513.json](../../../experiments/2026-09-26-deepseek-flash/batch-20260926T082513.json)。
 
 | 任务结果 | 验证 | 步数 | 工具调用 | 失败工具调用 | Tokens | 耗时（秒） | 执行轨迹 |
 |---|---|---:|---:|---:|---:|---:|---|
-| [task_001](records/20260926T082419-task_001-8efe74c0/result.json) | 通过 | 2 | 3 | 0 | 1457 | 2.852 | [Trace](records/20260926T082419-task_001-8efe74c0/trace.jsonl) |
-| [task_002](records/20260926T082421-task_002-54e18bf8/result.json) | 通过 | 3 | 3 | 0 | 2727 | 6.230 | [Trace](records/20260926T082421-task_002-54e18bf8/trace.jsonl) |
-| [task_003](records/20260926T082428-task_003-7d8a9607/result.json) | 通过 | 4 | 6 | 2 | 3795 | 4.858 | [Trace](records/20260926T082428-task_003-7d8a9607/trace.jsonl) |
-| [task_004](records/20260926T082433-task_004-0b2d7e7d/result.json) | 通过 | 5 | 6 | 2 | 5061 | 6.056 | [Trace](records/20260926T082433-task_004-0b2d7e7d/trace.jsonl) |
-| [task_005](records/20260926T082439-task_005-33c08298/result.json) | 通过 | 5 | 5 | 2 | 4884 | 7.426 | [Trace](records/20260926T082439-task_005-33c08298/trace.jsonl) |
-| [task_006](records/20260926T082446-task_006-4761423b/result.json) | 通过 | 5 | 5 | 2 | 4701 | 6.028 | [Trace](records/20260926T082446-task_006-4761423b/trace.jsonl) |
-| [task_007](records/20260926T082452-task_007-6b275b58/result.json) | 通过 | 3 | 4 | 0 | 2614 | 4.222 | [Trace](records/20260926T082452-task_007-6b275b58/trace.jsonl) |
-| [task_008](records/20260926T082456-task_008-c3ecbce8/result.json) | 通过 | 3 | 3 | 1 | 2324 | 4.333 | [Trace](records/20260926T082456-task_008-c3ecbce8/trace.jsonl) |
-| [task_009](records/20260926T082501-task_009-1fa5ec5c/result.json) | 通过 | 4 | 4 | 1 | 3970 | 7.146 | [Trace](records/20260926T082501-task_009-1fa5ec5c/trace.jsonl) |
-| [task_010](records/20260926T082508-task_010-1948cdae/result.json) | 通过 | 4 | 6 | 2 | 3984 | 5.418 | [Trace](records/20260926T082508-task_010-1948cdae/trace.jsonl) |
+| [task_001](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082419-task_001-8efe74c0/result.json) | 通过 | 2 | 3 | 0 | 1457 | 2.852 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082419-task_001-8efe74c0/trace.jsonl) |
+| [task_002](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082421-task_002-54e18bf8/result.json) | 通过 | 3 | 3 | 0 | 2727 | 6.230 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082421-task_002-54e18bf8/trace.jsonl) |
+| [task_003](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082428-task_003-7d8a9607/result.json) | 通过 | 4 | 6 | 2 | 3795 | 4.858 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082428-task_003-7d8a9607/trace.jsonl) |
+| [task_004](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082433-task_004-0b2d7e7d/result.json) | 通过 | 5 | 6 | 2 | 5061 | 6.056 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082433-task_004-0b2d7e7d/trace.jsonl) |
+| [task_005](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082439-task_005-33c08298/result.json) | 通过 | 5 | 5 | 2 | 4884 | 7.426 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082439-task_005-33c08298/trace.jsonl) |
+| [task_006](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082446-task_006-4761423b/result.json) | 通过 | 5 | 5 | 2 | 4701 | 6.028 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082446-task_006-4761423b/trace.jsonl) |
+| [task_007](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082452-task_007-6b275b58/result.json) | 通过 | 3 | 4 | 0 | 2614 | 4.222 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082452-task_007-6b275b58/trace.jsonl) |
+| [task_008](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082456-task_008-c3ecbce8/result.json) | 通过 | 3 | 3 | 1 | 2324 | 4.333 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082456-task_008-c3ecbce8/trace.jsonl) |
+| [task_009](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082501-task_009-1fa5ec5c/result.json) | 通过 | 4 | 4 | 1 | 3970 | 7.146 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082501-task_009-1fa5ec5c/trace.jsonl) |
+| [task_010](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082508-task_010-1948cdae/result.json) | 通过 | 4 | 6 | 2 | 3984 | 5.418 | [Trace](../../../experiments/2026-09-26-deepseek-flash/records/20260926T082508-task_010-1948cdae/trace.jsonl) |
 
 “失败工具调用”包括工具状态非 `completed` 或 shell 命令退出码非零；因此探索性命令失败也会计入，但不等于任务失败。所有任务的终止原因为 `verified`。
 
@@ -39,4 +39,4 @@
 python3 -m coding_agent batch tasks
 ```
 
-运行记录默认保存在本地 `runs/`。本目录是上述一次真实运行的原始结果副本；各题 `result.json` 内的 `trace_path` 仍为运行时的 `runs/<run_id>/trace.jsonl`，在本目录中可按对应 `records/<run_id>/trace.jsonl` 查阅。
+运行记录默认保存在本地 `runs/`。仓库根目录的 `experiments/2026-09-26-deepseek-flash/` 保存了上述一次真实运行的原始结果副本；各题 `result.json` 内的 `trace_path` 仍为运行时的 `runs/<run_id>/trace.jsonl`，在实验产物目录中可按对应 `records/<run_id>/trace.jsonl` 查阅。

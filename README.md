@@ -4,6 +4,8 @@
 
 已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～G，建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；真实模型批量运行 10 个任务，均由独立 Verifier 判定通过。运行条件、逐题结果和完整 Trace 见[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
 
+后续开发按[总体方案](docs/方案.md)的节点 H～M 推进，目标是在自研的可日常使用 Coding Agent 上扩展长任务能力。
+
 ## 目前的文件
 
 ```text
