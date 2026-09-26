@@ -1,6 +1,7 @@
 """Mutable state for one task run."""
 
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 from coding_agent.contracts import (
     ModelResponse, StopReason, ToolResult, VerificationResult,
@@ -10,8 +11,12 @@ from coding_agent.contracts import (
 @dataclass
 class Turn:
     response: ModelResponse
+    model_at: str
+    model_duration_ms: int
     result: ToolResult | None = None
+    tool_at: str | None = None
     verification: VerificationResult | None = None
+    verification_at: str | None = None
 
 
 @dataclass
@@ -38,9 +43,11 @@ class RunState:
             for turn in self.turns
         )
 
-    def add_turn(self, response: ModelResponse, result: ToolResult | None = None) -> Turn:
+    def add_turn(self, response: ModelResponse, model_duration_ms: int) -> Turn:
         self.steps += 1
-        turn = Turn(response, result)
+        turn = Turn(
+            response, datetime.now(timezone.utc).isoformat(), model_duration_ms
+        )
         self.turns.append(turn)
         if response.input_tokens is None or response.output_tokens is None:
             self.tokens = None

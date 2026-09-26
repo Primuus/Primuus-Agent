@@ -119,7 +119,8 @@ Harness 在工具动作后调用任务 Verifier，并在模型最终回复时再
 ```text
 runs/<run_id>/
 ├── trace.jsonl   按执行顺序记录模型动作、工具结果、验证结果和错误
-└── result.json   单次运行摘要
+├── result.json   单次运行摘要
+└── config.json   本次配置和任务内容摘要
 ```
 
 `result.json` 使用 `RunResult` 字段：
@@ -146,7 +147,8 @@ runs/<run_id>/
 - `retries` 统计基础设施层面的额外尝试；未进行重试时为 `0`。后续 Failure Recovery 的策略重试需另行定义，避免混淆。
 - `tokens` 是可获得的输入与输出 token 之和；模型服务未提供用量时为 `null`，不能用 `0` 代替。
 - `latency_seconds` 是从任务启动到清理完成的总耗时。
-- `trace.jsonl` 每行是一个带 `run_id`、`step`、`event_type`、`timestamp` 和事件数据的 JSON 对象；节点 F 将固定具体事件类型及汇总实现。
+- `trace.jsonl` 每行是一个带 `run_id`、`step`、`event_type`、`timestamp` 和事件数据的 JSON 对象。
+- `event_type` 目前为 `model_action`、`tool_result`、`verification_result` 或 `task_finished`。`config.json` 记录不含密钥的运行参数与任务文件 SHA-256 摘要。
 
 ## 6. 默认配置
 

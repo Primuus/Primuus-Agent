@@ -1,6 +1,7 @@
 """Single-task agent loop, independent of model and execution backend."""
 
 from collections.abc import Callable
+from datetime import datetime, timezone
 from time import monotonic
 
 from coding_agent.contracts import ToolCall, ToolResult, VerificationResult
@@ -35,6 +36,7 @@ class Runner:
                 state.stop_reason = "timeout"
                 return state
             try:
+                model_started = monotonic()
                 response = self.model.generate(build_context(task, state), TOOL_SPECS)
             except (StopIteration, ValueError):
                 state.stop_reason = "invalid_model_action"
@@ -42,19 +44,21 @@ class Runner:
             except ModelServiceError:
                 state.stop_reason = "model_error"
                 return state
+            turn = state.add_turn(response, int((monotonic() - model_started) * 1000))
             if response.tool_call is None:
-                turn = state.add_turn(response)
                 try:
                     turn.verification = self.verify()
+                    turn.verification_at = datetime.now(timezone.utc).isoformat()
                 except VerifierError:
                     state.stop_reason = "verifier_error"
                     return state
                 state.stop_reason = "verified" if turn.verification.passed else "final_unverified"
                 return state
-            result = self.execute(response.tool_call)
-            turn = state.add_turn(response, result)
+            turn.result = self.execute(response.tool_call)
+            turn.tool_at = datetime.now(timezone.utc).isoformat()
             try:
                 turn.verification = self.verify()
+                turn.verification_at = datetime.now(timezone.utc).isoformat()
             except VerifierError:
                 state.stop_reason = "verifier_error"
                 return state
