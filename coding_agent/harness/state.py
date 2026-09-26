@@ -2,13 +2,16 @@
 
 from dataclasses import dataclass, field
 
-from coding_agent.contracts import ModelResponse, StopReason, ToolResult
+from coding_agent.contracts import (
+    ModelResponse, StopReason, ToolResult, VerificationResult,
+)
 
 
-@dataclass(frozen=True)
+@dataclass
 class Turn:
     response: ModelResponse
     result: ToolResult | None = None
+    verification: VerificationResult | None = None
 
 
 @dataclass
@@ -35,10 +38,12 @@ class RunState:
             for turn in self.turns
         )
 
-    def add_turn(self, response: ModelResponse, result: ToolResult | None = None) -> None:
+    def add_turn(self, response: ModelResponse, result: ToolResult | None = None) -> Turn:
         self.steps += 1
-        self.turns.append(Turn(response, result))
+        turn = Turn(response, result)
+        self.turns.append(turn)
         if response.input_tokens is None or response.output_tokens is None:
             self.tokens = None
         elif self.tokens is not None:
             self.tokens += response.input_tokens + response.output_tokens
+        return turn

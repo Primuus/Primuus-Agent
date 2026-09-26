@@ -1,7 +1,7 @@
 """Shared data contracts for the first-stage agent pipeline.
 
-This module defines shapes only. Loading tasks, executing actions, and writing
-results belong to later implementation nodes.
+Loading tasks, executing actions, and writing results live in their respective
+modules.
 """
 
 from dataclasses import dataclass
@@ -67,6 +67,15 @@ class ToolResult:
     output: str
     error: str | None
     exit_code: int | None
+    duration_ms: int
+
+
+@dataclass(frozen=True)
+class VerificationResult:
+    passed: bool
+    output: str
+    error: str | None
+    exit_code: int
     duration_ms: int
 
 
