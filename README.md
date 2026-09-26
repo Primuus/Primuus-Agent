@@ -4,13 +4,14 @@
 
 已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～G，建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；真实模型批量运行 10 个任务，均由独立 Verifier 判定通过。运行条件、逐题结果和完整 Trace 见[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
 
-后续开发按[总体方案](docs/方案.md)的节点 H～M 推进，目标是在自研的可日常使用 Coding Agent 上扩展长任务能力。
+后续开发按[总体方案](docs/方案.md)的节点 H～M 推进。节点 H 已完成：评测与通用会话共用同一 Session Runner。
 
 ## 目前的文件
 
 ```text
 coding_agent/       Python 包及共享数据契约
-coding_agent/harness/ 任务加载、状态、上下文与 Agent Loop
+coding_agent/harness/ 评测任务加载
+coding_agent/session/ 通用会话状态、上下文与 Agent Loop
 coding_agent/sandbox/ Docker 任务环境及镜像定义
 coding_agent/tools/   文件与终端工具
 coding_agent/verifier/ 独立容器验证器

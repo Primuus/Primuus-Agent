@@ -4,7 +4,7 @@ import subprocess
 from time import monotonic
 
 from coding_agent.contracts import ToolCall, ToolResult
-from coding_agent.sandbox.docker import DockerSandbox
+from coding_agent.session.workspace import Workspace
 
 
 READ_SCRIPT = (
@@ -19,7 +19,7 @@ WRITE_SCRIPT = (
 
 
 class DockerTools:
-    def __init__(self, sandbox: DockerSandbox) -> None:
+    def __init__(self, sandbox: Workspace) -> None:
         self.sandbox = sandbox
 
     def execute(self, call: ToolCall) -> ToolResult:

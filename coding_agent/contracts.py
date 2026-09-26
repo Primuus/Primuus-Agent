@@ -11,6 +11,7 @@ from typing import Any, Literal
 ToolStatus = Literal["completed", "error", "timeout"]
 StopReason = Literal[
     "verified",
+    "completed",
     "final_unverified",
     "max_steps",
     "timeout",

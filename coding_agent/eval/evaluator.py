@@ -9,10 +9,11 @@ from time import monotonic
 from uuid import uuid4
 
 from coding_agent.contracts import RunResult
-from coding_agent.harness.runner import Runner
 from coding_agent.harness.task import load_task
 from coding_agent.models.base import ModelBackend
 from coding_agent.sandbox.docker import DockerSandbox
+from coding_agent.session.runner import SessionRunner
+from coding_agent.session.state import SessionSpec, SessionState
 from coding_agent.tools.docker import DockerTools
 from coding_agent.verifier.docker import DockerVerifier
 
@@ -52,10 +53,10 @@ def run_task(
             sandbox_config["cpus"], sandbox_config["memory_mb"],
             config["verifier_timeout_seconds"],
         )
-        state = Runner(
+        state = SessionRunner(
             model, DockerTools(sandbox).execute, verifier.check,
             config["max_steps"], config["task_timeout_seconds"],
-        ).run(task)
+        ).run(SessionSpec(run_id, task.instructions))
     result = RunResult(
         run_id=run_id,
         task_id=task.spec.task_id,
@@ -70,7 +71,7 @@ def run_task(
         latency_seconds=round(monotonic() - started, 3),
         trace_path=str(run_dir / "trace.jsonl"),
     )
-    write_trace(run_dir / "trace.jsonl", result, state.turns)
+    write_trace(run_dir / "trace.jsonl", state)
     (run_dir / "result.json").write_text(
         json.dumps(asdict(result), ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -85,44 +86,9 @@ def run_task(
     return result
 
 
-def write_trace(path: Path, result: RunResult, turns: list) -> None:
-    events = []
-    for index, turn in enumerate(turns, 1):
-        events.append({
-            "run_id": result.run_id,
-            "step": index,
-            "event_type": "model_action",
-            "timestamp": turn.model_at,
-            "data": {
-                "response": asdict(turn.response),
-                "duration_ms": turn.model_duration_ms,
-            },
-        })
-        for tool_result, tool_at in turn.observations:
-            events.append({
-                "run_id": result.run_id,
-                "step": index,
-                "event_type": "tool_result",
-                "timestamp": tool_at,
-                "data": asdict(tool_result),
-            })
-        if turn.verification is not None:
-            events.append({
-                "run_id": result.run_id,
-                "step": index,
-                "event_type": "verification_result",
-                "timestamp": turn.verification_at,
-                "data": asdict(turn.verification),
-            })
-    events.append({
-        "run_id": result.run_id,
-        "step": result.steps,
-        "event_type": "task_finished",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "data": {"success": result.success, "stop_reason": result.stop_reason},
-    })
+def write_trace(path: Path, state: SessionState) -> None:
     path.write_text(
-        "\n".join(json.dumps(event, ensure_ascii=False) for event in events) + "\n",
+        "\n".join(json.dumps(event, ensure_ascii=False) for event in state.events) + "\n",
         encoding="utf-8",
     )
 
