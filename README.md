@@ -4,7 +4,7 @@
 
 已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～G，建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；真实模型批量运行 10 个任务，均由独立 Verifier 判定通过。运行条件、逐题结果和完整 Trace 见[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
 
-后续开发按[总体方案](docs/方案.md)的节点 H～M 推进。节点 H 已完成：评测与通用会话共用同一 Session Runner。
+后续开发按[总体方案](docs/方案.md)的节点 H～M 推进。节点 H、I 已完成：评测与普通仓库会话共用同一 Session Runner。
 
 ## 目前的文件
 
@@ -50,6 +50,19 @@ python3 -m coding_agent batch tasks
 ```
 
 每次运行的 `trace.jsonl`、`result.json` 和 `config.json` 保存在 `runs/<run_id>/`；批量汇总保存为 `runs/batch-<时间戳>.json`。`runs/` 已加入 `.gitignore`。
+
+## 在普通仓库中工作
+
+从本项目目录运行以下命令，仓库路径指向要修改的 Git 仓库：
+
+```bash
+python3 -m coding_agent exec /path/to/repository --task '修复登录流程中的错误' --check 'python -m compileall -q .'
+python3 -m coding_agent chat /path/to/repository
+```
+
+`exec` 是单次无交互运行，默认允许在隔离工作区内执行工具；`chat` 是可连续提问的交互会话，写文件和运行 Shell 时默认询问。可用 `--approval-mode auto|ask|read-only` 指定策略，`--max-steps` 调整模型轮数。交互会话中可用 `/status`、`/diff`、`/exit`。
+
+每次会话从目标仓库当前 `HEAD` 创建独立 Git 副本，原仓库及其未提交改动不会被修改。工作区、`diff.patch`、`status.txt`、`trace.jsonl` 和 `result.json` 默认保存在 `~/.local/state/primuus-agent/sessions/<session_id>/`；可用 `--sessions-dir` 修改位置。`--check` 指定的项目检查在模型完成后执行，检查结果保存在 `result.json`，检查失败时 `exec` 返回非零退出码。当前会话状态仍只在进程中维护，节点 J 将实现暂停与续跑。
 
 ## 任务集
 
