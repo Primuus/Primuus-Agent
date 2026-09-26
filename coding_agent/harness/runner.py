@@ -7,7 +7,7 @@ from coding_agent.contracts import ToolCall, ToolResult
 from coding_agent.harness.context import build_context
 from coding_agent.harness.state import RunState
 from coding_agent.harness.task import LoadedTask
-from coding_agent.models.base import ModelBackend
+from coding_agent.models.base import ModelBackend, ModelServiceError
 from coding_agent.tools.specs import TOOL_SPECS
 
 
@@ -37,6 +37,9 @@ class Runner:
                 response = self.model.generate(build_context(task, state), TOOL_SPECS)
             except (StopIteration, ValueError):
                 state.stop_reason = "invalid_model_action"
+                return state
+            except ModelServiceError:
+                state.stop_reason = "model_error"
                 return state
             if response.tool_call is None:
                 state.add_turn(response)

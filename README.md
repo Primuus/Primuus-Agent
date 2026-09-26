@@ -2,7 +2,7 @@
 
 本仓库用于实现一个可运行、可验证、可评测的 Coding / Terminal Agent。
 
-当前已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～C：任务契约、确定性 Agent Loop 和 Docker 工具。真实模型将在后续节点接入。
+当前已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～C：任务契约、确定性 Agent Loop 和 Docker 工具。OpenAI 兼容模型后端已实现，实际模型服务联通尚待验证。
 
 ## 目前的文件
 

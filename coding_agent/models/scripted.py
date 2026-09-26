@@ -1,6 +1,7 @@
 """Deterministic backend for exercising the agent loop."""
 
 from coding_agent.contracts import ModelResponse
+from typing import Any
 
 
 class ScriptedBackend:
@@ -10,6 +11,6 @@ class ScriptedBackend:
         self.responses = iter(responses)
 
     def generate(
-        self, messages: list[dict[str, str]], tools: list[dict]
+        self, messages: list[dict[str, Any]], tools: list[dict]
     ) -> ModelResponse:
         return next(self.responses)

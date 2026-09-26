@@ -2,6 +2,7 @@
 
 from dataclasses import asdict
 import json
+from typing import Any
 
 from coding_agent.harness.state import RunState
 from coding_agent.harness.task import LoadedTask
@@ -13,7 +14,7 @@ SYSTEM_PROMPT = (
 )
 
 
-def build_context(task: LoadedTask, state: RunState) -> list[dict[str, str]]:
+def build_context(task: LoadedTask, state: RunState) -> list[dict[str, Any]]:
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": task.instructions},
@@ -24,9 +25,24 @@ def build_context(task: LoadedTask, state: RunState) -> list[dict[str, str]]:
             messages.append({"role": "assistant", "content": turn.response.final_message or ""})
         else:
             messages.append(
-                {"role": "assistant", "content": json.dumps({"tool_call": asdict(call)})}
+                {
+                    "role": "assistant",
+                    "content": None,
+                    "tool_calls": [{
+                        "id": call.call_id,
+                        "type": "function",
+                        "function": {
+                            "name": call.name,
+                            "arguments": json.dumps(call.arguments),
+                        },
+                    }],
+                }
             )
             messages.append(
-                {"role": "tool", "content": json.dumps(asdict(turn.result))}
+                {
+                    "role": "tool",
+                    "tool_call_id": call.call_id,
+                    "content": json.dumps(asdict(turn.result)),
+                }
             )
     return messages

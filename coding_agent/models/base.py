@@ -1,6 +1,6 @@
 """Model backend interface."""
 
-from typing import Protocol
+from typing import Any, Protocol
 
 from coding_agent.contracts import ModelResponse
 
@@ -9,5 +9,9 @@ class ModelBackend(Protocol):
     model_id: str
 
     def generate(
-        self, messages: list[dict[str, str]], tools: list[dict]
+        self, messages: list[dict[str, Any]], tools: list[dict]
     ) -> ModelResponse: ...
+
+
+class ModelServiceError(Exception):
+    """The configured model endpoint could not complete a request."""
