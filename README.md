@@ -2,7 +2,7 @@
 
 本仓库用于实现一个可运行、可验证、可评测的 Coding / Terminal Agent。
 
-当前已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～F，并建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；已完成真实模型的单任务闭环验证，批量评测结果将在节点 G 记录。
+已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～G，建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；真实模型批量运行 10 个任务，均由独立 Verifier 判定通过。运行条件、逐题结果和完整 Trace 见[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
 
 ## 目前的文件
 
@@ -29,7 +29,7 @@ cd tasks/task_001/repo
 python3 ../verifier.py
 ```
 
-预期退出码为非零。未来的 Agent 应修复 `calculator.py`，使同一验证器返回零退出码。
+预期退出码为非零。Agent 的任务是修复 `calculator.py`，使同一验证器返回零退出码。
 
 Docker 工具使用前构建本地镜像：
 
@@ -64,3 +64,5 @@ python3 -m coding_agent batch tasks
 | `task_010` | 修复依赖当前目录的文件读取 |
 
 每个任务都包含 `task.md`、初始 `repo/` 和仅供 Harness 调用的 `verifier.py`。10 个任务均已确认初始版本验证失败、临时修复版本验证通过。用预设修复动作运行整条批量链路时，10 个任务全部通过，平均每任务 1 步、1 次工具调用；这只用于检查系统集成，**不是模型性能实验结果**。检查使用的临时文件已清理，任务 Verifier 属于评测数据并保留。
+
+真实模型的首轮基线实验对每个任务运行一次，结果为 10/10 通过，平均每任务 3.8 步、4.5 次工具调用、5.4569 秒。该结果仅对应这 10 个小型任务和这一次运行；原始结果及 Trace 已保存在[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。

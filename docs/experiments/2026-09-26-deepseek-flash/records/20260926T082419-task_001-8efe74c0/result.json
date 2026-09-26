@@ -1,0 +1,14 @@
+{
+  "run_id": "20260926T082419-task_001-8efe74c0",
+  "task_id": "task_001",
+  "model_id": "deepseek-flash",
+  "success": true,
+  "stop_reason": "verified",
+  "steps": 2,
+  "tool_calls": 3,
+  "failed_tool_calls": 0,
+  "retries": 0,
+  "tokens": 1457,
+  "latency_seconds": 2.852,
+  "trace_path": "runs/20260926T082419-task_001-8efe74c0/trace.jsonl"
+}

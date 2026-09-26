@@ -1,0 +1,22 @@
+{
+  "config": {
+    "max_steps": 20,
+    "task_timeout_seconds": 600,
+    "tool_timeout_seconds": 30,
+    "verifier_timeout_seconds": 60,
+    "model": {
+      "backend": "openai_compatible",
+      "name": "deepseek-flash",
+      "endpoint_host": "api.deepseek.com"
+    },
+    "sandbox": {
+      "image": "coding-agent-sandbox:local",
+      "workspace": "/workspace",
+      "cpus": 1.0,
+      "memory_mb": 512,
+      "network_enabled": false
+    },
+    "results_dir": "runs"
+  },
+  "task_digest": "d684be1afaa38db4ebcbc199d2b51f70d94233e6f363a5ddb7c13b20e7640d0f"
+}
