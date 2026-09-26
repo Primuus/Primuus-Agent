@@ -1,0 +1,1 @@
+{"schema_version": 1, "task_id": "task_004", "title": "Correct JSON setting types", "tags": ["json", "config"], "verifier": {"kind": "python_script", "entrypoint": "verifier.py"}}

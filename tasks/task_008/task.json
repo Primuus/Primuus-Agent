@@ -1,0 +1,1 @@
+{"schema_version": 1, "task_id": "task_008", "title": "Repair CLI greeting output", "tags": ["python", "cli"], "verifier": {"kind": "python_script", "entrypoint": "verifier.py"}}

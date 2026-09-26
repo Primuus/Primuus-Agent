@@ -1,0 +1,1 @@
+{"schema_version": 1, "task_id": "task_010", "title": "Load data relative to a module", "tags": ["python", "file-path"], "verifier": {"kind": "python_script", "entrypoint": "verifier.py"}}

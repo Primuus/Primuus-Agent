@@ -1,0 +1,1 @@
+{"schema_version": 1, "task_id": "task_007", "title": "Fix the zero-count error", "tags": ["python", "log-analysis"], "verifier": {"kind": "python_script", "entrypoint": "verifier.py"}}

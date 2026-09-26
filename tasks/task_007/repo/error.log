@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "worker.py", line 8, in <module>
+    print(ratio(10, 0))
+  File "ratio.py", line 2, in ratio
+    return total / count
+ZeroDivisionError: division by zero

@@ -1,0 +1,1 @@
+{"schema_version": 1, "task_id": "task_005", "title": "Implement first_even", "tags": ["python", "missing-function"], "verifier": {"kind": "python_script", "entrypoint": "verifier.py"}}

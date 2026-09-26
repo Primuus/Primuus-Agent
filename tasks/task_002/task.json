@@ -1,0 +1,1 @@
+{"schema_version": 1, "task_id": "task_002", "title": "Normalize display names", "tags": ["python", "bugfix"], "verifier": {"kind": "python_script", "entrypoint": "verifier.py"}}

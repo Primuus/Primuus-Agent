@@ -2,7 +2,7 @@
 
 本仓库用于实现一个可运行、可验证、可评测的 Coding / Terminal Agent。
 
-当前已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～C、E、F：任务契约、确定性 Agent Loop、Docker 工具、独立 Verifier 和评测产物。OpenAI 兼容模型后端已实现，实际模型服务联通尚待验证。
+当前已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～C、E、F，并建立了 10 个任务。OpenAI 兼容模型后端已实现；实际模型服务联通和真实模型评测仍待完成。
 
 ## 目前的文件
 
@@ -47,3 +47,20 @@ python3 -m coding_agent batch tasks
 ```
 
 每次运行的 `trace.jsonl`、`result.json` 和 `config.json` 保存在 `runs/<run_id>/`；批量汇总保存为 `runs/batch-<时间戳>.json`。`runs/` 已加入 `.gitignore`。
+
+## 任务集
+
+| 任务 | 内容 |
+|---|---|
+| `task_001` | 修复加法函数 |
+| `task_002` | 修复名称标准化 |
+| `task_003` | 修复本地模块导入 |
+| `task_004` | 修复 JSON 配置类型 |
+| `task_005` | 补全缺失函数 |
+| `task_006` | 修复按 ID 查询的 API |
+| `task_007` | 根据错误日志修复除零问题 |
+| `task_008` | 修复命令行输出格式 |
+| `task_009` | 修复键值配置解析 |
+| `task_010` | 修复依赖当前目录的文件读取 |
+
+每个任务都包含 `task.md`、初始 `repo/` 和仅供 Harness 调用的 `verifier.py`。10 个任务均已确认初始版本验证失败、临时修复版本验证通过。用预设修复动作运行整条批量链路时，10 个任务全部通过，平均每任务 1 步、1 次工具调用；这只用于检查系统集成，**不是模型性能实验结果**。检查使用的临时文件已清理，任务 Verifier 属于评测数据并保留。
