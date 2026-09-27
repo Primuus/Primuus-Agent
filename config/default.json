@@ -6,6 +6,7 @@
   "context_keep_messages": 12,
   "project_instruction_files": ["AGENTS.md"],
   "skills": [],
+  "hooks": {"before_tool": [], "after_tool": []},
   "recovery": {
     "enabled": true,
     "model_retries": 2,

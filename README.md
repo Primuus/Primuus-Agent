@@ -72,6 +72,8 @@ python3 -m coding_agent chat /path/to/repository --skill cleanup
 
 创建普通仓库会话时，根目录的 `AGENTS.md` 会作为项目指令加入模型上下文。`--instruction-file <相对路径>` 可再加入项目文件；`--skill <名称>` 会读取工作区中的 `.primuus/skills/<名称>/SKILL.md`。这些来源的内容与摘要记录在会话事件中，续跑时保持一致。
 
+可用 `--hooks-file <JSON 文件>` 显式启用 `before_tool` 和 `after_tool` Shell Hooks。例如文件内容为 `{"before_tool": ["git diff --check"], "after_tool": []}`。Hook 在隔离工作区运行，遵守当前权限模式，并把命令、结果写入 Trace。前置 Hook 失败会阻止对应工具调用；后置 Hook 失败会作为本次工具错误反馈。会话续跑沿用创建时保存的 Hook 配置。
+
 会话事件在操作过程中持续写入 `trace.jsonl`。运行中按 `Ctrl+C` 可暂停；空闲时也可用命令标记暂停。记下输出中的 `session_id` 后，可查看并续跑：
 
 ```bash

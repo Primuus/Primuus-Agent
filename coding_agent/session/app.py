@@ -12,6 +12,7 @@ from coding_agent.contracts import ToolCall, ToolResult, VerificationResult
 from coding_agent.models.base import ModelBackend
 from coding_agent.sandbox.docker import DockerSandbox
 from coding_agent.session.journal import EventJournal, session_lock
+from coding_agent.session.hooks import HookExecutor
 from coding_agent.session.permissions import PermissionExecutor
 from coding_agent.session.recovery import RecoveryPolicy, failure_category
 from coding_agent.session.repository import RepositoryWorkspace
@@ -186,7 +187,7 @@ class RepositorySession:
                 }),
             )
 
-            def execute(call: ToolCall) -> ToolResult:
+            def execute_tool(call: ToolCall) -> ToolResult:
                 if call.name != "update_plan":
                     return permitted.execute(call)
                 items = call.arguments.get("items")
@@ -202,6 +203,10 @@ class RepositorySession:
                 if sum(item["status"] == "completed" for item in items) > completed_before:
                     self._snapshot("plan milestone")
                 return ToolResult(call.call_id, call.name, "completed", "Plan updated", None, None, 0)
+
+            hooks = HookExecutor(
+                self.config.get("hooks", {}), execute_tool, permitted.execute, self.state,
+            )
 
             def verify_checks() -> VerificationResult:
                 nonlocal check_results
@@ -236,7 +241,7 @@ class RepositorySession:
 
             try:
                 self.state = SessionRunner(
-                    self.model, execute, verify_checks if checks else None,
+                    self.model, hooks.execute, verify_checks if checks else None,
                     self.config["max_steps"], self.config["task_timeout_seconds"],
                     REPOSITORY_TOOL_SPECS,
                     max_tokens=self.config.get("max_tokens"),
