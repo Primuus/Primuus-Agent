@@ -11,12 +11,14 @@ from urllib.parse import urlsplit
 from coding_agent.eval.evaluator import compare_batch, run_batch, run_task
 from coding_agent.models.factory import create_model
 from coding_agent.session.app import RepositorySession
+from coding_agent.session.memory import MEMORY_KINDS, MemoryStore, repository_identity
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("command", choices=[
         "run", "batch", "compare", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
+        "memory-add", "memory-list", "memory-update", "memory-remove", "memory-history",
     ])
     parser.add_argument("path", type=Path, help="Task path, Git repository, or session ID")
     parser.add_argument("--task", help="Instruction for exec, ci, chat, or resume")
@@ -24,6 +26,13 @@ def main() -> None:
     parser.add_argument("--approval-mode", choices=["auto", "ask", "read-only"])
     parser.add_argument("--sessions-dir", type=Path, default=Path.home() / ".local/state/primuus-agent/sessions")
     parser.add_argument("--output-dir", type=Path, help="CI artifact directory")
+    parser.add_argument("--memory-dir", type=Path, default=Path.home() / ".local/state/primuus-agent/memory")
+    parser.add_argument("--memory-id", help="Memory entry to update, remove, or inspect")
+    parser.add_argument("--kind", choices=sorted(MEMORY_KINDS), help="Memory category")
+    parser.add_argument("--text", help="Memory content")
+    parser.add_argument("--source", help="Source reference for a manual memory revision")
+    parser.add_argument("--scope", action="append", help="Relative repository path in memory scope")
+    parser.add_argument("--all-memories", action="store_true", help="Include inactive memory entries")
     parser.add_argument("--max-steps", type=int)
     parser.add_argument("--repeats", type=int, default=1, help="Runs per task and variant for compare")
     parser.add_argument("--recovery-mode", choices=["on", "off"], help="Enable or disable automatic recovery")
@@ -46,6 +55,34 @@ def main() -> None:
     if arguments.output_dir is not None and arguments.command != "ci":
         parser.error("--output-dir is only available with ci")
     config = json.loads(arguments.config.read_text(encoding="utf-8"))
+    if arguments.command.startswith("memory-"):
+        repository, commit = repository_identity(arguments.path)
+        store = MemoryStore(arguments.memory_dir)
+        source = {"kind": "manual", "ref": arguments.source or "", "commit": commit}
+        if arguments.command == "memory-add":
+            if not arguments.kind or not arguments.text or not arguments.source:
+                parser.error("memory-add requires --kind, --text and --source")
+            result = store.add(repository, arguments.kind, arguments.text, arguments.scope or [], source)
+        elif arguments.command == "memory-list":
+            result = [entry.to_dict() for entry in store.list(repository, not arguments.all_memories)]
+        else:
+            if not arguments.memory_id:
+                parser.error(f"{arguments.command} requires --memory-id")
+            if arguments.command == "memory-update":
+                if not arguments.text or not arguments.source:
+                    parser.error("memory-update requires --text and --source")
+                previous = store.get(repository, arguments.memory_id)
+                result = store.update(
+                    repository, arguments.memory_id, arguments.text,
+                    previous.scope if arguments.scope is None else arguments.scope, source,
+                )
+            elif arguments.command == "memory-remove":
+                result = store.deactivate(repository, arguments.memory_id)
+            else:
+                result = store.history(repository, arguments.memory_id)
+        print(json.dumps(result.to_dict() if hasattr(result, "to_dict") else result,
+                         ensure_ascii=False, indent=2))
+        return
     saved_metadata = None
     if arguments.command in ("resume", "inspect", "pause", "snapshot", "restore"):
         session_dir = arguments.path if (arguments.path / "session.json").is_file() else arguments.sessions_dir / arguments.path

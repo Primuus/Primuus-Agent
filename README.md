@@ -114,6 +114,20 @@ python3 -m coding_agent restore <session_id> --snapshot <commit>
 
 恢复未完成的任务时可省略 `--task`。若中断恰好落在一个工具调用内部，该操作的结果可能无法确定；先查看会话工作区和 diff，再用 `resume <session_id> --resolve-pending` 确认继续。系统不会自动重放这次工具调用。交互模式还提供 `/plan`、`/snapshots`、`/restore <commit>` 和 `/pause`。复杂任务可由模型维护里程碑计划；上下文过长时，旧对话被压缩为摘要，近期消息和计划保留。会话总轮数和 Token 上限由配置控制。
 
+## 仓库记忆
+
+可将项目知识、历史失败或有效修复保存到仓库外的记忆库。每条记录包含来源、原仓库提交、适用路径及修订历史；默认位置为 `~/.local/state/primuus-agent/memory/memory.sqlite3`，可用 `--memory-dir` 指定。当前支持手工维护，跨会话自动提取与检索将在节点 M 的后续小目标接入。
+
+```bash
+python3 -m coding_agent memory-add /path/to/repository --kind project \
+  --text '导出文件采用 UTF-8 编码' --source 'docs/export.md' --scope 'exporter.py'
+python3 -m coding_agent memory-list /path/to/repository
+python3 -m coding_agent memory-update /path/to/repository \
+  --memory-id <记忆 ID> --text '导出文件采用 UTF-8 BOM' --source 'issue-42'
+python3 -m coding_agent memory-history /path/to/repository --memory-id <记忆 ID>
+python3 -m coding_agent memory-remove /path/to/repository --memory-id <记忆 ID>
+```
+
 ## 任务集
 
 | 任务 | 内容 |
