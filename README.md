@@ -135,6 +135,16 @@ python3 -m coding_agent exec /path/to/repository \
   --task '修复 CSV 导出' --check 'git diff --check' --memory-mode retrieve
 ```
 
+跨任务记忆对照可用同一模型、任务、检查和预算重复运行三种模式。输出目录必须为空；其中保存记忆库快照、每次会话的配置与 Trace、补丁以及汇总报告。运行时模型仍可能随机变化，应结合重复次数和单次轨迹分析。
+
+```bash
+python3 -m coding_agent compare-memory /path/to/repository \
+  --task '修复 CSV 导出' --check 'python3 -m compileall -q .' \
+  --repeats 3 --output-dir runs/memory-comparison
+```
+
+检索链路的受控对照及其局限见[记忆实验记录](docs/experiments/2026-09-27-memory-controlled/README.md)。
+
 ## 任务集
 
 | 任务 | 内容 |

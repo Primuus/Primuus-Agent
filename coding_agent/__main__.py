@@ -9,6 +9,7 @@ from shutil import copyfile
 from urllib.parse import urlsplit
 
 from coding_agent.eval.evaluator import compare_batch, run_batch, run_task
+from coding_agent.eval.memory_compare import compare_memory
 from coding_agent.models.factory import create_model
 from coding_agent.session.app import RepositorySession
 from coding_agent.session.memory import MEMORY_KINDS, MemoryStore, repository_identity
@@ -17,15 +18,15 @@ from coding_agent.session.memory import MEMORY_KINDS, MemoryStore, repository_id
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("command", choices=[
-        "run", "batch", "compare", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
+        "run", "batch", "compare", "compare-memory", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
         "memory-add", "memory-list", "memory-update", "memory-remove", "memory-history",
     ])
     parser.add_argument("path", type=Path, help="Task path, Git repository, or session ID")
-    parser.add_argument("--task", help="Instruction for exec, ci, chat, or resume")
+    parser.add_argument("--task", help="Instruction for exec, ci, chat, compare-memory, or resume")
     parser.add_argument("--check", action="append", help="Project check to run after execution")
     parser.add_argument("--approval-mode", choices=["auto", "ask", "read-only"])
     parser.add_argument("--sessions-dir", type=Path, default=Path.home() / ".local/state/primuus-agent/sessions")
-    parser.add_argument("--output-dir", type=Path, help="CI artifact directory")
+    parser.add_argument("--output-dir", type=Path, help="CI or comparison artifact directory")
     parser.add_argument("--memory-dir", type=Path, help="Repository memory database directory")
     parser.add_argument("--memory-mode", choices=["off", "summary", "retrieve"], help="Memory context for a new session")
     parser.add_argument("--memory-id", help="Memory entry to update, remove, or inspect")
@@ -54,8 +55,8 @@ def main() -> None:
     parser.add_argument("--config", type=Path, default=Path("config/default.json"))
     arguments = parser.parse_args()
     default_memory_dir = Path.home() / ".local/state/primuus-agent/memory"
-    if arguments.output_dir is not None and arguments.command != "ci":
-        parser.error("--output-dir is only available with ci")
+    if arguments.output_dir is not None and arguments.command not in ("ci", "compare-memory"):
+        parser.error("--output-dir is only available with ci or compare-memory")
     config = json.loads(arguments.config.read_text(encoding="utf-8"))
     if arguments.command.startswith("memory-"):
         repository, commit = repository_identity(arguments.path)
@@ -92,14 +93,16 @@ def main() -> None:
         if (arguments.instruction_file or arguments.skill or arguments.hooks_file
             or arguments.mcp_config or arguments.memory_mode or arguments.memory_dir):
             parser.error("project instructions, skills, Hooks, MCP and memory settings are available when creating a session")
-    elif arguments.command in ("exec", "ci", "chat"):
+    elif arguments.command in ("exec", "ci", "chat", "compare-memory"):
+        if arguments.command == "compare-memory" and arguments.memory_mode:
+            parser.error("compare-memory selects all three memory modes")
         config["memory"]["mode"] = arguments.memory_mode or config["memory"]["mode"]
         config["memory_dir"] = str((arguments.memory_dir or default_memory_dir).resolve())
     elif arguments.memory_mode or arguments.memory_dir:
         parser.error("memory settings are available for repository sessions")
     if arguments.max_steps is not None:
         config["max_steps"] = arguments.max_steps
-    elif arguments.command in ("exec", "ci", "chat"):
+    elif arguments.command in ("exec", "ci", "chat", "compare-memory"):
         config["max_steps"] = config["repository_max_steps"]
     if arguments.image:
         config["sandbox"]["image"] = arguments.image
@@ -176,6 +179,18 @@ def main() -> None:
             parser.error("compare requires --repeats >= 1")
         paths = sorted(path for path in arguments.path.iterdir() if (path / "task.json").is_file())
         print(json.dumps(compare_batch(paths, make_model, config, Path(config["results_dir"]), arguments.repeats)))
+        return
+    if arguments.command == "compare-memory":
+        if not arguments.task or not arguments.check or arguments.output_dir is None:
+            parser.error("compare-memory requires --task, --check and --output-dir")
+        if arguments.approval_mode:
+            parser.error("compare-memory uses auto approval in isolated workspaces")
+        report = compare_memory(
+            arguments.path, arguments.task, arguments.check, config,
+            make_model, arguments.sessions_dir, arguments.output_dir.resolve(),
+            arguments.repeats,
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2))
         return
 
     if arguments.command in ("exec", "ci", "chat"):

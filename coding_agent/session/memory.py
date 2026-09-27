@@ -82,6 +82,14 @@ class MemoryStore:
         database.row_factory = sqlite3.Row
         return database
 
+    def snapshot_to(self, directory: Path) -> Path:
+        directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        target = directory / "memory.sqlite3"
+        with closing(self._connect()) as source, closing(sqlite3.connect(target)) as destination:
+            source.backup(destination)
+        os.chmod(target, 0o600)
+        return target
+
     @staticmethod
     def _entry(row: sqlite3.Row) -> MemoryEntry:
         return MemoryEntry(

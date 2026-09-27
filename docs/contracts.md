@@ -163,6 +163,7 @@ runs/<run_id>/
 - `ci` 与 `exec` 共用普通仓库会话及 Trace。`ci --output-dir` 将 `result.json`、`trace.jsonl`、`diff.patch`、`status.txt` 复制到指定目录，并生成 `summary.json`，字段为 `success`、`session_id`、`stop_reason`、`checks` 和 `artifacts`。成功退出码为 0，未完成或项目检查失败为 1；失败时仍保留可生成的会话产物。
 - 跨任务记忆位于仓库外的 SQLite 文件中，按原仓库绝对路径隔离。每条记录包含 `memory_id`、`kind`（`project`、`failure`、`fix`）、内容、相对路径适用范围、来源、修订号与启停状态。新增、修订和停用都保留版本快照；手工来源记录来源引用及当时的原仓库提交。
 - 普通仓库会话的记忆模式为 `off`、`summary` 或 `retrieve`。启动和续跑时选择的记录由 `memory_context_set` 事件保存快照，Context 标注记忆 ID、修订号、适用路径和来源；`result.json` 列出本次选择的 ID。`memory_stored` 记录从当前会话提取的失败或经过项目检查的修复。检索只读取同一原仓库的有效记录；停用条目不会进入新上下文。
+- `compare-memory` 固定原仓库基线、任务、检查、模型和预算，先复制记忆数据库，然后用 `off`、`summary`、`retrieve` 各运行指定次数。比较期间关闭记忆写入；`report.json` 汇总成功率、轮数、工具调用、Token、耗时与选择的记忆 ID，每次运行仍保留独立会话配置、Trace、结果和补丁。
 
 ## 6. 默认配置
 
