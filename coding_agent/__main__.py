@@ -33,6 +33,7 @@ def main() -> None:
     parser.add_argument("--instruction-file", action="append", help="Relative project instruction file")
     parser.add_argument("--skill", action="append", help="Repository skill name under .primuus/skills")
     parser.add_argument("--hooks-file", type=Path, help="JSON file defining before_tool and after_tool commands")
+    parser.add_argument("--mcp-config", type=Path, help="JSON file with opt-in MCP stdio servers")
     parser.add_argument("--image", help="Docker image for the repository workspace")
     parser.add_argument("--network", action="store_true", help="Allow network access inside the repository container")
     parser.add_argument("--snapshot", help="Snapshot commit to restore")
@@ -45,8 +46,8 @@ def main() -> None:
     if arguments.command in ("resume", "inspect", "pause", "snapshot", "restore"):
         session_dir = arguments.path if (arguments.path / "session.json").is_file() else arguments.sessions_dir / arguments.path
         saved_metadata = json.loads((session_dir / "session.json").read_text(encoding="utf-8"))
-        if arguments.instruction_file or arguments.skill or arguments.hooks_file:
-            parser.error("--instruction-file, --skill and --hooks-file are available when creating a session")
+        if arguments.instruction_file or arguments.skill or arguments.hooks_file or arguments.mcp_config:
+            parser.error("project instructions, skills, Hooks and MCP settings are available when creating a session")
     if arguments.max_steps is not None:
         config["max_steps"] = arguments.max_steps
     elif arguments.command in ("exec", "chat"):
@@ -66,6 +67,11 @@ def main() -> None:
                    for commands in hooks.values())):
             parser.error("hooks file must define lists of before_tool and after_tool commands")
         config["hooks"] = hooks
+    if arguments.mcp_config:
+        mcp_config = json.loads(arguments.mcp_config.read_text(encoding="utf-8"))
+        if type(mcp_config) is not dict or set(mcp_config) != {"servers"} or type(mcp_config["servers"]) is not list:
+            parser.error("MCP config must contain a servers list")
+        config["mcp_servers"] = mcp_config["servers"]
     if arguments.recovery_mode is not None:
         config["recovery"]["enabled"] = arguments.recovery_mode == "on"
     configured_model = deepcopy(saved_metadata["config"]["model"] if saved_metadata else config["model"])

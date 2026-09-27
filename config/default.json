@@ -7,6 +7,7 @@
   "project_instruction_files": ["AGENTS.md"],
   "skills": [],
   "hooks": {"before_tool": [], "after_tool": []},
+  "mcp_servers": [],
   "recovery": {
     "enabled": true,
     "model_retries": 2,

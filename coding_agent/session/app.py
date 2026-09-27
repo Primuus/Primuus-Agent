@@ -13,7 +13,8 @@ from coding_agent.models.base import ModelBackend
 from coding_agent.sandbox.docker import DockerSandbox
 from coding_agent.session.journal import EventJournal, session_lock
 from coding_agent.session.hooks import HookExecutor
-from coding_agent.session.permissions import PermissionExecutor
+from coding_agent.session.mcp import MCPBridge
+from coding_agent.session.permissions import PermissionExecutor, WRITE_TOOLS
 from coding_agent.session.recovery import RecoveryPolicy, failure_category
 from coding_agent.session.repository import RepositoryWorkspace
 from coding_agent.session.runner import SessionRunner
@@ -178,13 +179,24 @@ class RepositorySession:
             self.config["tool_timeout_seconds"],
             persistent=True,
             container_name=f"coding-agent-{self.session_id}",
-        ) as sandbox:
+        ) as sandbox, MCPBridge(self.config.get("mcp_servers", []),
+                                self.config["tool_timeout_seconds"],
+                                self.repository.workspace) as mcp:
             tools = DockerTools(sandbox, self.repository.base_commit)
+            if mcp.tool_specs:
+                self.state.emit("mcp_tools_registered", {
+                    "tools": [tool["name"] for tool in mcp.tool_specs],
+                })
+
+            def dispatch(call: ToolCall) -> ToolResult:
+                return mcp.execute(call) if mcp.handles(call.name) else tools.execute(call)
+
             permitted = PermissionExecutor(
-                tools.execute, self.approval_mode, self.ask,
+                dispatch, self.approval_mode, self.ask,
                 on_prompt=lambda call, allowed: self.state.emit("manual_intervention", {
                     "kind": "permission", "tool": call.name, "allowed": allowed,
                 }),
+                write_tools=WRITE_TOOLS | mcp.write_tools,
             )
 
             def execute_tool(call: ToolCall) -> ToolResult:
@@ -243,7 +255,7 @@ class RepositorySession:
                 self.state = SessionRunner(
                     self.model, hooks.execute, verify_checks if checks else None,
                     self.config["max_steps"], self.config["task_timeout_seconds"],
-                    REPOSITORY_TOOL_SPECS,
+                    REPOSITORY_TOOL_SPECS + mcp.tool_specs,
                     max_tokens=self.config.get("max_tokens"),
                     context_max_chars=self.config.get("context_max_chars"),
                     context_keep_messages=self.config.get("context_keep_messages", 12),

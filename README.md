@@ -74,6 +74,22 @@ python3 -m coding_agent chat /path/to/repository --skill cleanup
 
 可用 `--hooks-file <JSON 文件>` 显式启用 `before_tool` 和 `after_tool` Shell Hooks。例如文件内容为 `{"before_tool": ["git diff --check"], "after_tool": []}`。Hook 在隔离工作区运行，遵守当前权限模式，并把命令、结果写入 Trace。前置 Hook 失败会阻止对应工具调用；后置 Hook 失败会作为本次工具错误反馈。会话续跑沿用创建时保存的 Hook 配置。
 
+MCP 工具为可选扩展。先安装 `python3 -m pip install '.[mcp]'`，再通过 `--mcp-config <JSON 文件>` 为新会话配置受信任的 stdio 服务，例如：
+
+```json
+{
+  "servers": [{
+    "name": "project",
+    "command": "python3",
+    "args": ["/path/to/server.py"],
+    "env_from": ["PROJECT_TOKEN"],
+    "read_only_tools": ["lookup"]
+  }]
+}
+```
+
+服务工具会以 `mcp__project__lookup` 等名称提供给模型；未列入 `read_only_tools` 的工具按写入操作管理，在 `ask` 模式询问、在 `read-only` 模式拒绝。服务命令在 Agent 宿主机上以隔离 Git 副本为工作目录运行，只有 `env_from` 列出的环境变量会额外传给服务；只配置你信任的服务。工具发现、调用和权限决定写入会话 Trace，续跑沿用创建时的配置。未配置 MCP 时不需要安装可选依赖。
+
 会话事件在操作过程中持续写入 `trace.jsonl`。运行中按 `Ctrl+C` 可暂停；空闲时也可用命令标记暂停。记下输出中的 `session_id` 后，可查看并续跑：
 
 ```bash
