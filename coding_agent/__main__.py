@@ -26,7 +26,8 @@ def main() -> None:
     parser.add_argument("--approval-mode", choices=["auto", "ask", "read-only"])
     parser.add_argument("--sessions-dir", type=Path, default=Path.home() / ".local/state/primuus-agent/sessions")
     parser.add_argument("--output-dir", type=Path, help="CI artifact directory")
-    parser.add_argument("--memory-dir", type=Path, default=Path.home() / ".local/state/primuus-agent/memory")
+    parser.add_argument("--memory-dir", type=Path, help="Repository memory database directory")
+    parser.add_argument("--memory-mode", choices=["off", "summary", "retrieve"], help="Memory context for a new session")
     parser.add_argument("--memory-id", help="Memory entry to update, remove, or inspect")
     parser.add_argument("--kind", choices=sorted(MEMORY_KINDS), help="Memory category")
     parser.add_argument("--text", help="Memory content")
@@ -52,12 +53,13 @@ def main() -> None:
     parser.add_argument("--interactive", action="store_true", help="Stay in an interactive session after resume")
     parser.add_argument("--config", type=Path, default=Path("config/default.json"))
     arguments = parser.parse_args()
+    default_memory_dir = Path.home() / ".local/state/primuus-agent/memory"
     if arguments.output_dir is not None and arguments.command != "ci":
         parser.error("--output-dir is only available with ci")
     config = json.loads(arguments.config.read_text(encoding="utf-8"))
     if arguments.command.startswith("memory-"):
         repository, commit = repository_identity(arguments.path)
-        store = MemoryStore(arguments.memory_dir)
+        store = MemoryStore(arguments.memory_dir or default_memory_dir)
         source = {"kind": "manual", "ref": arguments.source or "", "commit": commit}
         if arguments.command == "memory-add":
             if not arguments.kind or not arguments.text or not arguments.source:
@@ -87,8 +89,14 @@ def main() -> None:
     if arguments.command in ("resume", "inspect", "pause", "snapshot", "restore"):
         session_dir = arguments.path if (arguments.path / "session.json").is_file() else arguments.sessions_dir / arguments.path
         saved_metadata = json.loads((session_dir / "session.json").read_text(encoding="utf-8"))
-        if arguments.instruction_file or arguments.skill or arguments.hooks_file or arguments.mcp_config:
-            parser.error("project instructions, skills, Hooks and MCP settings are available when creating a session")
+        if (arguments.instruction_file or arguments.skill or arguments.hooks_file
+            or arguments.mcp_config or arguments.memory_mode or arguments.memory_dir):
+            parser.error("project instructions, skills, Hooks, MCP and memory settings are available when creating a session")
+    elif arguments.command in ("exec", "ci", "chat"):
+        config["memory"]["mode"] = arguments.memory_mode or config["memory"]["mode"]
+        config["memory_dir"] = str((arguments.memory_dir or default_memory_dir).resolve())
+    elif arguments.memory_mode or arguments.memory_dir:
+        parser.error("memory settings are available for repository sessions")
     if arguments.max_steps is not None:
         config["max_steps"] = arguments.max_steps
     elif arguments.command in ("exec", "ci", "chat"):

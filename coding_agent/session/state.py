@@ -35,6 +35,7 @@ class SessionState:
     tokens: int | None = 0
     plan: list[dict[str, str]] = field(default_factory=list)
     context_sources: list[dict[str, str]] = field(default_factory=list)
+    memory_context: dict[str, Any] = field(default_factory=dict)
     summary: str = ""
     snapshots: list[dict[str, Any]] = field(default_factory=list)
     pending_tools: dict[str, ToolCall] = field(default_factory=dict)
@@ -137,6 +138,11 @@ class SessionState:
         source = {"kind": kind, "path": path, "content": content, "sha256": digest}
         self.emit("context_source_added", source)
         self.context_sources.append(source)
+
+    def set_memory_context(self, mode: str, query: str, entries: list[dict]) -> None:
+        context = {"mode": mode, "query": query, "entries": entries}
+        self.emit("memory_context_set", context)
+        self.memory_context = context
 
     def record_failure(self, category: str, detail: dict[str, Any]) -> None:
         self.emit("failure_detected", {"category": category, **detail})
@@ -245,6 +251,8 @@ class SessionState:
                 state.messages.append({"role": "system", "content": data["content"]})
             elif kind == "context_source_added":
                 state.context_sources.append(data)
+            elif kind == "memory_context_set":
+                state.memory_context = data
             elif kind == "failure_detected" and "signature" in data:
                 state.last_failed_action = data["signature"]
                 state.repeat_blocks = 0

@@ -14,6 +14,7 @@ from coding_agent.sandbox.docker import DockerSandbox
 from coding_agent.session.journal import EventJournal, session_lock
 from coding_agent.session.hooks import HookExecutor
 from coding_agent.session.mcp import MCPBridge
+from coding_agent.session.memory import MemoryStore
 from coding_agent.session.permissions import PermissionExecutor, WRITE_TOOLS
 from coding_agent.session.recovery import RecoveryPolicy, failure_category
 from coding_agent.session.repository import RepositoryWorkspace
@@ -144,6 +145,7 @@ class RepositorySession:
         resolve_pending: bool,
     ) -> dict:
         started = monotonic()
+        event_start = len(self.state.events)
         if self.state.pending_tools and resolve_pending:
             self.state.emit("manual_intervention", {"kind": "resolve_pending"})
         self.state.resolve_interrupted_turn(resolve_pending)
@@ -168,6 +170,20 @@ class RepositorySession:
             self.state.finish("completed")
             self.state.emit("run_duration", {"seconds": round(monotonic() - started, 3)})
             return self._save()
+        memory_settings = self.config.get("memory", {"mode": "off"})
+        memory_mode = memory_settings["mode"]
+        memory_store = None
+        current_task = instruction or next(
+            (event["data"]["content"] for event in reversed(self.state.events)
+             if event["event_type"] == "user_message"), "",
+        )
+        if memory_mode != "off":
+            memory_store = MemoryStore(Path(self.config["memory_dir"]))
+            entries = memory_store.select(
+                str(self.repository.source), current_task, memory_mode,
+                memory_settings["max_entries"], memory_settings["max_chars"],
+            )
+            self.state.set_memory_context(memory_mode, current_task, entries)
         sandbox_config = self.config["sandbox"]
         check_results: list[dict] | None = None if checks else []
         with DockerSandbox(
@@ -270,6 +286,19 @@ class RepositorySession:
                 self.state.finish("paused")
         self.state.emit("run_duration", {"seconds": round(monotonic() - started, 3)})
         self._snapshot(f"after step {self.state.steps}")
+        if memory_store is not None and memory_settings.get("capture", True):
+            diff = self.repository.diff()
+            captured = memory_store.capture(
+                str(self.repository.source), self.session_id, self.repository.base_commit,
+                current_task, self.state.events[event_start:], self.state.stop_reason,
+                check_results or [], diff, self.repository.changed_files(),
+                self.repository.session_dir / "trace.jsonl",
+            )
+            for entry in captured:
+                self.state.emit("memory_stored", {
+                    "memory_id": entry.memory_id, "kind": entry.kind,
+                    "revision": entry.revision,
+                })
         return self._save(check_results)
 
     def snapshot(self, label: str) -> str:
@@ -327,6 +356,8 @@ class RepositorySession:
             "base_commit": self.repository.base_commit,
             "model_id": self.model.model_id,
             "approval_mode": self.approval_mode,
+            "memory_mode": self.config.get("memory", {}).get("mode", "off"),
+            "memory_ids": [entry["memory_id"] for entry in self.state.memory_context.get("entries", [])],
             "stop_reason": self.state.stop_reason,
             "steps": self.state.steps,
             "tool_calls": self.state.tool_calls,

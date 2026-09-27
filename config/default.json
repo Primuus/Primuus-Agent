@@ -8,6 +8,7 @@
   "skills": [],
   "hooks": {"before_tool": [], "after_tool": []},
   "mcp_servers": [],
+  "memory": {"mode": "off", "max_entries": 3, "max_chars": 2500},
   "recovery": {
     "enabled": true,
     "model_retries": 2,

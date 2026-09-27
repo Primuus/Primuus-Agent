@@ -116,7 +116,7 @@ python3 -m coding_agent restore <session_id> --snapshot <commit>
 
 ## 仓库记忆
 
-可将项目知识、历史失败或有效修复保存到仓库外的记忆库。每条记录包含来源、原仓库提交、适用路径及修订历史；默认位置为 `~/.local/state/primuus-agent/memory/memory.sqlite3`，可用 `--memory-dir` 指定。当前支持手工维护，跨会话自动提取与检索将在节点 M 的后续小目标接入。
+可将项目知识、历史失败或有效修复保存到仓库外的记忆库。每条记录包含来源、原仓库提交、适用路径及修订历史；默认位置为 `~/.local/state/primuus-agent/memory/memory.sqlite3`，可用 `--memory-dir` 指定。手工维护入口如下：
 
 ```bash
 python3 -m coding_agent memory-add /path/to/repository --kind project \
@@ -126,6 +126,13 @@ python3 -m coding_agent memory-update /path/to/repository \
   --memory-id <记忆 ID> --text '导出文件采用 UTF-8 BOM' --source 'issue-42'
 python3 -m coding_agent memory-history /path/to/repository --memory-id <记忆 ID>
 python3 -m coding_agent memory-remove /path/to/repository --memory-id <记忆 ID>
+```
+
+新会话可指定 `--memory-mode off|summary|retrieve`，默认为 `off`。`summary` 提供最近记录，`retrieve` 按当前任务关键词和适用路径选择相关记录，最多加入配置中的条数与字符数；所选记录及其来源写入 Trace，续跑时重新检索。开启记忆的会话会从本次 Trace 记录历史失败；仅在项目检查通过且确有代码变更时，才记录有效修复及补丁摘要。
+
+```bash
+python3 -m coding_agent exec /path/to/repository \
+  --task '修复 CSV 导出' --check 'git diff --check' --memory-mode retrieve
 ```
 
 ## 任务集

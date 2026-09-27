@@ -48,6 +48,12 @@ class RepositoryWorkspace:
             check=True, capture_output=True, text=True,
         ).stdout
 
+    def changed_files(self) -> list[str]:
+        return subprocess.run(
+            ["git", "-C", str(self.workspace), "diff", "--name-only", self.base_commit, "--"],
+            check=True, capture_output=True, text=True,
+        ).stdout.splitlines()
+
     def snapshot(self, label: str) -> str:
         index = self.session_dir / f"snapshot-{uuid4().hex}.index"
         environment = {

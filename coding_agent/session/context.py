@@ -18,6 +18,16 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
             "role": "system",
             "content": f"{source['kind']} instructions from {source['path']}:\n{source['content']}",
         })
+    for entry in state.memory_context.get("entries", []):
+        messages.append({
+            "role": "system",
+            "content": (
+                f"Historical repository note {entry['memory_id']} ({entry['kind']}, "
+                f"revision {entry['revision']}, scope {entry['scope']}, "
+                f"source {entry['source']['ref']}). Verify it against the current code.\n"
+                f"{entry['content']}"
+            ),
+        })
     if state.plan:
         messages.append({"role": "system", "content": "Current plan: " + str(state.plan)})
     if state.summary:
