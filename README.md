@@ -4,7 +4,7 @@
 
 已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～G，建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；真实模型批量运行 10 个任务，均由独立 Verifier 判定通过。运行条件、逐题结果和完整 Trace 见[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
 
-后续开发按[总体方案](docs/方案.md)的节点 H～M 推进。节点 H～L 已完成：评测与普通仓库会话共用同一 Session Runner，普通仓库会话支持持久记录、续跑、有限失败恢复以及模型、项目指令、Hooks、MCP 和 CI 扩展。节点 K 的受控故障注入结果见[实验记录](docs/experiments/2026-09-27-recovery-controlled/README.md)。
+后续开发按[总体方案](docs/方案.md)的节点 H～M 推进。节点 H～M 已完成：评测与普通仓库会话共用同一 Session Runner，普通仓库会话支持持久记录、续跑、有限失败恢复、扩展接口、跨任务记忆和隔离的并行任务。节点 K 的受控故障注入结果见[实验记录](docs/experiments/2026-09-27-recovery-controlled/README.md)。
 
 ## 目前的文件
 
@@ -144,6 +144,27 @@ python3 -m coding_agent compare-memory /path/to/repository \
 ```
 
 检索链路的受控对照及其局限见[记忆实验记录](docs/experiments/2026-09-27-memory-controlled/README.md)。
+
+## 并行任务与补丁整合
+
+`parallel` 根据 JSON 清单把独立子任务交给各自的会话。每项任务需要指定 ID、指令、允许修改的相对路径和项目检查；清单还需指定整合后的检查。例如：
+
+```json
+{
+  "tasks": [
+    {"id": "api", "instruction": "修复 API 分页", "paths": ["src/api.py"], "checks": ["python3 -m compileall -q src"]},
+    {"id": "export", "instruction": "修复导出格式", "paths": ["src/export.py"], "checks": ["python3 -m compileall -q src"]}
+  ],
+  "integration_checks": ["python3 -m compileall -q src"]
+}
+```
+
+```bash
+python3 -m coding_agent parallel /path/to/repository \
+  --tasks-file tasks.json --workers 2 --output-dir runs/parallel-review
+```
+
+所有任务从同一个提交创建独立 Git 副本，在各自容器中运行；结果分别写入 `tasks/<id>/` 中的 `handoff.json`、Trace、结果和补丁。完成后按清单顺序在另一份 Git 副本中检查并应用成功任务的补丁，执行整合检查。范围外修改和补丁冲突不会进入整合结果，均在 `report.json` 中说明；原仓库不被修改。输出目录应为空，整合失败时命令返回非零退出码。并行任务应相互独立；有前后依赖的任务应分批执行。
 
 ## 任务集
 

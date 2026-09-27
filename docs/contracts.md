@@ -164,6 +164,7 @@ runs/<run_id>/
 - 跨任务记忆位于仓库外的 SQLite 文件中，按原仓库绝对路径隔离。每条记录包含 `memory_id`、`kind`（`project`、`failure`、`fix`）、内容、相对路径适用范围、来源、修订号与启停状态。新增、修订和停用都保留版本快照；手工来源记录来源引用及当时的原仓库提交。
 - 普通仓库会话的记忆模式为 `off`、`summary` 或 `retrieve`。启动和续跑时选择的记录由 `memory_context_set` 事件保存快照，Context 标注记忆 ID、修订号、适用路径和来源；`result.json` 列出本次选择的 ID。`memory_stored` 记录从当前会话提取的失败或经过项目检查的修复。检索只读取同一原仓库的有效记录；停用条目不会进入新上下文。
 - `compare-memory` 固定原仓库基线、任务、检查、模型和预算，先复制记忆数据库，然后用 `off`、`summary`、`retrieve` 各运行指定次数。比较期间关闭记忆写入；`report.json` 汇总成功率、轮数、工具调用、Token、耗时与选择的记忆 ID，每次运行仍保留独立会话配置、Trace、结果和补丁。
+- `parallel` 清单含至少两个 `tasks`（每项有 `id`、`instruction`、`paths`、`checks`）及 `integration_checks`。各任务从相同原仓库提交创建会话，指令告知分配路径，执行后再检查实际改动路径；每份 `handoff.json` 记录范围、会话 ID、检查结果与产物目录。成功任务的补丁按清单顺序在第三份 Git 副本中应用，冲突和越界单独报告，最后在容器中执行整合检查。`report.json` 给出任务交接、补丁应用状态、整合结果和独立审阅路径；比较和并行任务均不会修改原仓库。
 
 ## 6. 默认配置
 

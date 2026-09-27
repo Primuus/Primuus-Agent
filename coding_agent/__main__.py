@@ -13,12 +13,13 @@ from coding_agent.eval.memory_compare import compare_memory
 from coding_agent.models.factory import create_model
 from coding_agent.session.app import RepositorySession
 from coding_agent.session.memory import MEMORY_KINDS, MemoryStore, repository_identity
+from coding_agent.session.parallel import run_parallel
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("command", choices=[
-        "run", "batch", "compare", "compare-memory", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
+        "run", "batch", "compare", "compare-memory", "parallel", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
         "memory-add", "memory-list", "memory-update", "memory-remove", "memory-history",
     ])
     parser.add_argument("path", type=Path, help="Task path, Git repository, or session ID")
@@ -26,7 +27,9 @@ def main() -> None:
     parser.add_argument("--check", action="append", help="Project check to run after execution")
     parser.add_argument("--approval-mode", choices=["auto", "ask", "read-only"])
     parser.add_argument("--sessions-dir", type=Path, default=Path.home() / ".local/state/primuus-agent/sessions")
-    parser.add_argument("--output-dir", type=Path, help="CI or comparison artifact directory")
+    parser.add_argument("--output-dir", type=Path, help="CI, comparison, or parallel artifact directory")
+    parser.add_argument("--tasks-file", type=Path, help="Parallel task handoff manifest")
+    parser.add_argument("--workers", type=int, default=2, help="Concurrent repository sessions for parallel")
     parser.add_argument("--memory-dir", type=Path, help="Repository memory database directory")
     parser.add_argument("--memory-mode", choices=["off", "summary", "retrieve"], help="Memory context for a new session")
     parser.add_argument("--memory-id", help="Memory entry to update, remove, or inspect")
@@ -55,8 +58,10 @@ def main() -> None:
     parser.add_argument("--config", type=Path, default=Path("config/default.json"))
     arguments = parser.parse_args()
     default_memory_dir = Path.home() / ".local/state/primuus-agent/memory"
-    if arguments.output_dir is not None and arguments.command not in ("ci", "compare-memory"):
-        parser.error("--output-dir is only available with ci or compare-memory")
+    if arguments.output_dir is not None and arguments.command not in ("ci", "compare-memory", "parallel"):
+        parser.error("--output-dir is only available with ci, compare-memory or parallel")
+    if arguments.tasks_file is not None and arguments.command != "parallel":
+        parser.error("--tasks-file is only available with parallel")
     config = json.loads(arguments.config.read_text(encoding="utf-8"))
     if arguments.command.startswith("memory-"):
         repository, commit = repository_identity(arguments.path)
@@ -93,7 +98,7 @@ def main() -> None:
         if (arguments.instruction_file or arguments.skill or arguments.hooks_file
             or arguments.mcp_config or arguments.memory_mode or arguments.memory_dir):
             parser.error("project instructions, skills, Hooks, MCP and memory settings are available when creating a session")
-    elif arguments.command in ("exec", "ci", "chat", "compare-memory"):
+    elif arguments.command in ("exec", "ci", "chat", "compare-memory", "parallel"):
         if arguments.command == "compare-memory" and arguments.memory_mode:
             parser.error("compare-memory selects all three memory modes")
         config["memory"]["mode"] = arguments.memory_mode or config["memory"]["mode"]
@@ -102,7 +107,7 @@ def main() -> None:
         parser.error("memory settings are available for repository sessions")
     if arguments.max_steps is not None:
         config["max_steps"] = arguments.max_steps
-    elif arguments.command in ("exec", "ci", "chat", "compare-memory"):
+    elif arguments.command in ("exec", "ci", "chat", "compare-memory", "parallel"):
         config["max_steps"] = config["repository_max_steps"]
     if arguments.image:
         config["sandbox"]["image"] = arguments.image
@@ -191,6 +196,21 @@ def main() -> None:
             arguments.repeats,
         )
         print(json.dumps(report, ensure_ascii=False, indent=2))
+        return
+    if arguments.command == "parallel":
+        if arguments.tasks_file is None or arguments.output_dir is None:
+            parser.error("parallel requires --tasks-file and --output-dir")
+        if arguments.approval_mode == "ask":
+            parser.error("parallel requires a non-interactive approval mode")
+        manifest = json.loads(arguments.tasks_file.read_text(encoding="utf-8"))
+        report = run_parallel(
+            arguments.path, manifest, config, make_model,
+            arguments.sessions_dir, arguments.output_dir.resolve(),
+            arguments.workers, arguments.approval_mode or "auto",
+        )
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        if not report["integration"]["success"]:
+            raise SystemExit(1)
         return
 
     if arguments.command in ("exec", "ci", "chat"):
