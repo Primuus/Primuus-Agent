@@ -1,0 +1,41 @@
+name: Agent CI run
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Task for the coding agent
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Install agent and build sandbox
+        run: |
+          python3 -m pip install .
+          docker build -t coding-agent-sandbox:local -f coding_agent/sandbox/Dockerfile .
+      - name: Run task in an isolated checkout
+        env:
+          AGENT_TASK: ${{ inputs.task }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python3 -m coding_agent ci . \
+            --task "$AGENT_TASK" \
+            --check 'git diff --check' \
+            --output-dir "$RUNNER_TEMP/primuus-artifacts"
+      - name: Upload review artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: agent-ci-result
+          path: ${{ runner.temp }}/primuus-artifacts/
+          if-no-files-found: ignore

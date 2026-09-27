@@ -5,6 +5,7 @@ from copy import deepcopy
 import json
 import os
 from pathlib import Path
+from shutil import copyfile
 from urllib.parse import urlsplit
 
 from coding_agent.eval.evaluator import compare_batch, run_batch, run_task
@@ -15,13 +16,14 @@ from coding_agent.session.app import RepositorySession
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("command", choices=[
-        "run", "batch", "compare", "exec", "chat", "resume", "inspect", "pause", "snapshot", "restore",
+        "run", "batch", "compare", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
     ])
     parser.add_argument("path", type=Path, help="Task path, Git repository, or session ID")
-    parser.add_argument("--task", help="Instruction for exec, chat, or resume")
+    parser.add_argument("--task", help="Instruction for exec, ci, chat, or resume")
     parser.add_argument("--check", action="append", help="Project check to run after execution")
     parser.add_argument("--approval-mode", choices=["auto", "ask", "read-only"])
     parser.add_argument("--sessions-dir", type=Path, default=Path.home() / ".local/state/primuus-agent/sessions")
+    parser.add_argument("--output-dir", type=Path, help="CI artifact directory")
     parser.add_argument("--max-steps", type=int)
     parser.add_argument("--repeats", type=int, default=1, help="Runs per task and variant for compare")
     parser.add_argument("--recovery-mode", choices=["on", "off"], help="Enable or disable automatic recovery")
@@ -41,6 +43,8 @@ def main() -> None:
     parser.add_argument("--interactive", action="store_true", help="Stay in an interactive session after resume")
     parser.add_argument("--config", type=Path, default=Path("config/default.json"))
     arguments = parser.parse_args()
+    if arguments.output_dir is not None and arguments.command != "ci":
+        parser.error("--output-dir is only available with ci")
     config = json.loads(arguments.config.read_text(encoding="utf-8"))
     saved_metadata = None
     if arguments.command in ("resume", "inspect", "pause", "snapshot", "restore"):
@@ -50,7 +54,7 @@ def main() -> None:
             parser.error("project instructions, skills, Hooks and MCP settings are available when creating a session")
     if arguments.max_steps is not None:
         config["max_steps"] = arguments.max_steps
-    elif arguments.command in ("exec", "chat"):
+    elif arguments.command in ("exec", "ci", "chat"):
         config["max_steps"] = config["repository_max_steps"]
     if arguments.image:
         config["sandbox"]["image"] = arguments.image
@@ -129,9 +133,11 @@ def main() -> None:
         print(json.dumps(compare_batch(paths, make_model, config, Path(config["results_dir"]), arguments.repeats)))
         return
 
-    if arguments.command in ("exec", "chat"):
-        if arguments.command == "exec" and not arguments.task:
-            parser.error("exec requires --task")
+    if arguments.command in ("exec", "ci", "chat"):
+        if arguments.command in ("exec", "ci") and not arguments.task:
+            parser.error(f"{arguments.command} requires --task")
+        if arguments.command == "ci" and (arguments.output_dir is None or arguments.approval_mode == "ask"):
+            parser.error("ci requires --output-dir and a non-interactive approval mode")
         approval = arguments.approval_mode or ("ask" if arguments.command == "chat" else "auto")
         session = RepositorySession.create(
             arguments.path, arguments.sessions_dir, make_model(), config, approval
@@ -163,13 +169,32 @@ def main() -> None:
             parser.error("restore requires --snapshot")
         print(json.dumps(session.restore(arguments.snapshot), ensure_ascii=False, indent=2))
         return
-    if arguments.command == "exec":
+    if arguments.command in ("exec", "ci"):
         result = session.run(arguments.task, arguments.check)
-        print(json.dumps(result, ensure_ascii=False, indent=2))
-        if result["stop_reason"] != "completed" or any(
-            check["status"] != "completed" or check["exit_code"] != 0
+        success = result["stop_reason"] == "completed" and all(
+            check["status"] == "completed" and check["exit_code"] == 0
             for check in result["checks"]
-        ):
+        )
+        if arguments.command == "ci":
+            output_dir = arguments.output_dir.resolve()
+            output_dir.mkdir(parents=True, exist_ok=True)
+            session_dir = session.repository.session_dir
+            for name in ("result.json", "trace.jsonl", "diff.patch", "status.txt"):
+                copyfile(session_dir / name, output_dir / name)
+            summary = {
+                "success": success,
+                "session_id": result["session_id"],
+                "stop_reason": result["stop_reason"],
+                "checks": result["checks"],
+                "artifacts": ["result.json", "trace.jsonl", "diff.patch", "status.txt"],
+            }
+            (output_dir / "summary.json").write_text(
+                json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8",
+            )
+            print(json.dumps(summary, ensure_ascii=False))
+        else:
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        if not success:
             raise SystemExit(1)
         return
     if arguments.command == "resume":

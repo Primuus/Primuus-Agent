@@ -160,6 +160,7 @@ runs/<run_id>/
 - 普通仓库会话从隔离副本读取项目指令与显式选择的技能，写入 `context_source_added` 事件，记录相对路径、内容与 SHA-256 摘要。续跑从事件恢复这些来源；模型密钥只从命名的环境变量读取。
 - 显式启用的 `before_tool`、`after_tool` Hook 使用相同的命令权限入口，分别产生 `hook_started` 和 `hook_result` 事件。Hook 失败会反映在关联的工具结果中；未启用 Hooks 时不改变工具行为。
 - 普通仓库会话可显式配置 MCP stdio 服务。发现的工具以 `mcp__<服务名>__<工具名>` 暴露给模型，`mcp_tools_registered` 记录工具名；调用沿用 `tool_started`、`tool_result` 与权限事件。服务配置随会话保存，环境变量仅保存名称；未声明为只读的 MCP 工具按写操作审批。MCP 服务在宿主机执行，外部系统的副作用不属于 Git 快照，遇到未完成调用时仍需人工检查后确认续跑。
+- `ci` 与 `exec` 共用普通仓库会话及 Trace。`ci --output-dir` 将 `result.json`、`trace.jsonl`、`diff.patch`、`status.txt` 复制到指定目录，并生成 `summary.json`，字段为 `success`、`session_id`、`stop_reason`、`checks` 和 `artifacts`。成功退出码为 0，未完成或项目检查失败为 1；失败时仍保留可生成的会话产物。
 
 ## 6. 默认配置
 
