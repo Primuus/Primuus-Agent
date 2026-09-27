@@ -48,11 +48,14 @@ class OpenAICompatibleBackend:
             with urlopen(request, timeout=self.timeout_seconds) as response:
                 completion = json.load(response)
         except HTTPError as error:
-            raise ModelServiceError(f"Model API returned HTTP {error.code}") from error
+            raise ModelServiceError(
+                f"Model API returned HTTP {error.code}",
+                retryable=error.code in (408, 429, 500, 502, 503, 504),
+            ) from error
         except URLError as error:
-            raise ModelServiceError(str(error.reason)) from error
+            raise ModelServiceError(str(error.reason), retryable=True) from error
         except TimeoutError as error:
-            raise ModelServiceError("Model API request timed out") from error
+            raise ModelServiceError("Model API request timed out", retryable=True) from error
 
         message = completion["choices"][0]["message"]
         usage = completion.get("usage") or {}

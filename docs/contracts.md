@@ -1,6 +1,6 @@
 # 第一阶段数据与模块契约
 
-本文固定节点 A 的接口约定。Python 数据结构位于 [`coding_agent/contracts.py`](../coding_agent/contracts.py)；任务示例位于 [`tasks/task_001/`](../tasks/task_001/)。节点 B～G 将按此约定实现运行逻辑。
+本文记录当前评测任务与会话接口。Python 数据结构位于 [`coding_agent/contracts.py`](../coding_agent/contracts.py)；任务示例位于 [`tasks/task_001/`](../tasks/task_001/)。
 
 ## 1. 任务如何加载
 
@@ -33,7 +33,7 @@ tasks/task_001/
 - `task_id` 必须与目录名一致，在任务集中唯一。
 - `task.md` 和 `repo/` 必须存在；`repo/` 是 Agent 唯一可修改的任务内容。
 - 目前只约定 `python_script` 验证器；`entrypoint` 是相对任务目录的文件名，必须留在任务目录内。
-- Harness 读取元数据和说明，将 `repo/` 的副本放入 Agent 容器 `/workspace`。Agent 只能接触任务说明和该副本；验证器不得挂载到 Agent 容器。后续节点 E 应由 Harness 在独立的验证环境中，针对工作区快照运行验证器。
+- Harness 读取元数据和说明，将 `repo/` 的副本放入 Agent 容器 `/workspace`。Agent 只能接触任务说明和该副本；验证器在独立的容器中针对工作区快照运行，不挂载到 Agent 容器。
 - 任务基线应验证失败；存在正确修复时应验证通过。这样成功率才反映 Agent 的工作。
 
 ## 2. 模型如何交付动作
@@ -71,7 +71,7 @@ tasks/task_001/
 - 没有动作、同时有工具调用和最终回复、或最终回复为空，视为无效模型动作，终止原因记为 `invalid_model_action`。
 - 同轮多个工具调用按返回顺序执行，全部结果一起加入下一轮 Context；该轮仅进行一次 Verifier 检查。
 - 工具名或参数无效时，Harness 不执行该调用，而是生成 `ToolResult(status="error")` 反馈模型；该轮仍计入步数和失败工具调用次数。
-- 最终回复只表示模型决定结束；**成功必须由 Verifier 判定**。
+- 最终回复只表示模型决定结束；评测任务的**成功必须由 Verifier 判定**。开启恢复时，最终验证失败可以触发有次数上限的再修复。
 
 ## 3. 工具如何返回结果
 
@@ -98,13 +98,13 @@ tasks/task_001/
 
 ## 4. 成功如何判断、何时停止
 
-Harness 在工具动作后调用任务 Verifier，并在模型最终回复时再次确认结果。Verifier 在独立环境中读取 Agent 工作区的快照；其代码与执行入口由 Harness 控制，Agent 无法修改。验证通过时 `success=true`，`stop_reason="verified"`。模型最终回复而验证未通过时，结果为 `final_unverified`。
+Harness 在工具动作后调用任务 Verifier，并在模型最终回复时再次确认结果。Verifier 在独立环境中读取 Agent 工作区的快照；其代码与执行入口由 Harness 控制，Agent 无法修改。验证通过时 `success=true`，`stop_reason="verified"`。最终验证未通过时，可按恢复预算继续一轮；仍未通过时为 `final_unverified`。普通仓库会话在最终回复后执行保存的项目检查，检查通过时为 `completed`。
 
 其余终止原因：
 
 | `stop_reason` | 含义 |
 |---|---|
-| `completed` | 普通仓库会话收到模型最终回复；项目检查结果单独记录 |
+| `completed` | 普通仓库会话收到模型最终回复，指定的项目检查通过 |
 | `paused` | 普通仓库会话暂停，可从事件记录恢复 |
 | `token_budget` | 会话达到 Token 预算 |
 | `max_steps` | 达到模型轮次上限 |
@@ -113,8 +113,9 @@ Harness 在工具动作后调用任务 Verifier，并在模型最终回复时再
 | `model_error` | 模型服务持续不可用或返回错误 |
 | `tool_error` | 工具基础设施出现无法继续的错误 |
 | `verifier_error` | 验证器自身无法完成检查 |
+| `recovery_exhausted` | 重复失败动作达到拦截上限 |
 
-一般的无效工具参数和命令失败会作为 Observation 反馈模型，并不直接使用 `tool_error` 终止。第一阶段只要求这种基本错误处理；更复杂的恢复策略留到后续阶段。
+一般的无效工具参数和命令失败会作为 Observation 反馈模型，并不直接使用 `tool_error` 终止。节点 K 将模型服务、工具、命令、构建、测试和最终验证失败分别写入 `failure_detected` 事件；可重试的模型错误与只读工具超时有次数上限。重复失败动作会被拦截，写入、构建和测试失败可触发操作前快照回退。独立 Verifier 的内部输出不会反馈给模型；用户指定项目检查的输出可用于修复。
 
 ## 5. 结果保存在哪里
 
@@ -140,6 +141,9 @@ runs/<run_id>/
   "tool_calls": 18,
   "failed_tool_calls": 2,
   "retries": 0,
+  "recoveries": 0,
+  "manual_interventions": 0,
+  "failure_counts": {"test": 1},
   "tokens": 3200,
   "latency_seconds": 93.4,
   "trace_path": "runs/example_run_001/trace.jsonl"
@@ -148,11 +152,11 @@ runs/<run_id>/
 
 - `steps` 是模型回复轮数，`tool_calls` 是尝试分发的工具调用次数。
 - `failed_tool_calls` 统计无效工具调用、工具错误、工具超时和非零命令退出码。
-- `retries` 统计基础设施层面的额外尝试；未进行重试时为 `0`。后续 Failure Recovery 的策略重试需另行定义，避免混淆。
+- `retries` 统计模型、只读工具和最终验证的额外尝试；`recoveries` 统计重试、替代动作与快照回退事件；`manual_interventions` 统计会话中确认中断工具、权限询问和手动回退。`failure_counts` 按失败类别汇总事件。
 - `tokens` 是可获得的输入与输出 token 之和；模型服务未提供用量时为 `null`，不能用 `0` 代替。
 - `latency_seconds` 是从任务启动到清理完成的总耗时。
 - `trace.jsonl` 每行是一个带 `run_id`、`step`、`event_type`、`timestamp` 和事件数据的 JSON 对象。
-- 评测 Trace 包含 `user_message`、`model_action`、`tool_started`、`tool_result`、`verification_result` 和 `task_finished`。普通仓库会话还会记录计划、快照、上下文压缩、项目检查与恢复事件。`config.json` 记录不含密钥的运行参数与任务文件 SHA-256 摘要。
+- 评测 Trace 包含 `user_message`、`model_action`、`tool_started`、`tool_result`、`verification_result`、`failure_detected`、`recovery_action` 和 `task_finished`。普通仓库会话还会记录计划、快照、上下文压缩、项目检查及其命令集、人工介入与恢复事件。`config.json` 记录不含密钥的运行参数与任务文件 SHA-256 摘要。`compare` 对同一任务成对运行关闭和开启恢复的版本，分别保存单次 Trace 与汇总 JSON。
 
 ## 6. 默认配置
 

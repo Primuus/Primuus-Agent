@@ -1,0 +1,1 @@
+{"schema_version": 1, "task_id": "task_012", "title": "Respect export configuration across modules", "tags": ["python", "multi-file", "configuration"], "verifier": {"kind": "python_script", "entrypoint": "verifier.py"}}

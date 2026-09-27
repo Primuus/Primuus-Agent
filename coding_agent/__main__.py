@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from coding_agent.eval.evaluator import run_batch, run_task
+from coding_agent.eval.evaluator import compare_batch, run_batch, run_task
 from coding_agent.models.openai_compatible import OpenAICompatibleBackend
 from coding_agent.session.app import RepositorySession
 
@@ -14,14 +14,16 @@ from coding_agent.session.app import RepositorySession
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("command", choices=[
-        "run", "batch", "exec", "chat", "resume", "inspect", "pause", "snapshot", "restore",
+        "run", "batch", "compare", "exec", "chat", "resume", "inspect", "pause", "snapshot", "restore",
     ])
     parser.add_argument("path", type=Path, help="Task path, Git repository, or session ID")
     parser.add_argument("--task", help="Instruction for exec, chat, or resume")
-    parser.add_argument("--check", action="append", default=[], help="Project check to run after execution")
+    parser.add_argument("--check", action="append", help="Project check to run after execution")
     parser.add_argument("--approval-mode", choices=["auto", "ask", "read-only"])
     parser.add_argument("--sessions-dir", type=Path, default=Path.home() / ".local/state/primuus-agent/sessions")
     parser.add_argument("--max-steps", type=int)
+    parser.add_argument("--repeats", type=int, default=1, help="Runs per task and variant for compare")
+    parser.add_argument("--recovery-mode", choices=["on", "off"], help="Enable or disable automatic recovery")
     parser.add_argument("--model")
     parser.add_argument("--base-url")
     parser.add_argument("--image", help="Docker image for the repository workspace")
@@ -44,6 +46,8 @@ def main() -> None:
         config["sandbox"]["image"] = arguments.image
     if arguments.network:
         config["sandbox"]["network_enabled"] = True
+    if arguments.recovery_mode is not None:
+        config["recovery"]["enabled"] = arguments.recovery_mode == "on"
     model_id = (
         arguments.model or os.getenv("DEEPSEEK_MODEL") or os.getenv("OPENAI_MODEL")
         or (saved_metadata["config"]["model"]["name"] if saved_metadata else config["model"]["name"])
@@ -80,6 +84,12 @@ def main() -> None:
         paths = sorted(path for path in arguments.path.iterdir() if (path / "task.json").is_file())
         print(json.dumps(run_batch(paths, make_model, config, Path(config["results_dir"]))))
         return
+    if arguments.command == "compare":
+        if arguments.repeats < 1:
+            parser.error("compare requires --repeats >= 1")
+        paths = sorted(path for path in arguments.path.iterdir() if (path / "task.json").is_file())
+        print(json.dumps(compare_batch(paths, make_model, config, Path(config["results_dir"]), arguments.repeats)))
+        return
 
     if arguments.command in ("exec", "chat"):
         if arguments.command == "exec" and not arguments.task:
@@ -96,6 +106,8 @@ def main() -> None:
             session.config["sandbox"]["image"] = arguments.image
         if arguments.network:
             session.config["sandbox"]["network_enabled"] = True
+        if arguments.recovery_mode is not None:
+            session.config["recovery"]["enabled"] = arguments.recovery_mode == "on"
 
     if arguments.command == "inspect":
         print(json.dumps(session.inspect(), ensure_ascii=False, indent=2))

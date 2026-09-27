@@ -2,14 +2,16 @@
 
 import json
 from pathlib import Path
+from time import monotonic
 from typing import Callable
 from uuid import uuid4
 
-from coding_agent.contracts import ToolCall, ToolResult
+from coding_agent.contracts import ToolCall, ToolResult, VerificationResult
 from coding_agent.models.base import ModelBackend
 from coding_agent.sandbox.docker import DockerSandbox
 from coding_agent.session.journal import EventJournal, session_lock
 from coding_agent.session.permissions import PermissionExecutor
+from coding_agent.session.recovery import RecoveryPolicy, failure_category
 from coding_agent.session.repository import RepositoryWorkspace
 from coding_agent.session.runner import SessionRunner
 from coding_agent.session.state import SessionSpec, SessionState
@@ -38,13 +40,20 @@ class RepositorySession:
         self.state.event_sink = self.journal.append
         last_run = max(
             (index for index, event in enumerate(self.state.events)
-             if event["event_type"] in ("user_message", "session_resumed")),
+             if event["event_type"] in ("user_message", "session_resumed")
+             or (event["event_type"] == "model_action"
+                 and event["data"]["response"]["final_message"] is not None)),
             default=0,
         )
         self.last_checks = [
             event["data"] for event in self.state.events[last_run:]
             if event["event_type"] == "project_check"
         ]
+        self.check_commands = next(
+            (event["data"]["commands"] for event in reversed(self.state.events)
+             if event["event_type"] == "project_check_suite"),
+            [],
+        )
 
     @classmethod
     def create(
@@ -109,7 +118,15 @@ class RepositorySession:
         checks: list[str] | None,
         resolve_pending: bool,
     ) -> dict:
+        started = monotonic()
+        if self.state.pending_tools and resolve_pending:
+            self.state.emit("manual_intervention", {"kind": "resolve_pending"})
         self.state.resolve_interrupted_turn(resolve_pending)
+        if checks:
+            if checks != self.check_commands:
+                self.state.emit("project_check_suite", {"commands": checks})
+            self.check_commands = checks
+        checks = self.check_commands
         last_user = max(
             (index for index, event in enumerate(self.state.events)
              if event["event_type"] == "user_message"), default=-1,
@@ -120,11 +137,14 @@ class RepositorySession:
         )
         if (instruction is None and self.state.stop_reason in (None, "paused")
             and self.state.turns and not self.state.turns[-1].response.tool_calls
-            and last_model >= last_user):
+            and last_model >= last_user and not checks
+            and (self.state.turns[-1].verification is None
+                 or self.state.turns[-1].verification.passed)):
             self.state.finish("completed")
+            self.state.emit("run_duration", {"seconds": round(monotonic() - started, 3)})
             return self._save()
         sandbox_config = self.config["sandbox"]
-        check_results = []
+        check_results: list[dict] | None = None if checks else []
         with DockerSandbox(
             self.repository.workspace,
             sandbox_config["image"],
@@ -136,7 +156,12 @@ class RepositorySession:
             container_name=f"coding-agent-{self.session_id}",
         ) as sandbox:
             tools = DockerTools(sandbox, self.repository.base_commit)
-            permitted = PermissionExecutor(tools.execute, self.approval_mode, self.ask)
+            permitted = PermissionExecutor(
+                tools.execute, self.approval_mode, self.ask,
+                on_prompt=lambda call, allowed: self.state.emit("manual_intervention", {
+                    "kind": "permission", "tool": call.name, "allowed": allowed,
+                }),
+            )
 
             def execute(call: ToolCall) -> ToolResult:
                 if call.name != "update_plan":
@@ -155,28 +180,55 @@ class RepositorySession:
                     self._snapshot("plan milestone")
                 return ToolResult(call.call_id, call.name, "completed", "Plan updated", None, None, 0)
 
+            def verify_checks() -> VerificationResult:
+                nonlocal check_results
+                checked_at = monotonic()
+                check_results = []
+                for index, command in enumerate(checks or [], 1):
+                    call = ToolCall(f"check-{index}", "run_shell", {"command": command})
+                    result = tools.execute(call)
+                    record = {
+                        "command": command,
+                        "category": failure_category(call, result),
+                        "status": result.status,
+                        "exit_code": result.exit_code,
+                        "output": result.output,
+                        "error": result.error,
+                    }
+                    check_results.append(record)
+                    self.state.emit("project_check", record)
+                    if record["category"] is not None:
+                        self.state.record_failure(record["category"], {
+                            "source": "project_check", "exit_code": result.exit_code,
+                        })
+                        break
+                return VerificationResult(
+                    passed=all(record["category"] is None for record in check_results),
+                    output="\n".join(record["output"] for record in check_results),
+                    error="\n".join(record["error"] or "" for record in check_results) or None,
+                    exit_code=next((record["exit_code"] or 1 for record in check_results
+                                    if record["category"] is not None), 0),
+                    duration_ms=int((monotonic() - checked_at) * 1000),
+                )
+
             try:
                 self.state = SessionRunner(
-                    self.model, execute, None,
+                    self.model, execute, verify_checks if checks else None,
                     self.config["max_steps"], self.config["task_timeout_seconds"],
                     REPOSITORY_TOOL_SPECS,
                     max_tokens=self.config.get("max_tokens"),
                     context_max_chars=self.config.get("context_max_chars"),
                     context_keep_messages=self.config.get("context_keep_messages", 12),
+                    recovery=RecoveryPolicy.from_config(self.config),
+                    checkpoint=self._snapshot,
+                    rollback=self.repository.restore,
+                    verify_after_tools=False,
+                    verification_success_reason="completed",
+                    expose_verification_output=True,
                 ).run(SessionSpec(self.session_id, instruction), self.state)
             except KeyboardInterrupt:
                 self.state.finish("paused")
-            for index, command in enumerate(checks or [], 1):
-                result = tools.execute(ToolCall(f"check-{index}", "run_shell", {"command": command}))
-                record = {
-                    "command": command,
-                    "status": result.status,
-                    "exit_code": result.exit_code,
-                    "output": result.output,
-                    "error": result.error,
-                }
-                check_results.append(record)
-                self.state.emit("project_check", record)
+        self.state.emit("run_duration", {"seconds": round(monotonic() - started, 3)})
         self._snapshot(f"after step {self.state.steps}")
         return self._save(check_results)
 
@@ -200,6 +252,7 @@ class RepositorySession:
         if not matching:
             raise ValueError("Snapshot does not belong to this session")
         self.repository.restore(commit)
+        self.state.emit("manual_intervention", {"kind": "restore", "commit": commit})
         self.state.update_plan(matching[-1]["plan"])
         self.state.record_restore(commit)
         return self._save([])
@@ -239,6 +292,19 @@ class RepositorySession:
             "tool_calls": self.state.tool_calls,
             "failed_tool_calls": self.state.failed_tool_calls,
             "tokens": self.state.tokens,
+            "retries": sum(
+                event["data"].get("kind") in ("model_retry", "tool_retry", "validation_retry")
+                for event in self.state.events if event["event_type"] == "recovery_action"
+            ),
+            "recoveries": sum(
+                event["data"].get("kind") in ("model_retry", "tool_retry", "validation_retry", "snapshot_rollback", "alternative_action")
+                for event in self.state.events if event["event_type"] == "recovery_action"
+            ),
+            "manual_interventions": sum(event["event_type"] == "manual_intervention" for event in self.state.events),
+            "active_seconds": round(sum(
+                event["data"]["seconds"] for event in self.state.events
+                if event["event_type"] == "run_duration"
+            ), 3),
             "final_message": self.state.turns[-1].response.final_message if self.state.turns else None,
             "plan": self.state.plan,
             "snapshots": self.state.snapshots,

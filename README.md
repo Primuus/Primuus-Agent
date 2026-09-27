@@ -4,7 +4,7 @@
 
 已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～G，建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；真实模型批量运行 10 个任务，均由独立 Verifier 判定通过。运行条件、逐题结果和完整 Trace 见[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
 
-后续开发按[总体方案](docs/方案.md)的节点 H～M 推进。节点 H～J 已完成：评测与普通仓库会话共用同一 Session Runner，普通仓库会话支持持久记录和续跑。
+后续开发按[总体方案](docs/方案.md)的节点 H～M 推进。节点 H～K 已完成：评测与普通仓库会话共用同一 Session Runner，普通仓库会话支持持久记录、续跑和有限的失败恢复。节点 K 的受控故障注入结果见[实验记录](docs/experiments/2026-09-27-recovery-controlled/README.md)。
 
 ## 目前的文件
 
@@ -47,9 +47,10 @@ docker build -t coding-agent-sandbox:local -f coding_agent/sandbox/Dockerfile .
 ```bash
 python3 -m coding_agent run tasks/task_001
 python3 -m coding_agent batch tasks
+python3 -m coding_agent compare tasks --repeats 3
 ```
 
-每次运行的 `trace.jsonl`、`result.json` 和 `config.json` 保存在 `runs/<run_id>/`；批量汇总保存为 `runs/batch-<时间戳>.json`。`runs/` 已加入 `.gitignore`。
+每次运行的 `trace.jsonl`、`result.json` 和 `config.json` 保存在 `runs/<run_id>/`；批量汇总保存为 `runs/batch-<时间戳>.json`。`compare` 对同一任务分别运行关闭和开启恢复的版本，保存成对结果、成功率、恢复率、步数、Token、耗时和人工介入。真实模型结果有随机性，应重复运行并结合单次 Trace 分析。`runs/` 已加入 `.gitignore`。
 
 ## 在普通仓库中工作
 
@@ -60,9 +61,11 @@ python3 -m coding_agent exec /path/to/repository --task '修复登录流程中�
 python3 -m coding_agent chat /path/to/repository
 ```
 
-`exec` 是单次无交互运行，默认允许在隔离工作区内执行工具；`chat` 是可连续提问的交互会话，写文件和运行 Shell 时默认询问。可用 `--approval-mode auto|ask|read-only` 指定策略，`--max-steps` 调整模型轮数。默认镜像包含 Python 和 Git；其他语言项目可用 `--image` 选择已准备好的镜像，镜像仍需包含 Python 和 Git 供文件工具使用。确需容器联网时显式加 `--network`。交互会话中可用 `/status`、`/diff`、`/exit`。
+`exec` 是单次无交互运行，默认允许在隔离工作区内执行工具；`chat` 是可连续提问的交互会话，写文件和运行 Shell 时默认询问。可用 `--approval-mode auto|ask|read-only` 指定策略，`--max-steps` 调整模型轮数，`--recovery-mode on|off` 切换恢复策略。默认镜像包含 Python 和 Git；其他语言项目可用 `--image` 选择已准备好的镜像，镜像仍需包含 Python 和 Git 供文件工具使用。确需容器联网时显式加 `--network`。交互会话中可用 `/status`、`/diff`、`/exit`。
 
-每次会话从目标仓库当前 `HEAD` 创建独立 Git 副本，原仓库及其未提交改动不会被修改。工作区、`session.json`、`diff.patch`、`status.txt`、`trace.jsonl` 和 `result.json` 默认保存在 `~/.local/state/primuus-agent/sessions/<session_id>/`；可用 `--sessions-dir` 修改位置。`--check` 指定的项目检查在模型完成后执行，检查结果保存在 `result.json`，检查失败时 `exec` 返回非零退出码。
+每次会话从目标仓库当前 `HEAD` 创建独立 Git 副本，原仓库及其未提交改动不会被修改。工作区、`session.json`、`diff.patch`、`status.txt`、`trace.jsonl` 和 `result.json` 默认保存在 `~/.local/state/primuus-agent/sessions/<session_id>/`；可用 `--sessions-dir` 修改位置。`--check` 指定的项目检查在模型给出最终回复后执行，检查失败时将结果交给模型进行有限次修复；检查命令保存在会话中供续跑使用。最终仍未通过时，`exec` 返回非零退出码。
+
+默认恢复策略只对可重试的模型服务错误和只读工具超时自动重试；相同的失败动作会被拦截，并提示模型检查原因、选择其他动作。写文件、构建或测试失败时，隔离工作区可回到操作前快照。恢复动作、失败类别、重试和人工介入计数都写入会话事件与结果。运行 `--recovery-mode off` 可取得无自动恢复的基线。
 
 会话事件在操作过程中持续写入 `trace.jsonl`。运行中按 `Ctrl+C` 可暂停；空闲时也可用命令标记暂停。记下输出中的 `session_id` 后，可查看并续跑：
 
@@ -91,7 +94,9 @@ python3 -m coding_agent restore <session_id> --snapshot <commit>
 | `task_008` | 修复命令行输出格式 |
 | `task_009` | 修复键值配置解析 |
 | `task_010` | 修复依赖当前目录的文件读取 |
+| `task_011` | 跨模块修复带分页的问题搜索 |
+| `task_012` | 跨模块实现配置驱动的 CSV 导出 |
 
-每个任务都包含 `task.md`、初始 `repo/` 和仅供 Harness 调用的 `verifier.py`。10 个任务均已确认初始版本验证失败、临时修复版本验证通过。用预设修复动作运行整条批量链路时，10 个任务全部通过，平均每任务 1 步、1 次工具调用；这只用于检查系统集成，**不是模型性能实验结果**。检查使用的临时文件已清理，任务 Verifier 属于评测数据并保留。
+每个任务都包含 `task.md`、初始 `repo/` 和仅供 Harness 调用的 `verifier.py`。12 个任务均已确认初始版本验证失败、参考修复版本验证通过。最初 10 个任务用预设修复动作运行整条批量链路时全部通过，平均每任务 1 步、1 次工具调用；这只用于检查系统集成，**不是模型性能实验结果**。检查使用的临时文件已清理，任务 Verifier 属于评测数据并保留。
 
 真实模型的首轮基线实验对每个任务运行一次，结果为 10/10 通过，平均每任务 3.8 步、4.5 次工具调用、5.4569 秒。该结果仅对应这 10 个小型任务和这一次运行；原始结果及 Trace 已保存在[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。

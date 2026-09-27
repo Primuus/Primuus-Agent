@@ -37,6 +37,8 @@ class SessionState:
     summary: str = ""
     snapshots: list[dict[str, Any]] = field(default_factory=list)
     pending_tools: dict[str, ToolCall] = field(default_factory=dict)
+    last_failed_action: str | None = None
+    repeat_blocks: int = 0
     event_sink: Callable[[dict[str, Any]], None] | None = field(default=None, repr=False)
 
     @property
@@ -126,6 +128,29 @@ class SessionState:
         turn.verification = result
         turn.verification_at = timestamp
 
+    def add_guidance(self, content: str) -> None:
+        self.emit("recovery_guidance", {"content": content})
+        self.messages.append({"role": "system", "content": content})
+
+    def record_failure(self, category: str, detail: dict[str, Any]) -> None:
+        self.emit("failure_detected", {"category": category, **detail})
+        if "signature" in detail:
+            self.last_failed_action = detail["signature"]
+            self.repeat_blocks = 0
+
+    def record_repeat_block(self, signature: str, name: str) -> None:
+        self.repeat_blocks += 1
+        self.emit("recovery_action", {
+            "kind": "repeat_block", "signature": signature,
+            "name": name, "count": self.repeat_blocks,
+        })
+
+    def clear_failed_action(self, kind: str = "alternative_action") -> None:
+        if self.last_failed_action is not None:
+            self.emit("recovery_action", {"kind": kind})
+            self.last_failed_action = None
+            self.repeat_blocks = 0
+
     def update_plan(self, items: list[dict[str, str]]) -> None:
         self.emit("plan_updated", {"items": items})
         self.plan = items
@@ -210,6 +235,19 @@ class SessionState:
                 state.messages = data["messages"]
             elif kind == "snapshot_created":
                 state.snapshots.append(data)
+            elif kind == "recovery_guidance":
+                state.messages.append({"role": "system", "content": data["content"]})
+            elif kind == "failure_detected" and "signature" in data:
+                state.last_failed_action = data["signature"]
+                state.repeat_blocks = 0
+            elif kind == "failure_detected" and data["category"] == "model_service":
+                state.tokens = None
+            elif kind == "recovery_action":
+                if data["kind"] == "repeat_block":
+                    state.repeat_blocks = data["count"]
+                elif data["kind"] in ("alternative_action", "retry_succeeded"):
+                    state.last_failed_action = None
+                    state.repeat_blocks = 0
             elif kind == "workspace_restored":
                 state.messages.append({
                     "role": "system",

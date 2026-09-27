@@ -21,6 +21,7 @@ StopReason = Literal[
     "model_error",
     "tool_error",
     "verifier_error",
+    "recovery_exhausted",
 ]
 
 
@@ -93,6 +94,9 @@ class RunResult:
     tool_calls: int
     failed_tool_calls: int
     retries: int
+    recoveries: int
+    manual_interventions: int
+    failure_counts: dict[str, int]
     tokens: int | None
     latency_seconds: float
     trace_path: str

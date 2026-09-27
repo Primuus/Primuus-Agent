@@ -1,0 +1,78 @@
+{
+  "model_id": "controlled-fault-injection-v1",
+  "task_digests": {
+    "task_011": "1725a6e51caa73ad0290fdab47e2af47d62bc1b8a47c22ee2b267bdd4880ac46",
+    "task_012": "024d9692d22265f51c1811a0f54fd7cd1e0ee354edc4df36f91c3eba63b97d14"
+  },
+  "repeats": 1,
+  "budget": {
+    "max_steps": 5,
+    "task_timeout_seconds": 600,
+    "tool_timeout_seconds": 30,
+    "verifier_timeout_seconds": 60
+  },
+  "baseline": {
+    "runs": 2,
+    "success_rate": 0.0,
+    "recovery_rate": 0.0,
+    "avg_steps": 0.0,
+    "avg_tool_calls": 0.0,
+    "avg_failed_tool_calls": 0.0,
+    "avg_recovery_actions": 0.0,
+    "avg_tokens": null,
+    "avg_latency_seconds": 0.2475,
+    "manual_interventions": 0,
+    "failure_counts": {
+      "model_service": 2
+    },
+    "run_ids": [
+      "20260927T134205-task_011-6e0d79c2",
+      "20260927T134206-task_012-176375dc"
+    ]
+  },
+  "recovery": {
+    "runs": 2,
+    "success_rate": 1.0,
+    "recovery_rate": 1.0,
+    "avg_steps": 1.0,
+    "avg_tool_calls": 3.0,
+    "avg_failed_tool_calls": 0.0,
+    "avg_recovery_actions": 1.0,
+    "avg_tokens": null,
+    "avg_latency_seconds": 1.2565,
+    "manual_interventions": 0,
+    "failure_counts": {
+      "model_service": 2
+    },
+    "run_ids": [
+      "20260927T134205-task_011-2b152977",
+      "20260927T134206-task_012-b0fa8013"
+    ]
+  },
+  "pairs": [
+    {
+      "task_id": "task_011",
+      "repetition": 1,
+      "baseline": {
+        "run_id": "20260927T134205-task_011-6e0d79c2",
+        "success": false
+      },
+      "recovery": {
+        "run_id": "20260927T134205-task_011-2b152977",
+        "success": true
+      }
+    },
+    {
+      "task_id": "task_012",
+      "repetition": 1,
+      "baseline": {
+        "run_id": "20260927T134206-task_012-176375dc",
+        "success": false
+      },
+      "recovery": {
+        "run_id": "20260927T134206-task_012-b0fa8013",
+        "success": true
+      }
+    }
+  ]
+}
