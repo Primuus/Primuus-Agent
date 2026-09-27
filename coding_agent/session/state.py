@@ -34,6 +34,7 @@ class SessionState:
     stop_reason: StopReason | None = None
     tokens: int | None = 0
     plan: list[dict[str, str]] = field(default_factory=list)
+    context_sources: list[dict[str, str]] = field(default_factory=list)
     summary: str = ""
     snapshots: list[dict[str, Any]] = field(default_factory=list)
     pending_tools: dict[str, ToolCall] = field(default_factory=dict)
@@ -131,6 +132,11 @@ class SessionState:
     def add_guidance(self, content: str) -> None:
         self.emit("recovery_guidance", {"content": content})
         self.messages.append({"role": "system", "content": content})
+
+    def add_context_source(self, kind: str, path: str, content: str, digest: str) -> None:
+        source = {"kind": kind, "path": path, "content": content, "sha256": digest}
+        self.emit("context_source_added", source)
+        self.context_sources.append(source)
 
     def record_failure(self, category: str, detail: dict[str, Any]) -> None:
         self.emit("failure_detected", {"category": category, **detail})
@@ -237,6 +243,8 @@ class SessionState:
                 state.snapshots.append(data)
             elif kind == "recovery_guidance":
                 state.messages.append({"role": "system", "content": data["content"]})
+            elif kind == "context_source_added":
+                state.context_sources.append(data)
             elif kind == "failure_detected" and "signature" in data:
                 state.last_failed_action = data["signature"]
                 state.repeat_blocks = 0

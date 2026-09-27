@@ -4,6 +4,8 @@
   "max_tokens": 120000,
   "context_max_chars": 60000,
   "context_keep_messages": 12,
+  "project_instruction_files": ["AGENTS.md"],
+  "skills": [],
   "recovery": {
     "enabled": true,
     "model_retries": 2,

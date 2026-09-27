@@ -13,6 +13,11 @@ SYSTEM_PROMPT = (
 
 def build_context(state: SessionState) -> list[dict[str, Any]]:
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    for source in state.context_sources:
+        messages.append({
+            "role": "system",
+            "content": f"{source['kind']} instructions from {source['path']}:\n{source['content']}",
+        })
     if state.plan:
         messages.append({"role": "system", "content": "Current plan: " + str(state.plan)})
     if state.summary:

@@ -1,7 +1,9 @@
 """Durable coding sessions on ordinary Git repositories."""
 
+import hashlib
 import json
 from pathlib import Path
+import re
 from time import monotonic
 from typing import Callable
 from uuid import uuid4
@@ -67,6 +69,27 @@ class RepositorySession:
     ) -> "RepositorySession":
         repository = RepositoryWorkspace.create(source, sessions_dir / uuid4().hex[:12])
         session = cls(repository, model, config, approval_mode, ask)
+        def source_file(name: str) -> Path:
+            path = (repository.workspace / name).resolve()
+            if not path.is_relative_to(repository.workspace.resolve()):
+                raise ValueError(f"Instruction path leaves the workspace: {name}")
+            return path
+
+        for name in dict.fromkeys(config.get("project_instruction_files", ["AGENTS.md"])):
+            path = source_file(name)
+            if path.is_file():
+                content = path.read_text(encoding="utf-8")
+                session.state.add_context_source(
+                    "project", name, content, hashlib.sha256(content.encode()).hexdigest(),
+                )
+        for name in config.get("skills", []):
+            if re.fullmatch(r"[A-Za-z0-9_-]+", name) is None:
+                raise ValueError(f"Invalid skill name: {name}")
+            relative = Path(".primuus") / "skills" / name / "SKILL.md"
+            content = source_file(str(relative)).read_text(encoding="utf-8")
+            session.state.add_context_source(
+                "skill", str(relative), content, hashlib.sha256(content.encode()).hexdigest(),
+            )
         (repository.session_dir / "session.json").write_text(
             json.dumps({
                 "session_id": session.session_id,

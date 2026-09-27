@@ -44,6 +44,8 @@ docker build -t coding-agent-sandbox:local -f coding_agent/sandbox/Dockerfile .
 
 默认使用 DeepSeek 的 `deepseek-flash` 与 `https://api.deepseek.com`。在运行环境中设置 `DEEPSEEK_API_KEY` 后即可执行；密钥不会写入仓库或运行结果。若使用其他兼容 Chat Completions 工具调用的服务，可通过 `--model` 和 `--base-url` 覆盖默认值，并使用 `OPENAI_API_KEY`。
 
+模型适配还支持 Anthropic Messages API。指定 `--backend anthropic --model <模型 ID>`，并在运行环境设置 `ANTHROPIC_API_KEY`；其他兼容服务可用 `--api-key-env <变量名>` 指定凭据来源。配置和会话记录只保存变量名，不保存密钥值。
+
 ```bash
 python3 -m coding_agent run tasks/task_001
 python3 -m coding_agent batch tasks
@@ -59,6 +61,7 @@ python3 -m coding_agent compare tasks --repeats 3
 ```bash
 python3 -m coding_agent exec /path/to/repository --task '修复登录流程中的错误' --check 'git diff --check'
 python3 -m coding_agent chat /path/to/repository
+python3 -m coding_agent chat /path/to/repository --skill cleanup
 ```
 
 `exec` 是单次无交互运行，默认允许在隔离工作区内执行工具；`chat` 是可连续提问的交互会话，写文件和运行 Shell 时默认询问。可用 `--approval-mode auto|ask|read-only` 指定策略，`--max-steps` 调整模型轮数，`--recovery-mode on|off` 切换恢复策略。默认镜像包含 Python 和 Git；其他语言项目可用 `--image` 选择已准备好的镜像，镜像仍需包含 Python 和 Git 供文件工具使用。确需容器联网时显式加 `--network`。交互会话中可用 `/status`、`/diff`、`/exit`。
@@ -66,6 +69,8 @@ python3 -m coding_agent chat /path/to/repository
 每次会话从目标仓库当前 `HEAD` 创建独立 Git 副本，原仓库及其未提交改动不会被修改。工作区、`session.json`、`diff.patch`、`status.txt`、`trace.jsonl` 和 `result.json` 默认保存在 `~/.local/state/primuus-agent/sessions/<session_id>/`；可用 `--sessions-dir` 修改位置。`--check` 指定的项目检查在模型给出最终回复后执行，检查失败时将结果交给模型进行有限次修复；检查命令保存在会话中供续跑使用。最终仍未通过时，`exec` 返回非零退出码。
 
 默认恢复策略只对可重试的模型服务错误和只读工具超时自动重试；相同的失败动作会被拦截，并提示模型检查原因、选择其他动作。写文件、构建或测试失败时，隔离工作区可回到操作前快照。恢复动作、失败类别、重试和人工介入计数都写入会话事件与结果。运行 `--recovery-mode off` 可取得无自动恢复的基线。
+
+创建普通仓库会话时，根目录的 `AGENTS.md` 会作为项目指令加入模型上下文。`--instruction-file <相对路径>` 可再加入项目文件；`--skill <名称>` 会读取工作区中的 `.primuus/skills/<名称>/SKILL.md`。这些来源的内容与摘要记录在会话事件中，续跑时保持一致。
 
 会话事件在操作过程中持续写入 `trace.jsonl`。运行中按 `Ctrl+C` 可暂停；空闲时也可用命令标记暂停。记下输出中的 `session_id` 后，可查看并续跑：
 

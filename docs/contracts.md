@@ -157,6 +157,7 @@ runs/<run_id>/
 - `latency_seconds` 是从任务启动到清理完成的总耗时。
 - `trace.jsonl` 每行是一个带 `run_id`、`step`、`event_type`、`timestamp` 和事件数据的 JSON 对象。
 - 评测 Trace 包含 `user_message`、`model_action`、`tool_started`、`tool_result`、`verification_result`、`failure_detected`、`recovery_action` 和 `task_finished`。普通仓库会话还会记录计划、快照、上下文压缩、项目检查及其命令集、人工介入与恢复事件。`config.json` 记录不含密钥的运行参数与任务文件 SHA-256 摘要。`compare` 对同一任务成对运行关闭和开启恢复的版本，分别保存单次 Trace 与汇总 JSON。
+- 普通仓库会话从隔离副本读取项目指令与显式选择的技能，写入 `context_source_added` 事件，记录相对路径、内容与 SHA-256 摘要。续跑从事件恢复这些来源；模型密钥只从命名的环境变量读取。
 
 ## 6. 默认配置
 
