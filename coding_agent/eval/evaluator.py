@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 import subprocess
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -29,6 +30,33 @@ def task_digest(task_path: Path) -> str:
         digest.update(str(path.relative_to(task_path)).encode("utf-8"))
         digest.update(path.read_bytes())
     return digest.hexdigest()
+
+
+def evaluation_patch(source: Path, workspace: Path) -> str:
+    diff = subprocess.run(
+        [
+            "git", "diff", "--no-index", "--binary", "--no-ext-diff",
+            "--src-prefix=a/", "--dst-prefix=b/", str(source), str(workspace),
+        ],
+        capture_output=True, text=True,
+    )
+    if diff.returncode not in (0, 1):
+        raise RuntimeError(diff.stderr)
+    source_prefix = str(source.resolve()).lstrip("/")
+    workspace_prefix = str(workspace.resolve()).lstrip("/")
+    patch = diff.stdout.replace(f"a/{source_prefix}/", "a/")
+    patch = patch.replace(f"b/{workspace_prefix}/", "b/")
+    patch = patch.replace(f"a/{workspace_prefix}/", "a/")
+    patch = patch.replace(f"b/{source_prefix}/", "b/")
+    blocks = []
+    for block in re.split(r"(?=^diff --git )", patch, flags=re.MULTILINE):
+        if not block:
+            continue
+        header = block.split("\n", 1)[0]
+        if "/.pytest_cache/" in header or "/__pycache__/" in header or header.endswith((".pyc", '.pyc"')):
+            continue
+        blocks.append(block)
+    return "".join(blocks)
 
 
 def run_task(
@@ -64,19 +92,7 @@ def run_task(
             context_keep_messages=config["context_keep_messages"],
             recovery=RecoveryPolicy.from_config(config),
         ).run(SessionSpec(run_id, task.instructions))
-        diff = subprocess.run(
-            [
-                "git", "diff", "--no-index", "--binary", "--no-ext-diff",
-                "--src-prefix=a/", "--dst-prefix=b/",
-                str(task.repository), str(sandbox.workspace),
-            ],
-            capture_output=True, text=True,
-        )
-        if diff.returncode not in (0, 1):
-            raise RuntimeError(diff.stderr)
-        source = str(task.repository.resolve()).lstrip("/")
-        workspace = str(sandbox.workspace.resolve()).lstrip("/")
-        patch = diff.stdout.replace(f"a/{source}/", "a/").replace(f"b/{workspace}/", "b/")
+        patch = evaluation_patch(task.repository, sandbox.workspace)
         (run_dir / "diff.patch").write_text(patch, encoding="utf-8")
         checks = [turn.verification for turn in state.turns if turn.verification is not None]
         (run_dir / "verification.json").write_text(
