@@ -1,0 +1,44 @@
+{
+  "max_steps": 80,
+  "repository_max_steps": 80,
+  "max_tokens": 120000,
+  "context_max_chars": 60000,
+  "context_keep_messages": 12,
+  "project_instruction_files": [
+    "AGENTS.md"
+  ],
+  "skills": [],
+  "hooks": {
+    "before_tool": [],
+    "after_tool": []
+  },
+  "mcp_servers": [],
+  "memory": {
+    "mode": "off",
+    "max_entries": 3,
+    "max_chars": 2500
+  },
+  "recovery": {
+    "enabled": false,
+    "model_retries": 2,
+    "tool_retries": 1,
+    "validation_retries": 1,
+    "repeat_blocks": 2
+  },
+  "task_timeout_seconds": 1800,
+  "tool_timeout_seconds": 60,
+  "verifier_timeout_seconds": 30,
+  "model": {
+    "backend": "openai_compatible",
+    "name": "deepseek-flash",
+    "base_url": "https://api.deepseek.com"
+  },
+  "sandbox": {
+    "image": "coding-agent-real-benchmark:20260928",
+    "workspace": "/workspace",
+    "cpus": 1.0,
+    "memory_mb": 512,
+    "network_enabled": false
+  },
+  "results_dir": "runs"
+}

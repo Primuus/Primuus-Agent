@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "real_002",
+  "title": "Fix intword rounding carry at large magnitudes",
+  "tags": [
+    "python",
+    "real_repository",
+    "medium"
+  ],
+  "repository": "https://github.com/python-humanize/humanize",
+  "base_commit": "f971127ce7e7770d3ff5be05cfc484bdf9302e04",
+  "reference_commit": "ca892b368a535a79cc5e2181d052245b94fd6652",
+  "difficulty": "medium",
+  "setup_command": "PYTHONPATH=src python -c \"import humanize\"",
+  "test_command": "PYTHONPATH=src python -m pytest -q tests/test_number.py",
+  "source_archive_sha256": "73fb8f17e8e6a1b9fc79c6d2acd6377592db42f00bad88f23866414c6c421241",
+  "verifier": {
+    "kind": "python_script",
+    "entrypoint": "verifier.py"
+  },
+  "generated_setup_files": {
+    "src/humanize/_version.py": "__version__ = \"4.16.0\" (upstream hatch-vcs build artifact)"
+  },
+  "task_description": "`humanize.intword` can display a value just below the next named power as `1000.0` of the lower unit. When formatting rounds to the next named unit, carry the result to that unit. Preserve the documented gap between decillion and googol."
+}

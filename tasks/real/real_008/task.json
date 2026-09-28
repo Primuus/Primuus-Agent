@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "real_008",
+  "title": "Terminate JSONL iteration at EOF and fix relative seek",
+  "tags": [
+    "python",
+    "real_repository",
+    "medium"
+  ],
+  "repository": "https://github.com/mahmoud/boltons",
+  "base_commit": "435774ef8b10c1355bf77483a837945034011754",
+  "reference_commit": "f1034b07ddf71f4d9285134a47a4ade16fe40789",
+  "difficulty": "medium",
+  "setup_command": "python -c \"import boltons\"",
+  "test_command": "python -m pytest -q tests/test_jsonutils.py",
+  "source_archive_sha256": "7d41ca733d2ba065e1c0f7b8c25894c8e897706c45bca42cf7b7b5337d49b5ef",
+  "verifier": {
+    "kind": "python_script",
+    "entrypoint": "verifier.py"
+  },
+  "task_description": "`boltons.jsonutils.JSONLIterator` can repeatedly read after EOF when a relative seek lands inside the final line of a file without a trailing newline. A negative `rel_seek` should mean an offset measured backward from the end, so `-0.5` should select the same tail as `0.5`. Fix both behaviors without changing ordinary forward iteration."
+}

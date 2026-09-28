@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "real_003",
+  "title": "Format very large integers with intcomma",
+  "tags": [
+    "python",
+    "real_repository",
+    "easy"
+  ],
+  "repository": "https://github.com/python-humanize/humanize",
+  "base_commit": "14965a74953eb5119859975e7c452a04b481cdae",
+  "reference_commit": "984526c02448110a8392dde3f5e26096dfd7c729",
+  "difficulty": "easy",
+  "setup_command": "PYTHONPATH=src python -c \"import humanize\"",
+  "test_command": "PYTHONPATH=src python -m pytest -q tests/test_number.py",
+  "source_archive_sha256": "aed7776536458d9c89576b60606fd9f5999254aab78b5ceb9bcb96d27cd9d09d",
+  "verifier": {
+    "kind": "python_script",
+    "entrypoint": "verifier.py"
+  },
+  "generated_setup_files": {
+    "src/humanize/_version.py": "__version__ = \"4.16.0\" (upstream hatch-vcs build artifact)"
+  },
+  "task_description": "`humanize.intcomma` raises an overflow error when given a Python integer larger than the floating point range. It must format arbitrarily large positive and negative integers with comma grouping, while preserving ordinary integer formatting."
+}

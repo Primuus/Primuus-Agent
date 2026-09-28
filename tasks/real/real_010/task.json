@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "real_010",
+  "title": "Repair bulk set removals and barrel list bounds",
+  "tags": [
+    "python",
+    "real_repository",
+    "long_horizon"
+  ],
+  "repository": "https://github.com/mahmoud/boltons",
+  "base_commit": "efff866a3b66fdafc817894390742e1d8bc025e5",
+  "reference_commit": "e00c10a809525027b8167fbb7ac233cfc25a01f5",
+  "difficulty": "long_horizon",
+  "setup_command": "python -c \"import boltons\"",
+  "test_command": "python -m pytest -q tests/test_listutils.py tests/test_setutils.py",
+  "source_archive_sha256": "591fc1ea7b3d625e3a3f79b0f6b341c8a19ed6fa1fe2f5d86d0379a481e22b6a",
+  "verifier": {
+    "kind": "python_script",
+    "entrypoint": "verifier.py"
+  },
+  "task_description": "`boltons.listutils.BarrelList` should match built-in list indexing and insertion at either boundary, including after its data has split across internal sublists. Empty tail sublists must not break `pop()`. `boltons.setutils.IndexedSet` should preserve ordering and indexes after bulk difference and intersection updates; large removals should not trigger repeated full compactions."
+}

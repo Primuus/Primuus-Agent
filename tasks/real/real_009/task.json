@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "real_009",
+  "title": "Repair spooled stream write and text seek behavior",
+  "tags": [
+    "python",
+    "real_repository",
+    "long_horizon"
+  ],
+  "repository": "https://github.com/mahmoud/boltons",
+  "base_commit": "961dcff3f42e73b245aef65e377fe82763b257bb",
+  "reference_commit": "4e5faa3d7e4008d89e0d8bf1ea87b6d9a061a16d",
+  "difficulty": "long_horizon",
+  "setup_command": "python -c \"import boltons\"",
+  "test_command": "python -m pytest -q tests/test_ioutils.py",
+  "source_archive_sha256": "8a5db85ddb022ff867aa0bc4485d064b807a7b321460dafb00aa84ebd6230182",
+  "verifier": {
+    "kind": "python_script",
+    "entrypoint": "verifier.py"
+  },
+  "task_description": "`boltons.ioutils` spooled byte and text streams should follow the standard write contract: return the number of bytes or characters written. Byte streams must accept bytes-like objects and work inside `io.BufferedWriter`. Text streams must seek backward relative to the current character position even with multibyte UTF-8 characters, and reject a negative destination without moving the cursor. Check both in-memory and rolled-over streams."
+}

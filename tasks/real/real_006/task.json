@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "real_006",
+  "title": "Preserve marker quote semantics on serialization",
+  "tags": [
+    "python",
+    "real_repository",
+    "medium"
+  ],
+  "repository": "https://github.com/pypa/packaging",
+  "base_commit": "2497782b2bb03812d2a12ae882a4390c61ec5061",
+  "reference_commit": "5b583e309996a085ad3b5b045f3bf50a09c11b58",
+  "difficulty": "medium",
+  "setup_command": "PYTHONPATH=src python -c \"import packaging\"",
+  "test_command": "PYTHONPATH=src python -m pytest -q tests/test_markers.py",
+  "source_archive_sha256": "b21bf6f02e5d88ca752f357533b5e0b28f4ad588de3f5f7802cb1a1b512f6957",
+  "verifier": {
+    "kind": "python_script",
+    "entrypoint": "verifier.py"
+  },
+  "task_description": "Serializing a marker value that contains a double quote currently changes its meaning. Choose a delimiter that preserves an embedded quote when converting a `Marker` or `Requirement` back to text. A value containing both quote delimiters cannot be serialized and should raise `ValueError`."
+}

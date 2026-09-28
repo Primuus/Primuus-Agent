@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "real_007",
+  "title": "Handle zero interquartile range in histograms",
+  "tags": [
+    "python",
+    "real_repository",
+    "easy"
+  ],
+  "repository": "https://github.com/mahmoud/boltons",
+  "base_commit": "805c803ca71da28f09cb7ec521f7ea14d1a4048b",
+  "reference_commit": "1cdc0e9d36f3eb32608f3b34885717697643e9b8",
+  "difficulty": "easy",
+  "setup_command": "python -c \"import boltons\"",
+  "test_command": "python -m pytest -q tests/test_statsutils.py",
+  "source_archive_sha256": "f243e8d48ab6da1405c62471da09cb98d0b88adde29f230e8e9bcb28b8c44be6",
+  "verifier": {
+    "kind": "python_script",
+    "entrypoint": "verifier.py"
+  },
+  "task_description": "`boltons.statsutils.Stats` divides by zero when selecting histogram bins for constant data or data whose interquartile range is zero. These datasets should produce a usable histogram with one bin containing every observation."
+}

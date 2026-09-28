@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "real_004",
+  "title": "Preserve explicitly empty platform iterables",
+  "tags": [
+    "python",
+    "real_repository",
+    "medium"
+  ],
+  "repository": "https://github.com/pypa/packaging",
+  "base_commit": "b097450461523502ada842f98274449ad74ff1ff",
+  "reference_commit": "4e79787a31c99348649bb0dafee2a5078d3595be",
+  "difficulty": "medium",
+  "setup_command": "PYTHONPATH=src python -c \"import packaging\"",
+  "test_command": "PYTHONPATH=src python -m pytest -q tests/test_tags.py",
+  "source_archive_sha256": "9810b42f2d7d2771a4da124c1ba2a354b2c8c3f5801591a231e910aa0243aaeb",
+  "verifier": {
+    "kind": "python_script",
+    "entrypoint": "verifier.py"
+  },
+  "task_description": "In `packaging.tags`, an explicitly empty `platforms` iterable means no platform-specific tags. Apply this consistently to `cpython_tags`, `generic_tags`, and `compatible_tags`. `compatible_tags` should still produce its platform-independent `any` tags. Omitted `platforms` should continue using detected platform tags."
+}
