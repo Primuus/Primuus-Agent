@@ -6,6 +6,8 @@
 
 节点 H～M 已按[历史总体方案](docs/completed/方案.md)完成：评测与普通仓库会话共用同一 Session Runner，普通仓库会话支持持久记录、续跑、有限失败恢复、扩展接口、跨任务记忆和隔离的并行任务。节点 K 的受控故障注入结果见[实验记录](docs/experiments/2026-09-27-recovery-controlled/README.md)。后续按[Pre-SEA 阶段目标](docs/Primuus-Agent-Pre-SEA-Stage-Goals.md)推进真实仓库评测。
 
+阶段 N 已建立 3 个开源仓库的 10 个真实任务；来源、镜像、校准结果和运行入口见[节点 N 实施记录](docs/completed/节点N-实施记录.md)。真实模型重复运行的基线将在阶段 O 完成。
+
 ## 目前的文件
 
 ```text

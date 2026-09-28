@@ -1,0 +1,136 @@
+{
+  "created_at": "2026-09-28T13:44:45.455100+00:00",
+  "image": "coding-agent-real-benchmark:20260928",
+  "image_id": "sha256:4217cbc4df372b696f659c9f25d32dccbc52b4c33ddb8e8c2008c0aa8ae1f163",
+  "task_count": 10,
+  "tasks": [
+    {
+      "task_id": "real_001",
+      "repository": "https://github.com/python-humanize/humanize",
+      "base_commit": "bada0f88b4d115b96d94db1fe73b20579e84fc14",
+      "reference_commit": "ffdf407fdfe1a5738159b989eb2df190ed780448",
+      "source_archive_sha256": "4526a15485eed6b18ef9e2472923443874bf19327a792a6a788cd0614e710490",
+      "task_digest": "5fa6bd8ad251bb771135610bf10e3e178dc4be6e192971e56190b4d56c6d439e",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    },
+    {
+      "task_id": "real_002",
+      "repository": "https://github.com/python-humanize/humanize",
+      "base_commit": "f971127ce7e7770d3ff5be05cfc484bdf9302e04",
+      "reference_commit": "ca892b368a535a79cc5e2181d052245b94fd6652",
+      "source_archive_sha256": "73fb8f17e8e6a1b9fc79c6d2acd6377592db42f00bad88f23866414c6c421241",
+      "task_digest": "fea439d869134e72f9af77da3d75986ead356e9a6c431743e689f2d0d33c828b",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    },
+    {
+      "task_id": "real_003",
+      "repository": "https://github.com/python-humanize/humanize",
+      "base_commit": "14965a74953eb5119859975e7c452a04b481cdae",
+      "reference_commit": "984526c02448110a8392dde3f5e26096dfd7c729",
+      "source_archive_sha256": "aed7776536458d9c89576b60606fd9f5999254aab78b5ceb9bcb96d27cd9d09d",
+      "task_digest": "a965ef161db5347d49bd4f63eda488dfe510290f4624bb3a692537eaf023f174",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    },
+    {
+      "task_id": "real_004",
+      "repository": "https://github.com/pypa/packaging",
+      "base_commit": "b097450461523502ada842f98274449ad74ff1ff",
+      "reference_commit": "4e79787a31c99348649bb0dafee2a5078d3595be",
+      "source_archive_sha256": "9810b42f2d7d2771a4da124c1ba2a354b2c8c3f5801591a231e910aa0243aaeb",
+      "task_digest": "988c08b205c40a046f89400346cc95530ed2490f08a542681be5d901d65f7193",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    },
+    {
+      "task_id": "real_005",
+      "repository": "https://github.com/pypa/packaging",
+      "base_commit": "0bfc3cea4f9fe1b1b0c80ce06f02bd2433500c81",
+      "reference_commit": "189a76d54d64899adbca907c2a3efa5b6befdb28",
+      "source_archive_sha256": "1e0a3977259b835232b2ffa6ff54a37ab40db8df90637d336207d5df3cecb355",
+      "task_digest": "7999853bbaf1e3f119b89fbea1a8c1154f2709bef5eface218d71fbf57d91edd",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    },
+    {
+      "task_id": "real_006",
+      "repository": "https://github.com/pypa/packaging",
+      "base_commit": "2497782b2bb03812d2a12ae882a4390c61ec5061",
+      "reference_commit": "5b583e309996a085ad3b5b045f3bf50a09c11b58",
+      "source_archive_sha256": "b21bf6f02e5d88ca752f357533b5e0b28f4ad588de3f5f7802cb1a1b512f6957",
+      "task_digest": "f188caa3abeb0f4627e7aa26e1753fb40dd7e3b14d65cbb1d7a5edd3bb614d96",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    },
+    {
+      "task_id": "real_007",
+      "repository": "https://github.com/mahmoud/boltons",
+      "base_commit": "805c803ca71da28f09cb7ec521f7ea14d1a4048b",
+      "reference_commit": "1cdc0e9d36f3eb32608f3b34885717697643e9b8",
+      "source_archive_sha256": "f243e8d48ab6da1405c62471da09cb98d0b88adde29f230e8e9bcb28b8c44be6",
+      "task_digest": "864383a9cbb41910a9b9e86dffa46e35da505eb04b773577eb84ad0abc77bb5b",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    },
+    {
+      "task_id": "real_008",
+      "repository": "https://github.com/mahmoud/boltons",
+      "base_commit": "435774ef8b10c1355bf77483a837945034011754",
+      "reference_commit": "f1034b07ddf71f4d9285134a47a4ade16fe40789",
+      "source_archive_sha256": "7d41ca733d2ba065e1c0f7b8c25894c8e897706c45bca42cf7b7b5337d49b5ef",
+      "task_digest": "e1a1ca11d61205c19795189a37bbd57c3533deb1e31463d74803cc634ab56dac",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    },
+    {
+      "task_id": "real_009",
+      "repository": "https://github.com/mahmoud/boltons",
+      "base_commit": "961dcff3f42e73b245aef65e377fe82763b257bb",
+      "reference_commit": "4e5faa3d7e4008d89e0d8bf1ea87b6d9a061a16d",
+      "source_archive_sha256": "8a5db85ddb022ff867aa0bc4485d064b807a7b321460dafb00aa84ebd6230182",
+      "task_digest": "9d96fa4dc2e84b672bbefee710b16948a64aba168626b576c8ef778e810ebe88",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    },
+    {
+      "task_id": "real_010",
+      "repository": "https://github.com/mahmoud/boltons",
+      "base_commit": "efff866a3b66fdafc817894390742e1d8bc025e5",
+      "reference_commit": "e00c10a809525027b8167fbb7ac233cfc25a01f5",
+      "source_archive_sha256": "591fc1ea7b3d625e3a3f79b0f6b341c8a19ed6fa1fe2f5d86d0379a481e22b6a",
+      "task_digest": "59e653fc39ee0cfab32dd6e2d4ffb26ed043b65b9fb06da72bbce7f3abcef96f",
+      "baseline_verifier_passed": false,
+      "reference_verifier_passed": true,
+      "setup_exit_code": 0,
+      "project_check_exit_code": 0
+    }
+  ],
+  "evaluation_smoke": {
+    "task_id": "real_003",
+    "model_id": "scripted",
+    "success": true,
+    "stop_reason": "verified",
+    "tool_calls": 1
+  },
+  "validated_at": "2026-09-28T13:47:02.683638+00:00"
+}
