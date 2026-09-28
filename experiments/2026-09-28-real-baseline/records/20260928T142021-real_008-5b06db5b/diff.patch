@@ -1,0 +1,34 @@
+diff --git a/boltons/jsonutils.py b/boltons/jsonutils.py
+index bf61b03..681ba70 100644
+--- a/boltons/jsonutils.py
++++ b/boltons/jsonutils.py
+@@ -156,7 +156,9 @@ class JSONLIterator:
+             raise ValueError("'rel_seek' expected a float between"
+                              " -1.0 and 1.0, not %r" % rel_seek)
+         elif rel_seek < 0:
+-            rel_seek = 1.0 - rel_seek
++            # A negative rel_seek is measured backward from the end of
++            # the file, so -0.5 selects the same position as 0.5.
++            rel_seek = 1.0 + rel_seek
+         self._rel_seek = rel_seek
+         self._blocksize = 4096
+         if rel_seek is not None:
+@@ -180,11 +182,14 @@ class JSONLIterator:
+         cur_pos = fo.tell()
+         while '\n' not in cur:
+             cur = fo.read(bsize)
++            if not cur:
++                # EOF was reached without finding a newline (e.g., the
++                # target landed inside a final line lacking a trailing
++                # newline). Leave the cursor at EOF so iteration stops
++                # instead of spinning on empty reads forever.
++                return
+             total_read += bsize
+-        try:
+-            newline_offset = cur.index('\n') + total_read - bsize
+-        except ValueError:
+-            raise  # TODO: seek to end?
++        newline_offset = cur.index('\n') + total_read - bsize
+         fo.seek(cur_pos + newline_offset)
+ 
+     def _init_rel_seek(self):

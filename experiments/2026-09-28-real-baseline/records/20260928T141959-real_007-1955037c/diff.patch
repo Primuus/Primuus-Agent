@@ -1,0 +1,25 @@
+diff --git a/boltons/statsutils.py b/boltons/statsutils.py
+index 7b75a14..ec649f1 100644
+--- a/boltons/statsutils.py
++++ b/boltons/statsutils.py
+@@ -560,10 +560,16 @@ class Stats:
+         elif count is None:
+             # freedman algorithm for fixed-width bin selection
+             q25, q75 = self.get_quantile(0.25), self.get_quantile(0.75)
+-            dx = 2 * (q75 - q25) / (len_data ** (1 / 3.0))
+-            bin_count = max(1, int(ceil((max_data - min_data) / dx)))
+-            bins = [min_data + (dx * i) for i in range(bin_count + 1)]
+-            bins = [b for b in bins if b < max_data]
++            iqr = q75 - q25
++            if iqr:
++                dx = 2 * iqr / (len_data ** (1 / 3.0))
++                bin_count = max(1, int(ceil((max_data - min_data) / dx)))
++                bins = [min_data + (dx * i) for i in range(bin_count + 1)]
++                bins = [b for b in bins if b < max_data]
++            else:
++                # zero-width bins (e.g., constant data) would divide by
++                # zero; use a single bin that captures every observation
++                bins = [min_data]
+         else:
+             dx = (max_data - min_data) / float(count)
+             bins = [min_data + (dx * i) for i in range(count)]

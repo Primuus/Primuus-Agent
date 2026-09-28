@@ -1,0 +1,246 @@
+{
+  "normalized_at": "2026-09-28T14:32:09.833631+00:00",
+  "method": "normalize source/workspace prefixes and omit pytest/bytecode cache diff blocks",
+  "runs": [
+    {
+      "task_id": "real_001",
+      "repetition": 1,
+      "raw_sha256": "c6bad4590262172ca8648086603c1d1ee1e4da90ecf4d5c3f04db1f62de197c0",
+      "normalized_sha256": "c6bad4590262172ca8648086603c1d1ee1e4da90ecf4d5c3f04db1f62de197c0",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 1,
+      "raw_sha256": "30e837ab66304f008d5d9d4f1f1658be7c57860d8e2a294a20a1db868072d77e",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 13,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 1,
+      "raw_sha256": "f3da6f72235ccacad1ba15456eb42d4a91cd620c12374e53c4ac51c171b72c3a",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 7,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 1,
+      "raw_sha256": "64c805fa28f113c83e7aef6deeb1647921ec026861b1a5c6661b42b0714381df",
+      "normalized_sha256": "64c805fa28f113c83e7aef6deeb1647921ec026861b1a5c6661b42b0714381df",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 1,
+      "raw_sha256": "dc6402ae12b2fdbabd82d3a33ae573df15ef728a5eab1c6c88e6336ae09d9a6a",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 21,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 1,
+      "raw_sha256": "81e599779baf462c9d51f7e416267feea9b90cd59aa4e0f76c96f3d05d121c55",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 21,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 1,
+      "raw_sha256": "722958e702e0f9c3fd44baf12837bf00c663972142bc61793dc0f98b5759302a",
+      "normalized_sha256": "ec54c2f4541a4673051bc9e58e9f436217bcf1b26cf2d348a8fb469e34fe96e5",
+      "removed_generated_cache_blocks": 9,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 1,
+      "raw_sha256": "3d2298eebd9f243ec4d6d4a36e626d557c1d7ba60ec8e2dce27c178ec6ddb2cf",
+      "normalized_sha256": "28b5ec4fa9871e19615648974e6ed0b2372708d5b403ade29154ac94a0d2e841",
+      "removed_generated_cache_blocks": 2,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 1,
+      "raw_sha256": "6d76532f13315fa4606415898ef94845de1c8e485d0f6e64ab144982f93b70ec",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 9,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 1,
+      "raw_sha256": "c82b2af36ed5b8ebb2496bbeb16890fe5d3f58a72f43152b98411c256aee0204",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 12,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_001",
+      "repetition": 2,
+      "raw_sha256": "9e9403bdd747854d49d2416a55d1f9e133ee7509d1618a533bc1fcc15b8f542d",
+      "normalized_sha256": "9e9403bdd747854d49d2416a55d1f9e133ee7509d1618a533bc1fcc15b8f542d",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 2,
+      "raw_sha256": "d5b9f5f79c90ac28fd30272c0b3a8ab96d49ed756a5b2c4f568fd35635f027cf",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 13,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 2,
+      "raw_sha256": "e0c4ef1d922f7506ddad6ed907c402503af5ecf533e20b23a99f27ca006577da",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 13,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 2,
+      "raw_sha256": "64c805fa28f113c83e7aef6deeb1647921ec026861b1a5c6661b42b0714381df",
+      "normalized_sha256": "64c805fa28f113c83e7aef6deeb1647921ec026861b1a5c6661b42b0714381df",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 2,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 2,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 2,
+      "raw_sha256": "5bf0c6fa516db08bef6af2c2fe9de716e7b12aaa28ce44d84736e9b2c989a8e3",
+      "normalized_sha256": "b479402b8fd0f0e329c06cfc08124bcd898a6224a1ae08e8827266eccc881638",
+      "removed_generated_cache_blocks": 2,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 2,
+      "raw_sha256": "305ff610086c242b53a7a6d58613e28dc61aa40aed1bb40b16a81def86d7d94e",
+      "normalized_sha256": "1474b870c7535ec97852ed422b8a3f0f311be6c3429960f4c0cefc43b611e6ef",
+      "removed_generated_cache_blocks": 9,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 2,
+      "raw_sha256": "7c8b315f42d71249a354167ab0ba6399e908710010831195d63edde1fd85a4cd",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 9,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 2,
+      "raw_sha256": "c7a3176c7e5c28316f0d3dcd78f022003bc50d5d9517a9a71fd809b2dbc28c79",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 12,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_001",
+      "repetition": 3,
+      "raw_sha256": "e9e2f663f5a33607b1a3e4a8b0f91bfd24a06fc8b9c783b3d7f176850aaa179e",
+      "normalized_sha256": "e9e2f663f5a33607b1a3e4a8b0f91bfd24a06fc8b9c783b3d7f176850aaa179e",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 3,
+      "raw_sha256": "e18241a64d406961bdca1b181fe325f75fd64c18b6f74197b86c7be21faa7cad",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 13,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 3,
+      "raw_sha256": "d65ddbe07d43452e7a2d998508325f49293ef999023728ba2feaa9be6274ec34",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 13,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 3,
+      "raw_sha256": "ea497e61d3b151ec60795fbe2109ce0934a2b3e0d2c42f74fad00f5989f046da",
+      "normalized_sha256": "ea497e61d3b151ec60795fbe2109ce0934a2b3e0d2c42f74fad00f5989f046da",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 3,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 3,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 0,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 3,
+      "raw_sha256": "4466981659d8c35da5be23f4ca9c78bf003b6abfd17a9bd9103f8821be234640",
+      "normalized_sha256": "18d5b8374e64b24e1e18fef71b77e8681823e4dffeb08eacb3c1438537cd1f8a",
+      "removed_generated_cache_blocks": 9,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 3,
+      "raw_sha256": "aeafdfa3d0214acf72f0ce48009b5c020d5ce0e2787ce7ffdbcbb05ef9aa176e",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 9,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 3,
+      "raw_sha256": "003503eee3860a997faacc81a53dfc22d5d24adf56c1283f6e0e7beac87686c7",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 9,
+      "patch_applies_to_baseline": true
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 3,
+      "raw_sha256": "b0701ca5799663b1a58576cce8c04b6ab61e1c3d49e91e3db70972e3d24e618c",
+      "normalized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "removed_generated_cache_blocks": 12,
+      "patch_applies_to_baseline": true
+    }
+  ]
+}
