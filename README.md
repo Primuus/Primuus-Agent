@@ -54,7 +54,7 @@ python3 -m coding_agent batch tasks
 python3 -m coding_agent compare tasks --repeats 3
 ```
 
-每次运行的 `trace.jsonl`、`result.json` 和 `config.json` 保存在 `runs/<run_id>/`；批量汇总保存为 `runs/batch-<时间戳>.json`。`compare` 对同一任务分别运行关闭和开启恢复的版本，保存成对结果、成功率、恢复率、步数、Token、耗时和人工介入。真实模型结果有随机性，应重复运行并结合单次 Trace 分析。`runs/` 已加入 `.gitignore`。
+每次运行的 `trace.jsonl`、`diff.patch`、`verification.json`、`result.json` 和 `config.json` 保存在 `runs/<run_id>/`；批量汇总保存为 `runs/batch-<时间戳>.json`。`compare` 对同一任务分别运行关闭和开启恢复的版本，保存成对结果、成功率、恢复率、步数、Token、耗时和人工介入。真实模型结果有随机性，应重复运行并结合单次 Trace 分析。`runs/` 已加入 `.gitignore`。
 
 ## 在普通仓库中工作
 

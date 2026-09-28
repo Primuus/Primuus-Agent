@@ -124,6 +124,8 @@ Harness 在工具动作后调用任务 Verifier，并在模型最终回复时再
 ```text
 runs/<run_id>/
 ├── trace.jsonl   按执行顺序记录模型动作、工具结果、验证结果和错误
+├── diff.patch    相对任务基线的最终工作区差异
+├── verification.json  独立验证次数和最后一次结果
 ├── result.json   单次运行摘要
 └── config.json   本次配置和任务内容摘要
 ```

@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import subprocess
 from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -60,6 +61,28 @@ def run_task(
             config["max_steps"], config["task_timeout_seconds"],
             recovery=RecoveryPolicy.from_config(config),
         ).run(SessionSpec(run_id, task.instructions))
+        diff = subprocess.run(
+            [
+                "git", "diff", "--no-index", "--binary", "--no-ext-diff",
+                "--src-prefix=a/", "--dst-prefix=b/",
+                str(task.repository), str(sandbox.workspace),
+            ],
+            capture_output=True, text=True,
+        )
+        if diff.returncode not in (0, 1):
+            raise RuntimeError(diff.stderr)
+        source = str(task.repository.resolve()).lstrip("/")
+        workspace = str(sandbox.workspace.resolve()).lstrip("/")
+        patch = diff.stdout.replace(f"a/{source}/", "a/").replace(f"b/{workspace}/", "b/")
+        (run_dir / "diff.patch").write_text(patch, encoding="utf-8")
+        checks = [turn.verification for turn in state.turns if turn.verification is not None]
+        (run_dir / "verification.json").write_text(
+            json.dumps(
+                {"count": len(checks), "final": asdict(checks[-1]) if checks else None},
+                ensure_ascii=False, indent=2,
+            ) + "\n",
+            encoding="utf-8",
+        )
     failure_counts: dict[str, int] = {}
     for event in state.events:
         if event["event_type"] == "failure_detected":
