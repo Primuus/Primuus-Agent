@@ -2,9 +2,9 @@
 
 本仓库用于实现一个可运行、可验证、可评测的 Coding / Terminal Agent。
 
-已完成[第一阶段执行方案](docs/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～G，建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；真实模型批量运行 10 个任务，均由独立 Verifier 判定通过。运行条件、逐题结果和完整 Trace 见[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
+已完成[第一阶段执行方案](docs/completed/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～G，建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；真实模型批量运行 10 个任务，均由独立 Verifier 判定通过。运行条件、逐题结果和完整 Trace 见[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
 
-后续开发按[总体方案](docs/方案.md)的节点 H～M 推进。节点 H～M 已完成：评测与普通仓库会话共用同一 Session Runner，普通仓库会话支持持久记录、续跑、有限失败恢复、扩展接口、跨任务记忆和隔离的并行任务。节点 K 的受控故障注入结果见[实验记录](docs/experiments/2026-09-27-recovery-controlled/README.md)。
+节点 H～M 已按[历史总体方案](docs/completed/方案.md)完成：评测与普通仓库会话共用同一 Session Runner，普通仓库会话支持持久记录、续跑、有限失败恢复、扩展接口、跨任务记忆和隔离的并行任务。节点 K 的受控故障注入结果见[实验记录](docs/experiments/2026-09-27-recovery-controlled/README.md)。后续按[Pre-SEA 阶段目标](docs/Primuus-Agent-Pre-SEA-Stage-Goals.md)推进真实仓库评测。
 
 ## 目前的文件
 
@@ -21,7 +21,7 @@ docs/contracts.md   任务、动作、工具结果、运行结果约定
 tasks/task_001/     最小示例任务：说明、初始仓库、独立验证器
 ```
 
-任务包的读取方式、验证规则和结果位置见[契约文档](docs/contracts.md)。
+任务包的读取方式、验证规则和结果位置见[契约文档](docs/completed/contracts.md)。
 
 ## 检查示例任务
 

@@ -1,6 +1,6 @@
 # Long-Horizon Coding Agent：第一阶段执行方案
 
-> 本文记录已完成的第一阶段任务。节点 A～G 已完成，实验结果见[第一阶段基线记录](experiments/2026-09-26-deepseek-flash/README.md)。后续工作以[总体方案](方案.md)为准。
+> 本文记录已完成的第一阶段任务。节点 A～G 已完成，实验结果见[第一阶段基线记录](../experiments/2026-09-26-deepseek-flash/README.md)。历史后续工作见[总体方案](方案.md)。
 
 ## 1. 第一阶段要完成什么
 
@@ -44,7 +44,7 @@
 
 ### 节点 A：确定任务与模块契约
 
-**状态**：已完成。产物见 [`contracts.md`](contracts.md)、[`coding_agent/contracts.py`](../coding_agent/contracts.py)、[`config/default.json`](../config/default.json) 和 [`tasks/task_001/`](../tasks/task_001/)。
+**状态**：已完成。产物见 [`contracts.md`](contracts.md)、[`coding_agent/contracts.py`](../../coding_agent/contracts.py)、[`config/default.json`](../../config/default.json) 和 [`tasks/task_001/`](../../tasks/task_001/)。
 
 **工作内容**
 
@@ -135,7 +135,7 @@
 
 ### 节点 G：扩充任务集并交付完整项目
 
-**状态**：已完成。建立 10 个任务，逐题确认初始失败与临时修复后通过；预设动作的批量链路检查为 10/10。DeepSeek V4.1 Flash 对每题运行一次，独立验证结果为 10/10，平均 3.8 步、4.5 次工具调用、5.4569 秒；配置、结果与完整 Trace 见[实验记录](experiments/2026-09-26-deepseek-flash/README.md)。
+**状态**：已完成。建立 10 个任务，逐题确认初始失败与临时修复后通过；预设动作的批量链路检查为 10/10。DeepSeek V4.1 Flash 对每题运行一次，独立验证结果为 10/10，平均 3.8 步、4.5 次工具调用、5.4569 秒；配置、结果与完整 Trace 见[实验记录](../experiments/2026-09-26-deepseek-flash/README.md)。
 
 **工作内容**
 

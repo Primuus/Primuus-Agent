@@ -1,6 +1,6 @@
 # 第一阶段数据与模块契约
 
-本文记录当前评测任务与会话接口。Python 数据结构位于 [`coding_agent/contracts.py`](../coding_agent/contracts.py)；任务示例位于 [`tasks/task_001/`](../tasks/task_001/)。
+本文记录当前评测任务与会话接口。Python 数据结构位于 [`coding_agent/contracts.py`](../../coding_agent/contracts.py)；任务示例位于 [`tasks/task_001/`](../../tasks/task_001/)。
 
 ## 1. 任务如何加载
 
@@ -168,4 +168,4 @@ runs/<run_id>/
 
 ## 6. 默认配置
 
-[`config/default.json`](../config/default.json) 放步数、超时、容器资源、结果目录等初始值。当前默认服务为 DeepSeek，模型 ID 为 `deepseek-flash`，基础地址为 `https://api.deepseek.com`。密钥不写入任务包、配置文件或 Trace；运行时从 `DEEPSEEK_API_KEY` 或 `OPENAI_API_KEY` 读取。
+[`config/default.json`](../../config/default.json) 放步数、超时、容器资源、结果目录等初始值。当前默认服务为 DeepSeek，模型 ID 为 `deepseek-flash`，基础地址为 `https://api.deepseek.com`。密钥不写入任务包、配置文件或 Trace；运行时从 `DEEPSEEK_API_KEY` 或 `OPENAI_API_KEY` 读取。
