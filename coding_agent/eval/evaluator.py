@@ -59,6 +59,9 @@ def run_task(
         state = SessionRunner(
             model, DockerTools(sandbox).execute, verifier.check,
             config["max_steps"], config["task_timeout_seconds"],
+            max_tokens=config["max_tokens"],
+            context_max_chars=config["context_max_chars"],
+            context_keep_messages=config["context_keep_messages"],
             recovery=RecoveryPolicy.from_config(config),
         ).run(SessionSpec(run_id, task.instructions))
         diff = subprocess.run(
@@ -153,6 +156,83 @@ def run_batch(
     summary_path = results_dir / f"batch-{datetime.now(timezone.utc):%Y%m%dT%H%M%S}.json"
     summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n")
     return summary
+
+
+def run_baseline(
+    task_paths: list[Path], make_model, config: dict, output_dir: Path, repeats: int,
+) -> dict:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    manifest_path = output_dir / "manifest.json"
+    report_path = output_dir / "report.json"
+    fixed = {
+        "code_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+        "config": config,
+        "task_digests": {path.name: task_digest(path) for path in task_paths},
+        "task_order": [path.name for path in task_paths],
+        "repeats": repeats,
+    }
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if manifest != fixed:
+            raise ValueError("Baseline manifest differs from the current code, tasks, or config")
+        trials = json.loads(report_path.read_text(encoding="utf-8"))["trials"] if report_path.exists() else []
+    else:
+        if any(output_dir.iterdir()):
+            raise ValueError("Baseline output directory must be empty")
+        manifest_path.write_text(json.dumps(fixed, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        trials = []
+
+    completed = {(trial["task_id"], trial["repetition"]) for trial in trials}
+
+    def summarize() -> dict:
+        by_task = {}
+        for path in task_paths:
+            results = [trial["result"] for trial in trials if trial["task_id"] == path.name]
+            by_task[path.name] = {
+                "runs": len(results),
+                "successes": sum(result["success"] for result in results),
+                "stop_reasons": sorted({result["stop_reason"] for result in results}),
+            }
+        results = [trial["result"] for trial in trials]
+        count = len(results)
+        return {
+            "status": "complete" if count == len(task_paths) * repeats else "running",
+            "run_count": count,
+            "planned_runs": len(task_paths) * repeats,
+            "success_count": sum(result["success"] for result in results),
+            "success_rate": sum(result["success"] for result in results) / count if count else None,
+            "avg_steps": sum(result["steps"] for result in results) / count if count else None,
+            "avg_tool_calls": sum(result["tool_calls"] for result in results) / count if count else None,
+            "avg_failed_tool_calls": sum(result["failed_tool_calls"] for result in results) / count if count else None,
+            "avg_tokens": (sum(result["tokens"] for result in results) / count
+                           if count and all(result["tokens"] is not None for result in results) else None),
+            "avg_latency_seconds": sum(result["latency_seconds"] for result in results) / count if count else None,
+            "manual_interventions": sum(result["manual_interventions"] for result in results),
+            "by_task": by_task,
+            "trials": trials,
+        }
+
+    if not report_path.exists():
+        report_path.write_text(json.dumps(summarize(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    for repetition in range(1, repeats + 1):
+        for path in task_paths:
+            if (path.name, repetition) in completed:
+                continue
+            result = run_task(path, make_model(), config, output_dir / "records")
+            run_id = result.run_id
+            trials.append({
+                "task_id": path.name,
+                "repetition": repetition,
+                "result": asdict(result),
+                "artifacts": {
+                    name: f"records/{run_id}/{name}"
+                    for name in ("trace.jsonl", "diff.patch", "verification.json", "result.json", "config.json")
+                },
+            })
+            report_path.write_text(json.dumps(summarize(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            print(f"{path.name} repeat {repetition}/{repeats}: {result.stop_reason} ",
+                  f"steps={result.steps} tokens={result.tokens}", flush=True)
+    return summarize()
 
 
 def compare_batch(

@@ -8,7 +8,7 @@ from pathlib import Path
 from shutil import copyfile
 from urllib.parse import urlsplit
 
-from coding_agent.eval.evaluator import compare_batch, run_batch, run_task
+from coding_agent.eval.evaluator import compare_batch, run_baseline, run_batch, run_task
 from coding_agent.eval.memory_compare import compare_memory
 from coding_agent.models.factory import create_model
 from coding_agent.session.app import RepositorySession
@@ -19,7 +19,7 @@ from coding_agent.session.parallel import run_parallel
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("command", choices=[
-        "run", "batch", "compare", "compare-memory", "parallel", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
+        "run", "batch", "baseline", "compare", "compare-memory", "parallel", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
         "memory-add", "memory-list", "memory-update", "memory-remove", "memory-history",
     ])
     parser.add_argument("path", type=Path, help="Task path, Git repository, or session ID")
@@ -58,8 +58,8 @@ def main() -> None:
     parser.add_argument("--config", type=Path, default=Path("config/default.json"))
     arguments = parser.parse_args()
     default_memory_dir = Path.home() / ".local/state/primuus-agent/memory"
-    if arguments.output_dir is not None and arguments.command not in ("ci", "compare-memory", "parallel"):
-        parser.error("--output-dir is only available with ci, compare-memory or parallel")
+    if arguments.output_dir is not None and arguments.command not in ("baseline", "ci", "compare-memory", "parallel"):
+        parser.error("--output-dir is only available with baseline, ci, compare-memory or parallel")
     if arguments.tasks_file is not None and arguments.command != "parallel":
         parser.error("--tasks-file is only available with parallel")
     config = json.loads(arguments.config.read_text(encoding="utf-8"))
@@ -178,6 +178,18 @@ def main() -> None:
     if arguments.command == "batch":
         paths = sorted(path for path in arguments.path.iterdir() if (path / "task.json").is_file())
         print(json.dumps(run_batch(paths, make_model, config, Path(config["results_dir"]))))
+        return
+    if arguments.command == "baseline":
+        if arguments.output_dir is None or arguments.repeats < 3:
+            parser.error("baseline requires --output-dir and --repeats >= 3")
+        if config["recovery"]["enabled"] or config["memory"]["mode"] != "off":
+            parser.error("baseline requires recovery and memory to be off")
+        if not os.getenv(config["model"]["api_key_env"]):
+            parser.error("baseline requires the configured model API key in the environment")
+        paths = sorted(path for path in arguments.path.iterdir() if (path / "task.json").is_file())
+        report = run_baseline(paths, make_model, config, arguments.output_dir.resolve(), arguments.repeats)
+        print(json.dumps({"status": report["status"], "run_count": report["run_count"],
+                          "success_count": report["success_count"]}))
         return
     if arguments.command == "compare":
         if arguments.repeats < 1:
