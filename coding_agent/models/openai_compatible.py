@@ -1,6 +1,7 @@
 """Chat Completions backend for OpenAI-compatible model endpoints."""
 
 import json
+from http.client import IncompleteRead
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -56,6 +57,8 @@ class OpenAICompatibleBackend:
             raise ModelServiceError(str(error.reason), retryable=True) from error
         except TimeoutError as error:
             raise ModelServiceError("Model API request timed out", retryable=True) from error
+        except IncompleteRead as error:
+            raise ModelServiceError("Model API response was truncated", retryable=True) from error
 
         message = completion["choices"][0]["message"]
         usage = completion.get("usage") or {}
