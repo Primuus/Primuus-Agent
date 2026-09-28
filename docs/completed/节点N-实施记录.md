@@ -36,6 +36,8 @@ docker build -f tasks/real/Dockerfile -t coding-agent-real-benchmark:20260928 ta
 
 真实任务镜像在已有沙箱镜像上增加固定版本的 `pretend`，供 packaging 的项目测试使用。本次校准使用镜像 ID `sha256:4217cbc4df372b696f659c9f25d32dccbc52b4c33ddb8e8c2008c0aa8ae1f163`；实验跨机器重建时应记录实际镜像 ID。任务运行配置位于 [`config/real-benchmark.json`](../../config/real-benchmark.json)：恢复关闭、记忆关闭、容器断网，真实模型默认仍为 DeepSeek `deepseek-flash`。阶段 O 应固定并记录所用镜像 ID 与模型版本，再重复运行。
 
+本机还用 `--no-cache` 从项目 Dockerfile 重新构建了基础镜像和任务镜像，并在新镜像中检查 `real_004` 的环境、项目测试和失败基线。若构建机器的代理只监听宿主机回环地址，基础镜像构建需使用 `--network host`，并通过 Docker 的 `--build-arg HTTP_PROXY --build-arg HTTPS_PROXY --build-arg http_proxy --build-arg https_proxy` 传入已有代理环境变量；普通桥接网络无法连接宿主机回环代理。
+
 沿用现有 Evaluation 入口：
 
 ```bash
@@ -57,5 +59,6 @@ python3 -m coding_agent batch tasks/real --config config/real-benchmark.json
 | 环境检查命令 | 10/10 通过 |
 | 修复前原项目检查命令 | 10/10 通过 |
 | 同一 Evaluation 接入 | `real_003` 脚本化修复通过 |
+| 从 Dockerfile 无缓存重建 | 基础镜像、任务镜像通过；新镜像上的 `real_004` 检查通过 |
 
 校准时参考补丁只应用于临时副本，随后删除。任务包内不含补丁，原始仓库与基线快照均未被修改。阶段 N 的验收已完成；下一步按新计划进入阶段 O，使用真实模型在这 10 题上重复运行基线。

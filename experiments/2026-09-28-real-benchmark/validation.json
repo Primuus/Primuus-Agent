@@ -132,5 +132,15 @@
     "stop_reason": "verified",
     "tool_calls": 1
   },
-  "validated_at": "2026-09-28T13:47:02.683638+00:00"
+  "validated_at": "2026-09-28T13:47:02.683638+00:00",
+  "environment_rebuild": {
+    "base_image_no_cache_build": "passed",
+    "benchmark_image_no_cache_build": "passed",
+    "base_image_id": "sha256:d0302825d143f6fb640c46e94ff8023a4e53ce164c10e34cbc997db7e5fb1ff5",
+    "benchmark_image_id": "sha256:522dcd8bdf1537c8a21bdf54083321940dd5e8689f31e728dba0eade7f790546",
+    "fresh_image_smoke_task": "real_004",
+    "setup_exit_code": 0,
+    "project_check_exit_code": 0,
+    "baseline_verifier_passed": false
+  }
 }
