@@ -303,9 +303,28 @@ class MemoryStore:
             digest = sha256(f"{repository}:{session_id}:failure:{event['timestamp']}".encode()).hexdigest()[:16]
             captured.append(self.add(repository, "failure", content, changed_paths, source, digest))
 
-        if stop_reason == "completed" and checks and all(
+        checks_passed = bool(checks) and all(
             check["status"] == "completed" and check["exit_code"] == 0 for check in checks
-        ) and diff:
+        )
+        if checks_passed:
+            commands = [check["command"] for check in checks]
+            content = (
+                "Project checks observed to pass on one session workspace:\n"
+                + "\n".join(commands)
+                + "\nRerun on the current revision; this does not establish task completion."
+            )
+            source = {
+                "kind": "project_check", "ref": str(trace_path),
+                "session_id": session_id, "event": "passed", "commit": base_commit,
+            }
+            digest = sha256(json.dumps(
+                [repository, base_commit, commands], ensure_ascii=False,
+            ).encode()).hexdigest()[:16]
+            entry = self.add(repository, "project", content, [], source, digest)
+            if entry.source["session_id"] == session_id:
+                captured.append(entry)
+
+        if stop_reason == "completed" and checks_passed and diff:
             final = next((event["data"]["response"]["final_message"] for event in reversed(events)
                           if event["event_type"] == "model_action"
                           and event["data"]["response"]["final_message"]), "")

@@ -32,6 +32,8 @@ class SessionRunner:
         verify_after_tools: bool = True,
         verification_success_reason: str = "verified",
         expose_verification_output: bool = False,
+        post_tool_verify: Callable[[], VerificationResult | None] | None = None,
+        budget_guidance: bool = False,
     ) -> None:
         self.model = model
         self.execute = execute
@@ -48,6 +50,8 @@ class SessionRunner:
         self.verify_after_tools = verify_after_tools
         self.verification_success_reason = verification_success_reason
         self.expose_verification_output = expose_verification_output
+        self.post_tool_verify = post_tool_verify
+        self.budget_guidance = budget_guidance
 
     def run(self, spec: SessionSpec, state: SessionState | None = None) -> SessionState:
         state = state or SessionState(spec.session_id)
@@ -58,6 +62,7 @@ class SessionRunner:
             state.stop_reason = None
         started = monotonic()
         validation_retries = 0
+        budget_warning_sent = False
         if (spec.instructions is None and self.verify is not None and state.turns
             and not state.turns[-1].response.tool_calls
             and state.turns[-1].verification is not None
@@ -90,6 +95,14 @@ class SessionRunner:
             if self.max_tokens is not None and state.known_tokens >= self.max_tokens:
                 state.finish("token_budget")
                 return state
+            if (self.budget_guidance and not budget_warning_sent
+                and self.max_tokens is not None
+                and state.known_tokens >= self.max_tokens * 0.6):
+                state.add_workflow_guidance(
+                    "The token budget is over 60% used. Focus on the requested change and "
+                    "finish as soon as the requirements and project checks are satisfied."
+                )
+                budget_warning_sent = True
             if self.context_max_chars is not None:
                 state.compact(self.context_max_chars, self.context_keep_messages)
             model_attempt = 0
@@ -200,6 +213,26 @@ class SessionRunner:
             if self.recovery.enabled and state.repeat_blocks >= self.recovery.repeat_blocks:
                 state.finish("recovery_exhausted")
                 return state
+            if self.post_tool_verify is not None:
+                try:
+                    progress = self.post_tool_verify()
+                except VerifierError:
+                    state.record_failure("verification", {"reason": "verifier_error"})
+                    state.finish("verifier_error")
+                    return state
+                if progress is not None:
+                    state.add_verification(turn, progress)
+                    if progress.passed:
+                        state.add_workflow_guidance(
+                            "The configured project checks passed for the current patch. "
+                            "Review the user's requirements; if they are satisfied, give a final reply now."
+                        )
+                    else:
+                        detail = (progress.output + " " + (progress.error or ""))[:4000]
+                        state.add_workflow_guidance(
+                            "The configured project checks failed for the current patch. "
+                            "Fix the reported problem before finishing. Output: " + detail
+                        )
             if self.verify is not None and self.verify_after_tools:
                 try:
                     state.add_verification(turn, self.verify())

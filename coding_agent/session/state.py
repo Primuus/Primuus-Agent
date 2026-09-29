@@ -141,6 +141,10 @@ class SessionState:
         self.emit("recovery_guidance", {"content": content})
         self.messages.append({"role": "system", "content": content})
 
+    def add_workflow_guidance(self, content: str) -> None:
+        self.emit("workflow_guidance", {"content": content})
+        self.messages.append({"role": "system", "content": content})
+
     def add_context_source(self, kind: str, path: str, content: str, digest: str) -> None:
         source = {"kind": kind, "path": path, "content": content, "sha256": digest}
         self.emit("context_source_added", source)
@@ -254,7 +258,7 @@ class SessionState:
                 state.messages = data["messages"]
             elif kind == "snapshot_created":
                 state.snapshots.append(data)
-            elif kind == "recovery_guidance":
+            elif kind in ("recovery_guidance", "workflow_guidance"):
                 state.messages.append({"role": "system", "content": data["content"]})
             elif kind == "context_source_added":
                 state.context_sources.append(data)

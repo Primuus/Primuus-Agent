@@ -236,8 +236,15 @@ class RepositorySession:
                 self.config.get("hooks", {}), execute_tool, permitted.execute, self.state,
             )
 
+            last_observed_patch = self.repository.diff()
+            last_checked_patch: str | None = None
+            last_check_result: VerificationResult | None = None
+
             def verify_checks() -> VerificationResult:
-                nonlocal check_results
+                nonlocal check_results, last_checked_patch, last_check_result
+                patch = self.repository.diff()
+                if patch == last_checked_patch and last_check_result is not None and last_check_result.passed:
+                    return last_check_result
                 checked_at = monotonic()
                 check_results = []
                 for index, command in enumerate(checks or [], 1):
@@ -258,7 +265,7 @@ class RepositorySession:
                             "source": "project_check", "exit_code": result.exit_code,
                         })
                         break
-                return VerificationResult(
+                result = VerificationResult(
                     passed=all(record["category"] is None for record in check_results),
                     output="\n".join(record["output"] for record in check_results),
                     error="\n".join(record["error"] or "" for record in check_results) or None,
@@ -266,6 +273,23 @@ class RepositorySession:
                                     if record["category"] is not None), 0),
                     duration_ms=int((monotonic() - checked_at) * 1000),
                 )
+                last_checked_patch = self.repository.diff()
+                last_check_result = result
+                return result
+
+            def verify_changed_workspace() -> VerificationResult | None:
+                nonlocal last_observed_patch, last_check_result
+                patch = self.repository.diff()
+                if patch == last_observed_patch:
+                    last_check_result = None
+                    return None
+                last_observed_patch = patch
+                if not patch:
+                    last_check_result = None
+                    return None
+                result = verify_checks()
+                last_observed_patch = self.repository.diff()
+                return result
 
             try:
                 self.state = SessionRunner(
@@ -281,6 +305,8 @@ class RepositorySession:
                     verify_after_tools=False,
                     verification_success_reason="completed",
                     expose_verification_output=True,
+                    post_tool_verify=verify_changed_workspace if checks else None,
+                    budget_guidance=True,
                 ).run(SessionSpec(self.session_id, instruction), self.state)
             except KeyboardInterrupt:
                 self.state.finish("paused")

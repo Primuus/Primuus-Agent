@@ -6,8 +6,10 @@ from coding_agent.session.state import SessionState
 
 
 SYSTEM_PROMPT = (
-    "You are a coding agent working in /workspace. Use the available tools to "
-    "inspect and modify the repository. Give a final reply when you are done."
+    "You are a coding agent working in /workspace. Inspect the files relevant to the "
+    "user's request, then make a focused change. Use relevant project checks to confirm "
+    "the result. Once the requirements are met and checks pass, give a final reply "
+    "without continuing unrelated exploration."
 )
 
 
