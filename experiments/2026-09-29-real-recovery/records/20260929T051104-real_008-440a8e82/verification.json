@@ -1,0 +1,10 @@
+{
+  "count": 7,
+  "final": {
+    "passed": false,
+    "output": "",
+    "error": "Traceback (most recent call last):\n  File \"/verifier/verifier.py\", line 29, in <module>\n    assert list(JSONLIterator(CappedReader(text), rel_seek=0.9)) == []\n  File \"/workspace/boltons/jsonutils.py\", line 163, in __init__\n    self._init_rel_seek()\n  File \"/workspace/boltons/jsonutils.py\", line 203, in _init_rel_seek\n    self._align_to_newline()\n  File \"/workspace/boltons/jsonutils.py\", line 182, in _align_to_newline\n    cur = fo.read(bsize)\n  File \"/verifier/verifier.py\", line 17, in read\n    raise AssertionError(\"read after EOF\")\nAssertionError: read after EOF\n",
+    "exit_code": 1,
+    "duration_ms": 262
+  }
+}

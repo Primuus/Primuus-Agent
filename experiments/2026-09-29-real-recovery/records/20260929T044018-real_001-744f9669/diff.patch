@@ -1,0 +1,48 @@
+diff --git a/src/humanize/lists.py b/src/humanize/lists.py
+index 525f0e3..4983a65 100644
+--- a/src/humanize/lists.py
++++ b/src/humanize/lists.py
+@@ -2,6 +2,8 @@
+ 
+ from __future__ import annotations
+ 
++from collections.abc import Iterable
++
+ TYPE_CHECKING = False
+ if TYPE_CHECKING:
+     from typing import Any
+@@ -9,25 +11,29 @@ if TYPE_CHECKING:
+ __all__ = ["natural_list"]
+ 
+ 
+-def natural_list(items: list[Any]) -> str:
++def natural_list(items: Iterable[Any]) -> str:
+     """Natural list.
+ 
+-    Convert a list of items into a human-readable string with commas and 'and'.
++    Convert an iterable of items into a human-readable string with commas and
++    'and'.
+ 
+     Examples:
+         >>> natural_list(["one", "two", "three"])
+         'one, two and three'
+-        >>> natural_list(["one", "two"])
++        >>> natural_list(("one", "two"))
+         'one and two'
+-        >>> natural_list(["one"])
++        >>> natural_list(iter(["one"]))
+         'one'
++        >>> natural_list(range(3))
++        '0, 1 and 2'
+ 
+     Args:
+-        items (list): An iterable of items.
++        items (Iterable): A finite iterable of items.
+ 
+     Returns:
+         str: A string with commas and 'and' in the right places.
+     """
++    items = list(items)
+     if not items:
+         return ""
+     if len(items) == 1:

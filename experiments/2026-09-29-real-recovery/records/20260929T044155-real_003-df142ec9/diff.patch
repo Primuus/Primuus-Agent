@@ -1,0 +1,55 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index 727435f..e85d683 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -154,23 +154,41 @@ def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+     try:
+         if isinstance(value, str):
+             value = value.replace(thousands_sep, "").replace(decimal_sep, ".")
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+             if "." in value:
+                 value = float(value)
+             else:
+-                value = int(value)
++                try:
++                    # ``int()`` accepts arbitrarily large integer strings, which
++                    # must not be routed through ``float()``.
++                    value = int(value)
++                except ValueError:
++                    if not math.isfinite(float(value)):
++                        return _format_not_finite(float(value))
++                    return str(value)
++        elif isinstance(value, float):
++            if not math.isfinite(value):
++                return _format_not_finite(value)
+         else:
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+-            float(value)
++            try:
++                if not math.isfinite(float(value)):
++                    return _format_not_finite(float(value))
++            except OverflowError:
++                # A Python int beyond the floating point range is still finite.
++                pass
+     except (TypeError, ValueError):
+         return str(value)
+ 
+-    if ndigits is not None:
+-        result = f"{value:,.{ndigits}f}"
+-    else:
++    try:
++        if ndigits is not None:
++            result = f"{value:,.{ndigits}f}"
++        else:
++            result = f"{value:,}"
++    except OverflowError:
++        # ``f`` formatting coerces ints to float, which overflows for very large
++        # integers. Fall back to integer grouping plus the requested precision.
+         result = f"{value:,}"
++        if ndigits is not None:
++            result += "." + "0" * ndigits
+     if thousands_sep != "," or decimal_sep != ".":
+         result = result.translate(str.maketrans(",.", thousands_sep + decimal_sep))
+     return result

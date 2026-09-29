@@ -1,0 +1,127 @@
+diff --git a/boltons/ioutils.py b/boltons/ioutils.py
+index bfcaf3f..5f62d20 100644
+--- a/boltons/ioutils.py
++++ b/boltons/ioutils.py
+@@ -302,13 +302,16 @@ class SpooledBytesIO(SpooledIOBase):
+     def write(self, s):
+         self._checkClosed()
+         if not isinstance(s, bytes):
+-            raise TypeError("bytes expected, got {}".format(
+-                type(s).__name__
+-            ))
++            try:
++                s = memoryview(s).tobytes()
++            except TypeError:
++                raise TypeError("bytes-like object expected, got {}".format(
++                    type(s).__name__
++                ))
+ 
+         if self.tell() + len(s) >= self._max_size:
+             self.rollover()
+-        self.buffer.write(s)
++        return self.buffer.write(s)
+ 
+     def seek(self, pos, mode=0):
+         self._checkClosed()
+@@ -403,55 +406,52 @@ class SpooledStringIO(SpooledIOBase):
+             self.rollover()
+         self.buffer.write(s.encode('utf-8'))
+         self._tell = current_pos + len(s)
++        return len(s)
+ 
+-    def _traverse_codepoints(self, current_position, n):
+-        """Traverse from current position to the right n codepoints"""
+-        dest = current_position + n
+-        while True:
+-            if current_position == dest:
+-                # By chance we've landed on the right position, break
+-                break
+-
+-            # If the read would take us past the intended position then
+-            # seek only enough to cover the offset
+-            if current_position + READ_CHUNK_SIZE > dest:
+-                self.read(dest - current_position)
+-                break
+-            else:
+-                ret = self.read(READ_CHUNK_SIZE)
++    def _seek_to_codepoint(self, dest):
++        """Move the cursor to the absolute codepoint offset *dest*.
+ 
+-            # Increment our current position
+-            current_position += READ_CHUNK_SIZE
++        *dest* must be a non-negative integer. Backward seeks restart
++        from the beginning of the buffer, while forward seeks read and
++        discard the intervening characters.
++        """
++        if dest < self._tell:
++            self.buffer.seek(0)
++            self._tell = 0
+ 
+-            # If we kept reading but there was nothing here, break
+-            # as we are at the end of the file
++        remaining = dest - self._tell
++        while remaining > 0:
++            chunk = min(remaining, READ_CHUNK_SIZE)
++            ret = self.buffer.reader.read(chunk, chunk)
+             if not ret:
+                 break
++            self._tell += len(ret)
++            remaining -= len(ret)
+ 
+-        return dest
++        # Seeking past the end of the stream is allowed; a read there
++        # simply returns no data. Keep the logical position at *dest*.
++        self._tell = dest
+ 
+     def seek(self, pos, mode=0):
+         """Traverse from offset to the specified codepoint"""
+         self._checkClosed()
+         # Seek to position from the start of the file
+         if mode == os.SEEK_SET:
+-            self.buffer.seek(0)
+-            self._traverse_codepoints(0, pos)
+-            self._tell = pos
++            dest = pos
+         # Seek to new position relative to current position
+         elif mode == os.SEEK_CUR:
+-            start_pos = self.tell()
+-            self._traverse_codepoints(self.tell(), pos)
+-            self._tell = start_pos + pos
++            dest = self.tell() + pos
+         elif mode == os.SEEK_END:
+-            self.buffer.seek(0)
+-            dest_position = self.len - pos
+-            self._traverse_codepoints(0, dest_position)
+-            self._tell = dest_position
++            dest = self.len + pos
+         else:
+             raise ValueError(
+                 f"Invalid whence ({mode}, should be 0, 1, or 2)"
+             )
++
++        if dest < 0:
++            raise ValueError("negative seek position {}".format(dest))
++
++        self._seek_to_codepoint(dest)
+         return self.tell()
+ 
+     def readline(self, length=None):
+@@ -496,15 +496,17 @@ class SpooledStringIO(SpooledIOBase):
+     @property
+     def len(self):
+         """Determine the number of codepoints in the file"""
++        save_tell = self._tell
+         pos = self.buffer.tell()
+         self.buffer.seek(0)
+         total = 0
+         while True:
+-            ret = self.read(READ_CHUNK_SIZE)
++            ret = self.buffer.reader.read(READ_CHUNK_SIZE, READ_CHUNK_SIZE)
+             if not ret:
+                 break
+             total += len(ret)
+         self.buffer.seek(pos)
++        self._tell = save_tell
+         return total
+ 
+ 

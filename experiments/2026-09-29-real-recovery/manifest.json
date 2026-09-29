@@ -1,0 +1,83 @@
+{
+  "code_commit": "d5ee61936a35470a3a72309da5c911f77ad875ef",
+  "base_config": {
+    "max_steps": 80,
+    "repository_max_steps": 80,
+    "max_tokens": 120000,
+    "context_max_chars": 60000,
+    "context_keep_messages": 12,
+    "project_instruction_files": [
+      "AGENTS.md"
+    ],
+    "skills": [],
+    "hooks": {
+      "before_tool": [],
+      "after_tool": []
+    },
+    "mcp_servers": [],
+    "memory": {
+      "mode": "off",
+      "max_entries": 3,
+      "max_chars": 2500
+    },
+    "recovery": {
+      "enabled": false,
+      "model_retries": 2,
+      "tool_retries": 1,
+      "validation_retries": 1,
+      "repeat_blocks": 2
+    },
+    "task_timeout_seconds": 1800,
+    "tool_timeout_seconds": 60,
+    "verifier_timeout_seconds": 30,
+    "model": {
+      "backend": "openai_compatible",
+      "name": "deepseek-flash",
+      "base_url": "https://api.deepseek.com",
+      "endpoint_host": "api.deepseek.com",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "max_output_tokens": 4096
+    },
+    "sandbox": {
+      "image": "sha256:4217cbc4df372b696f659c9f25d32dccbc52b4c33ddb8e8c2008c0aa8ae1f163",
+      "workspace": "/workspace",
+      "cpus": 1.0,
+      "memory_mb": 512,
+      "network_enabled": false
+    },
+    "results_dir": "runs",
+    "model_version": {
+      "name": "DeepSeek-V4.1-Flash",
+      "model_id": "deepseek-flash",
+      "checked_at": "2026-09-29T04:37:14.166193+00:00",
+      "source": "https://api.deepseek.com/models",
+      "release_documentation": "https://api-docs.deepseek.com/updates/"
+    }
+  },
+  "task_digests": {
+    "real_001": "5fa6bd8ad251bb771135610bf10e3e178dc4be6e192971e56190b4d56c6d439e",
+    "real_002": "fea439d869134e72f9af77da3d75986ead356e9a6c431743e689f2d0d33c828b",
+    "real_003": "a965ef161db5347d49bd4f63eda488dfe510290f4624bb3a692537eaf023f174",
+    "real_004": "988c08b205c40a046f89400346cc95530ed2490f08a542681be5d901d65f7193",
+    "real_005": "7999853bbaf1e3f119b89fbea1a8c1154f2709bef5eface218d71fbf57d91edd",
+    "real_006": "f188caa3abeb0f4627e7aa26e1753fb40dd7e3b14d65cbb1d7a5edd3bb614d96",
+    "real_007": "864383a9cbb41910a9b9e86dffa46e35da505eb04b773577eb84ad0abc77bb5b",
+    "real_008": "e1a1ca11d61205c19795189a37bbd57c3533deb1e31463d74803cc634ab56dac",
+    "real_009": "9d96fa4dc2e84b672bbefee710b16948a64aba168626b576c8ef778e810ebe88",
+    "real_010": "59e653fc39ee0cfab32dd6e2d4ffb26ed043b65b9fb06da72bbce7f3abcef96f"
+  },
+  "task_order": [
+    "real_001",
+    "real_002",
+    "real_003",
+    "real_004",
+    "real_005",
+    "real_006",
+    "real_007",
+    "real_008",
+    "real_009",
+    "real_010"
+  ],
+  "repeats": 3,
+  "variant_order": "off/on for odd repetitions, on/off for even repetitions"
+}

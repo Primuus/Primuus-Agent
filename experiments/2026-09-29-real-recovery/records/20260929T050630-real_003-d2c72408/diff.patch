@@ -1,0 +1,70 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index 727435f..31eb35d 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -151,23 +151,49 @@ def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+ 
+     thousands_sep = thousands_separator()
+     decimal_sep = decimal_separator()
+-    try:
+-        if isinstance(value, str):
+-            value = value.replace(thousands_sep, "").replace(decimal_sep, ".")
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+-            if "." in value:
+-                value = float(value)
+-            else:
+-                value = int(value)
+-        else:
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+-            float(value)
+-    except (TypeError, ValueError):
+-        return str(value)
+ 
+-    if ndigits is not None:
++    # Integers (and strings of digits) are formatted directly by the built-in
++    # format machinery, which supports arbitrarily large values. Converting to
++    # float first would overflow for integers beyond the float range, so keep
++    # the integer path separate from the float path.
++    if isinstance(value, str):
++        value = value.replace(thousands_sep, "").replace(decimal_sep, ".")
++        try:
++            int_value = int(value)
++        except ValueError:
++            int_value = None
++        if int_value is None:
++            try:
++                float_value = float(value)
++            except (TypeError, ValueError, OverflowError):
++                return str(value)
++            if not math.isfinite(float_value):
++                return _format_not_finite(float_value)
++            if "." not in value:
++                # Not an integer, and not a plain float (e.g. "1e3"): leave it be.
++                return str(value)
++            value = float_value
++    elif isinstance(value, int):
++        int_value = value
++    else:
++        int_value = None
++        try:
++            float_value = float(value)
++        except (TypeError, ValueError, OverflowError):
++            return str(value)
++        if not math.isfinite(float_value):
++            return _format_not_finite(float_value)
++
++    if int_value is not None:
++        try:
++            result = (
++                f"{int_value:,.{ndigits}f}" if ndigits is not None else f"{int_value:,}"
++            )
++        except OverflowError:
++            # Too large for the float-based "f" presentation; an integer needs no
++            # floating point arithmetic, so pad the decimal places ourselves.
++            result = f"{int_value:,}" + (f".{'0' * ndigits}" if ndigits else "")
++    elif ndigits is not None:
+         result = f"{value:,.{ndigits}f}"
+     else:
+         result = f"{value:,}"

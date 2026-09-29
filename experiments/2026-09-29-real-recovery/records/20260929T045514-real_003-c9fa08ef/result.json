@@ -1,0 +1,20 @@
+{
+  "run_id": "20260929T045514-real_003-c9fa08ef",
+  "task_id": "real_003",
+  "model_id": "deepseek-flash",
+  "success": false,
+  "stop_reason": "token_budget",
+  "steps": 13,
+  "tool_calls": 14,
+  "failed_tool_calls": 4,
+  "retries": 0,
+  "recoveries": 0,
+  "manual_interventions": 0,
+  "failure_counts": {
+    "command": 2,
+    "tool": 2
+  },
+  "tokens": 122999,
+  "latency_seconds": 38.291,
+  "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045514-real_003-c9fa08ef/trace.jsonl"
+}

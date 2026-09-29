@@ -1,0 +1,10 @@
+{
+  "count": 11,
+  "final": {
+    "passed": false,
+    "output": "",
+    "error": "Traceback (most recent call last):\n  File \"/verifier/verifier.py\", line 9, in <module>\n    assert stats.get_histogram_counts() == [(float(min(data)), len(data))]\n  File \"/workspace/boltons/statsutils.py\", line 599, in get_histogram_counts\n    bins = self._get_bin_bounds()\n  File \"/workspace/boltons/statsutils.py\", line 564, in _get_bin_bounds\n    bin_count = max(1, int(ceil((max_data - min_data) / dx)))\nZeroDivisionError: float division by zero\n",
+    "exit_code": 1,
+    "duration_ms": 257
+  }
+}

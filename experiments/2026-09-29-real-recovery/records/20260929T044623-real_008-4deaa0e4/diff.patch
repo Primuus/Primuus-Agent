@@ -1,0 +1,53 @@
+diff --git a/boltons/jsonutils.py b/boltons/jsonutils.py
+index bf61b03..1234aba 100644
+--- a/boltons/jsonutils.py
++++ b/boltons/jsonutils.py
+@@ -139,7 +139,9 @@ class JSONLIterator:
+             begins.
+         rel_seek (float): Used to preseek the start position of
+             iteration. Set to 0.0 for the start of the file, 1.0 for the
+-            end, and anything in between.
++            end, and anything in between. Negative values are measured
++            backward from the end of the file, so -0.5 selects the same
++            position as 0.5.
+ 
+     .. _JSON Lines format: http://jsonlines.org/
+     """
+@@ -156,7 +158,9 @@ class JSONLIterator:
+             raise ValueError("'rel_seek' expected a float between"
+                              " -1.0 and 1.0, not %r" % rel_seek)
+         elif rel_seek < 0:
+-            rel_seek = 1.0 - rel_seek
++            # A negative rel_seek is an offset measured backward from
++            # the end of the file, so -0.5 and 0.5 select the same point.
++            rel_seek = 1.0 + rel_seek
+         self._rel_seek = rel_seek
+         self._blocksize = 4096
+         if rel_seek is not None:
+@@ -176,15 +180,20 @@ class JSONLIterator:
+     def _align_to_newline(self):
+         "Aligns the file object's position to the next newline."
+         fo, bsize = self._file_obj, self._blocksize
+-        cur, total_read = '', 0
+         cur_pos = fo.tell()
+-        while '\n' not in cur:
++        total_read = 0
++        cur = fo.read(0)
++        newline = b'\n' if isinstance(cur, bytes) else '\n'
++        while newline not in cur:
+             cur = fo.read(bsize)
++            if not cur:
++                # EOF reached without finding a newline. There is no
++                # following line to align to, so terminate iteration by
++                # moving to the end of the file.
++                fo.seek(0, os.SEEK_END)
++                return
+             total_read += bsize
+-        try:
+-            newline_offset = cur.index('\n') + total_read - bsize
+-        except ValueError:
+-            raise  # TODO: seek to end?
++        newline_offset = cur.index(newline) + total_read - bsize
+         fo.seek(cur_pos + newline_offset)
+ 
+     def _init_rel_seek(self):

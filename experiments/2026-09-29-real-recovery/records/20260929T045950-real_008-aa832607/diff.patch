@@ -1,0 +1,57 @@
+diff --git a/boltons/jsonutils.py b/boltons/jsonutils.py
+index bf61b03..4bb38c5 100644
+--- a/boltons/jsonutils.py
++++ b/boltons/jsonutils.py
+@@ -139,7 +139,9 @@ class JSONLIterator:
+             begins.
+         rel_seek (float): Used to preseek the start position of
+             iteration. Set to 0.0 for the start of the file, 1.0 for the
+-            end, and anything in between.
++            end, and anything in between. Negative values are measured
++            backward from the end, so -0.5 selects the same position as
++            0.5.
+ 
+     .. _JSON Lines format: http://jsonlines.org/
+     """
+@@ -156,7 +158,10 @@ class JSONLIterator:
+             raise ValueError("'rel_seek' expected a float between"
+                              " -1.0 and 1.0, not %r" % rel_seek)
+         elif rel_seek < 0:
+-            rel_seek = 1.0 - rel_seek
++            # A negative rel_seek is an offset measured backward from the
++            # end of the file, e.g. -0.5 is 0.5 back from the end, which is
++            # the same position as 0.5 forward from the start.
++            rel_seek = 1.0 + rel_seek
+         self._rel_seek = rel_seek
+         self._blocksize = 4096
+         if rel_seek is not None:
+@@ -176,16 +181,21 @@ class JSONLIterator:
+     def _align_to_newline(self):
+         "Aligns the file object's position to the next newline."
+         fo, bsize = self._file_obj, self._blocksize
+-        cur, total_read = '', 0
+         cur_pos = fo.tell()
+-        while '\n' not in cur:
++        read_before = 0
++        while True:
+             cur = fo.read(bsize)
+-            total_read += bsize
+-        try:
+-            newline_offset = cur.index('\n') + total_read - bsize
+-        except ValueError:
+-            raise  # TODO: seek to end?
+-        fo.seek(cur_pos + newline_offset)
++            if not cur:
++                # Reached EOF without another newline. The cursor is already
++                # at the end of the file, so iteration terminates rather
++                # than repeatedly reading past EOF.
++                return
++            newline = b'\n' if isinstance(cur, bytes) else '\n'
++            newline_offset = cur.find(newline)
++            if newline_offset != -1:
++                fo.seek(cur_pos + read_before + newline_offset)
++                return
++            read_before += len(cur)
+ 
+     def _init_rel_seek(self):
+         "Sets the file object's position to the relative location set above."

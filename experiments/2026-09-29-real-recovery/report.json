@@ -1,0 +1,2751 @@
+{
+  "status": "complete",
+  "run_count": 60,
+  "planned_runs": 60,
+  "completed_pairs": 30,
+  "variants": {
+    "off": {
+      "runs": 30,
+      "successes": 15,
+      "success_rate": 0.5,
+      "success_after_detected_failure": 15,
+      "runs_with_detected_failure": 30,
+      "avg_steps": 8.966666666666667,
+      "avg_tool_calls": 13.1,
+      "avg_failed_tool_calls": 2.3,
+      "avg_repeated_tool_calls": 0.9,
+      "avg_tokens": null,
+      "known_token_runs": 28,
+      "known_token_total": 2784869,
+      "observed_turn_token_total": 2860678,
+      "unmeasured_model_requests": 2,
+      "avg_latency_seconds": 36.21496666666666,
+      "manual_interventions": 0,
+      "stop_reasons": {
+        "verified": 15,
+        "token_budget": 13,
+        "model_error": 2
+      },
+      "recovery_actions": {}
+    },
+    "on": {
+      "runs": 30,
+      "successes": 11,
+      "success_rate": 0.36666666666666664,
+      "success_after_detected_failure": 11,
+      "runs_with_detected_failure": 30,
+      "avg_steps": 9.866666666666667,
+      "avg_tool_calls": 13.9,
+      "avg_failed_tool_calls": 2.433333333333333,
+      "avg_repeated_tool_calls": 0.8333333333333334,
+      "avg_tokens": null,
+      "known_token_runs": 29,
+      "known_token_total": 3194910,
+      "observed_turn_token_total": 3319912,
+      "unmeasured_model_requests": 1,
+      "avg_latency_seconds": 35.90286666666667,
+      "manual_interventions": 0,
+      "stop_reasons": {
+        "verified": 11,
+        "token_budget": 19
+      },
+      "recovery_actions": {
+        "alternative_action": 71,
+        "model_retry": 1
+      }
+    }
+  },
+  "pairs": [
+    {
+      "task_id": "real_001",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T044003-real_001-6eb04895",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T044018-real_001-744f9669",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T044025-real_002-101c21c3",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T044122-real_002-a791d29f",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T044155-real_003-df142ec9",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T044231-real_003-38877d5c",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T044313-real_004-9faf7a41",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T044339-real_004-e68fd915",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T044352-real_005-f137b050",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T044442-real_005-b7d6269c",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T044501-real_006-d226734a",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T044522-real_006-650f0b8e",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T044545-real_007-b605462c",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T044603-real_007-6ca5ba9b",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T044623-real_008-4deaa0e4",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T044827-real_008-8a193157",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T044931-real_009-464e26e1",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T045029-real_009-a1b5a524",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 1,
+      "off": {
+        "run_id": "20260929T045111-real_010-a58b1557",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T045155-real_010-1696327e",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_001",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T045236-real_001-59da13a6",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T045225-real_001-21222a62",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T045350-real_002-a3d24e3f",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T045247-real_002-a4a25893",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T045514-real_003-c9fa08ef",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T045430-real_003-017cf578",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T045612-real_004-a7b0f16c",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T045552-real_004-57344650",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T045655-real_005-b95b9c16",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T045624-real_005-b9072327",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T045747-real_006-11151c1f",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T045714-real_006-a3dc41ec",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T045828-real_007-449d0d20",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T045807-real_007-c433dde1",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T045950-real_008-aa832607",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T045851-real_008-b06836be",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T050117-real_009-39db9c0a",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T050052-real_009-b26d5f79",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 2,
+      "off": {
+        "run_id": "20260929T050239-real_010-82f7276e",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T050151-real_010-80dafee2",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_001",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T050312-real_001-406cae77",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T050320-real_001-5ced1d3b",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T050330-real_002-3cd060f2",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T050449-real_002-c17221df",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T050552-real_003-3145f0b5",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T050630-real_003-d2c72408",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T050719-real_004-b7aef065",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T050730-real_004-9a7fe47f",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T050747-real_005-46ca2bf4",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T050817-real_005-a7fdb50e",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T050905-real_006-3c175ef5",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T050927-real_006-34663788",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T050948-real_007-4c345610",
+        "success": true
+      },
+      "on": {
+        "run_id": "20260929T051017-real_007-2c128f0f",
+        "success": false
+      }
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T051104-real_008-440a8e82",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T051205-real_008-4f22ad82",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T051311-real_009-a6e27be6",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T051352-real_009-8a03a872",
+        "success": true
+      }
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 3,
+      "off": {
+        "run_id": "20260929T051507-real_010-70ea9fe9",
+        "success": false
+      },
+      "on": {
+        "run_id": "20260929T051537-real_010-006a3a9c",
+        "success": false
+      }
+    }
+  ],
+  "trials": [
+    {
+      "task_id": "real_001",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T044003-real_001-6eb04895",
+        "task_id": "real_001",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 6,
+        "tool_calls": 10,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1
+        },
+        "tokens": 19234,
+        "latency_seconds": 15.096,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044003-real_001-6eb04895/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 19234,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044003-real_001-6eb04895/trace.jsonl",
+        "diff.patch": "records/20260929T044003-real_001-6eb04895/diff.patch",
+        "verification.json": "records/20260929T044003-real_001-6eb04895/verification.json",
+        "result.json": "records/20260929T044003-real_001-6eb04895/result.json",
+        "config.json": "records/20260929T044003-real_001-6eb04895/config.json"
+      }
+    },
+    {
+      "task_id": "real_001",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T044018-real_001-744f9669",
+        "task_id": "real_001",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 4,
+        "tool_calls": 6,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2
+        },
+        "tokens": 5598,
+        "latency_seconds": 7.35,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044018-real_001-744f9669/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 5598,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044018-real_001-744f9669/trace.jsonl",
+        "diff.patch": "records/20260929T044018-real_001-744f9669/diff.patch",
+        "verification.json": "records/20260929T044018-real_001-744f9669/verification.json",
+        "result.json": "records/20260929T044018-real_001-744f9669/result.json",
+        "config.json": "records/20260929T044018-real_001-744f9669/config.json"
+      }
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T044025-real_002-101c21c3",
+        "task_id": "real_002",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 14,
+        "tool_calls": 16,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 134294,
+        "latency_seconds": 56.808,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044025-real_002-101c21c3/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 134294,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044025-real_002-101c21c3/trace.jsonl",
+        "diff.patch": "records/20260929T044025-real_002-101c21c3/diff.patch",
+        "verification.json": "records/20260929T044025-real_002-101c21c3/verification.json",
+        "result.json": "records/20260929T044025-real_002-101c21c3/result.json",
+        "config.json": "records/20260929T044025-real_002-101c21c3/config.json"
+      }
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T044122-real_002-a791d29f",
+        "task_id": "real_002",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 9,
+        "tool_calls": 12,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 1,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1
+        },
+        "tokens": 131649,
+        "latency_seconds": 32.912,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044122-real_002-a791d29f/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 1
+        },
+        "observed_turn_tokens": 131649,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044122-real_002-a791d29f/trace.jsonl",
+        "diff.patch": "records/20260929T044122-real_002-a791d29f/diff.patch",
+        "verification.json": "records/20260929T044122-real_002-a791d29f/verification.json",
+        "result.json": "records/20260929T044122-real_002-a791d29f/result.json",
+        "config.json": "records/20260929T044122-real_002-a791d29f/config.json"
+      }
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T044155-real_003-df142ec9",
+        "task_id": "real_003",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 10,
+        "tool_calls": 11,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 2
+        },
+        "tokens": 90609,
+        "latency_seconds": 35.711,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044155-real_003-df142ec9/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {},
+        "observed_turn_tokens": 90609,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044155-real_003-df142ec9/trace.jsonl",
+        "diff.patch": "records/20260929T044155-real_003-df142ec9/diff.patch",
+        "verification.json": "records/20260929T044155-real_003-df142ec9/verification.json",
+        "result.json": "records/20260929T044155-real_003-df142ec9/result.json",
+        "config.json": "records/20260929T044155-real_003-df142ec9/config.json"
+      }
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T044231-real_003-38877d5c",
+        "task_id": "real_003",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 10,
+        "tool_calls": 11,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 101724,
+        "latency_seconds": 42.323,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044231-real_003-38877d5c/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 101724,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044231-real_003-38877d5c/trace.jsonl",
+        "diff.patch": "records/20260929T044231-real_003-38877d5c/diff.patch",
+        "verification.json": "records/20260929T044231-real_003-38877d5c/verification.json",
+        "result.json": "records/20260929T044231-real_003-38877d5c/result.json",
+        "config.json": "records/20260929T044231-real_003-38877d5c/config.json"
+      }
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T044313-real_004-9faf7a41",
+        "task_id": "real_004",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "model_error",
+        "steps": 7,
+        "tool_calls": 8,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2,
+          "model_service": 1
+        },
+        "tokens": null,
+        "latency_seconds": 25.89,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044313-real_004-9faf7a41/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {},
+        "observed_turn_tokens": 31212,
+        "unmeasured_model_requests": 1
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044313-real_004-9faf7a41/trace.jsonl",
+        "diff.patch": "records/20260929T044313-real_004-9faf7a41/diff.patch",
+        "verification.json": "records/20260929T044313-real_004-9faf7a41/verification.json",
+        "result.json": "records/20260929T044313-real_004-9faf7a41/result.json",
+        "config.json": "records/20260929T044313-real_004-9faf7a41/config.json"
+      }
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T044339-real_004-e68fd915",
+        "task_id": "real_004",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 7,
+        "tool_calls": 10,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 93590,
+        "latency_seconds": 13.005,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044339-real_004-e68fd915/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 93590,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044339-real_004-e68fd915/trace.jsonl",
+        "diff.patch": "records/20260929T044339-real_004-e68fd915/diff.patch",
+        "verification.json": "records/20260929T044339-real_004-e68fd915/verification.json",
+        "result.json": "records/20260929T044339-real_004-e68fd915/result.json",
+        "config.json": "records/20260929T044339-real_004-e68fd915/config.json"
+      }
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T044352-real_005-f137b050",
+        "task_id": "real_005",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 11,
+        "tool_calls": 20,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2,
+          "command": 1
+        },
+        "tokens": 132246,
+        "latency_seconds": 50.156,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044352-real_005-f137b050/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 2,
+        "recovery_actions": {},
+        "observed_turn_tokens": 132246,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044352-real_005-f137b050/trace.jsonl",
+        "diff.patch": "records/20260929T044352-real_005-f137b050/diff.patch",
+        "verification.json": "records/20260929T044352-real_005-f137b050/verification.json",
+        "result.json": "records/20260929T044352-real_005-f137b050/result.json",
+        "config.json": "records/20260929T044352-real_005-f137b050/config.json"
+      }
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T044442-real_005-b7d6269c",
+        "task_id": "real_005",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 12,
+        "tool_calls": 13,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 133860,
+        "latency_seconds": 19.117,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044442-real_005-b7d6269c/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 133860,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044442-real_005-b7d6269c/trace.jsonl",
+        "diff.patch": "records/20260929T044442-real_005-b7d6269c/diff.patch",
+        "verification.json": "records/20260929T044442-real_005-b7d6269c/verification.json",
+        "result.json": "records/20260929T044442-real_005-b7d6269c/result.json",
+        "config.json": "records/20260929T044442-real_005-b7d6269c/config.json"
+      }
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T044501-real_006-d226734a",
+        "task_id": "real_006",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 10,
+        "tool_calls": 18,
+        "failed_tool_calls": 4,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 3,
+          "command": 1
+        },
+        "tokens": 129258,
+        "latency_seconds": 20.382,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044501-real_006-d226734a/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {},
+        "observed_turn_tokens": 129258,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044501-real_006-d226734a/trace.jsonl",
+        "diff.patch": "records/20260929T044501-real_006-d226734a/diff.patch",
+        "verification.json": "records/20260929T044501-real_006-d226734a/verification.json",
+        "result.json": "records/20260929T044501-real_006-d226734a/result.json",
+        "config.json": "records/20260929T044501-real_006-d226734a/config.json"
+      }
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T044522-real_006-650f0b8e",
+        "task_id": "real_006",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 12,
+        "tool_calls": 22,
+        "failed_tool_calls": 4,
+        "retries": 0,
+        "recoveries": 4,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2,
+          "command": 2
+        },
+        "tokens": 138207,
+        "latency_seconds": 23.45,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044522-real_006-650f0b8e/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 4,
+        "recovery_actions": {
+          "alternative_action": 4
+        },
+        "observed_turn_tokens": 138207,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044522-real_006-650f0b8e/trace.jsonl",
+        "diff.patch": "records/20260929T044522-real_006-650f0b8e/diff.patch",
+        "verification.json": "records/20260929T044522-real_006-650f0b8e/verification.json",
+        "result.json": "records/20260929T044522-real_006-650f0b8e/result.json",
+        "config.json": "records/20260929T044522-real_006-650f0b8e/config.json"
+      }
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T044545-real_007-b605462c",
+        "task_id": "real_007",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 8,
+        "tool_calls": 9,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1
+        },
+        "tokens": 59443,
+        "latency_seconds": 17.383,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044545-real_007-b605462c/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 59443,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044545-real_007-b605462c/trace.jsonl",
+        "diff.patch": "records/20260929T044545-real_007-b605462c/diff.patch",
+        "verification.json": "records/20260929T044545-real_007-b605462c/verification.json",
+        "result.json": "records/20260929T044545-real_007-b605462c/result.json",
+        "config.json": "records/20260929T044545-real_007-b605462c/config.json"
+      }
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T044603-real_007-6ca5ba9b",
+        "task_id": "real_007",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 10,
+        "tool_calls": 11,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 1,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1
+        },
+        "tokens": 54550,
+        "latency_seconds": 20.652,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044603-real_007-6ca5ba9b/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 1
+        },
+        "observed_turn_tokens": 54550,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044603-real_007-6ca5ba9b/trace.jsonl",
+        "diff.patch": "records/20260929T044603-real_007-6ca5ba9b/diff.patch",
+        "verification.json": "records/20260929T044603-real_007-6ca5ba9b/verification.json",
+        "result.json": "records/20260929T044603-real_007-6ca5ba9b/result.json",
+        "config.json": "records/20260929T044603-real_007-6ca5ba9b/config.json"
+      }
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T044623-real_008-4deaa0e4",
+        "task_id": "real_008",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 10,
+        "tool_calls": 15,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 2
+        },
+        "tokens": 98387,
+        "latency_seconds": 123.499,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044623-real_008-4deaa0e4/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {},
+        "observed_turn_tokens": 98387,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044623-real_008-4deaa0e4/trace.jsonl",
+        "diff.patch": "records/20260929T044623-real_008-4deaa0e4/diff.patch",
+        "verification.json": "records/20260929T044623-real_008-4deaa0e4/verification.json",
+        "result.json": "records/20260929T044623-real_008-4deaa0e4/result.json",
+        "config.json": "records/20260929T044623-real_008-4deaa0e4/config.json"
+      }
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T044827-real_008-8a193157",
+        "task_id": "real_008",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 11,
+        "tool_calls": 18,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 101618,
+        "latency_seconds": 64.585,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044827-real_008-8a193157/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 101618,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044827-real_008-8a193157/trace.jsonl",
+        "diff.patch": "records/20260929T044827-real_008-8a193157/diff.patch",
+        "verification.json": "records/20260929T044827-real_008-8a193157/verification.json",
+        "result.json": "records/20260929T044827-real_008-8a193157/result.json",
+        "config.json": "records/20260929T044827-real_008-8a193157/config.json"
+      }
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T044931-real_009-464e26e1",
+        "task_id": "real_009",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 8,
+        "tool_calls": 11,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 1
+        },
+        "tokens": 93865,
+        "latency_seconds": 58.098,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T044931-real_009-464e26e1/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 93865,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T044931-real_009-464e26e1/trace.jsonl",
+        "diff.patch": "records/20260929T044931-real_009-464e26e1/diff.patch",
+        "verification.json": "records/20260929T044931-real_009-464e26e1/verification.json",
+        "result.json": "records/20260929T044931-real_009-464e26e1/result.json",
+        "config.json": "records/20260929T044931-real_009-464e26e1/config.json"
+      }
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045029-real_009-a1b5a524",
+        "task_id": "real_009",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 10,
+        "tool_calls": 16,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 3,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 2
+        },
+        "tokens": 128155,
+        "latency_seconds": 41.338,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045029-real_009-a1b5a524/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 3
+        },
+        "observed_turn_tokens": 128155,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045029-real_009-a1b5a524/trace.jsonl",
+        "diff.patch": "records/20260929T045029-real_009-a1b5a524/diff.patch",
+        "verification.json": "records/20260929T045029-real_009-a1b5a524/verification.json",
+        "result.json": "records/20260929T045029-real_009-a1b5a524/result.json",
+        "config.json": "records/20260929T045029-real_009-a1b5a524/config.json"
+      }
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 1,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T045111-real_010-a58b1557",
+        "task_id": "real_010",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 11,
+        "tool_calls": 17,
+        "failed_tool_calls": 4,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 3
+        },
+        "tokens": 122340,
+        "latency_seconds": 43.805,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045111-real_010-a58b1557/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 3,
+        "recovery_actions": {},
+        "observed_turn_tokens": 122340,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045111-real_010-a58b1557/trace.jsonl",
+        "diff.patch": "records/20260929T045111-real_010-a58b1557/diff.patch",
+        "verification.json": "records/20260929T045111-real_010-a58b1557/verification.json",
+        "result.json": "records/20260929T045111-real_010-a58b1557/result.json",
+        "config.json": "records/20260929T045111-real_010-a58b1557/config.json"
+      }
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 1,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045155-real_010-1696327e",
+        "task_id": "real_010",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 10,
+        "tool_calls": 15,
+        "failed_tool_calls": 4,
+        "retries": 0,
+        "recoveries": 3,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 2,
+          "tool": 2
+        },
+        "tokens": 132950,
+        "latency_seconds": 30.371,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045155-real_010-1696327e/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 2,
+        "recovery_actions": {
+          "alternative_action": 3
+        },
+        "observed_turn_tokens": 132950,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045155-real_010-1696327e/trace.jsonl",
+        "diff.patch": "records/20260929T045155-real_010-1696327e/diff.patch",
+        "verification.json": "records/20260929T045155-real_010-1696327e/verification.json",
+        "result.json": "records/20260929T045155-real_010-1696327e/result.json",
+        "config.json": "records/20260929T045155-real_010-1696327e/config.json"
+      }
+    },
+    {
+      "task_id": "real_001",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045225-real_001-21222a62",
+        "task_id": "real_001",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 5,
+        "tool_calls": 6,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2
+        },
+        "tokens": 11011,
+        "latency_seconds": 10.906,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045225-real_001-21222a62/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 11011,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045225-real_001-21222a62/trace.jsonl",
+        "diff.patch": "records/20260929T045225-real_001-21222a62/diff.patch",
+        "verification.json": "records/20260929T045225-real_001-21222a62/verification.json",
+        "result.json": "records/20260929T045225-real_001-21222a62/result.json",
+        "config.json": "records/20260929T045225-real_001-21222a62/config.json"
+      }
+    },
+    {
+      "task_id": "real_001",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T045236-real_001-59da13a6",
+        "task_id": "real_001",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 6,
+        "tool_calls": 8,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1
+        },
+        "tokens": 24534,
+        "latency_seconds": 10.797,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045236-real_001-59da13a6/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 24534,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045236-real_001-59da13a6/trace.jsonl",
+        "diff.patch": "records/20260929T045236-real_001-59da13a6/diff.patch",
+        "verification.json": "records/20260929T045236-real_001-59da13a6/verification.json",
+        "result.json": "records/20260929T045236-real_001-59da13a6/result.json",
+        "config.json": "records/20260929T045236-real_001-59da13a6/config.json"
+      }
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045247-real_002-a4a25893",
+        "task_id": "real_002",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 9,
+        "tool_calls": 12,
+        "failed_tool_calls": 2,
+        "retries": 1,
+        "recoveries": 3,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 1,
+          "model_service": 1
+        },
+        "tokens": null,
+        "latency_seconds": 63.386,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045247-real_002-a4a25893/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 2,
+          "model_retry": 1
+        },
+        "observed_turn_tokens": 125002,
+        "unmeasured_model_requests": 1
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045247-real_002-a4a25893/trace.jsonl",
+        "diff.patch": "records/20260929T045247-real_002-a4a25893/diff.patch",
+        "verification.json": "records/20260929T045247-real_002-a4a25893/verification.json",
+        "result.json": "records/20260929T045247-real_002-a4a25893/result.json",
+        "config.json": "records/20260929T045247-real_002-a4a25893/config.json"
+      }
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T045350-real_002-a3d24e3f",
+        "task_id": "real_002",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 11,
+        "tool_calls": 11,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 125926,
+        "latency_seconds": 39.922,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045350-real_002-a3d24e3f/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 125926,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045350-real_002-a3d24e3f/trace.jsonl",
+        "diff.patch": "records/20260929T045350-real_002-a3d24e3f/diff.patch",
+        "verification.json": "records/20260929T045350-real_002-a3d24e3f/verification.json",
+        "result.json": "records/20260929T045350-real_002-a3d24e3f/result.json",
+        "config.json": "records/20260929T045350-real_002-a3d24e3f/config.json"
+      }
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045430-real_003-017cf578",
+        "task_id": "real_003",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 11,
+        "tool_calls": 15,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2,
+          "command": 1
+        },
+        "tokens": 136900,
+        "latency_seconds": 43.898,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045430-real_003-017cf578/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 136900,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045430-real_003-017cf578/trace.jsonl",
+        "diff.patch": "records/20260929T045430-real_003-017cf578/diff.patch",
+        "verification.json": "records/20260929T045430-real_003-017cf578/verification.json",
+        "result.json": "records/20260929T045430-real_003-017cf578/result.json",
+        "config.json": "records/20260929T045430-real_003-017cf578/config.json"
+      }
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T045514-real_003-c9fa08ef",
+        "task_id": "real_003",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 13,
+        "tool_calls": 14,
+        "failed_tool_calls": 4,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 2,
+          "tool": 2
+        },
+        "tokens": 122999,
+        "latency_seconds": 38.291,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045514-real_003-c9fa08ef/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {},
+        "observed_turn_tokens": 122999,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045514-real_003-c9fa08ef/trace.jsonl",
+        "diff.patch": "records/20260929T045514-real_003-c9fa08ef/diff.patch",
+        "verification.json": "records/20260929T045514-real_003-c9fa08ef/verification.json",
+        "result.json": "records/20260929T045514-real_003-c9fa08ef/result.json",
+        "config.json": "records/20260929T045514-real_003-c9fa08ef/config.json"
+      }
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045552-real_004-57344650",
+        "task_id": "real_004",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 10,
+        "tool_calls": 14,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 1
+        },
+        "tokens": 107014,
+        "latency_seconds": 19.292,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045552-real_004-57344650/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 107014,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045552-real_004-57344650/trace.jsonl",
+        "diff.patch": "records/20260929T045552-real_004-57344650/diff.patch",
+        "verification.json": "records/20260929T045552-real_004-57344650/verification.json",
+        "result.json": "records/20260929T045552-real_004-57344650/result.json",
+        "config.json": "records/20260929T045552-real_004-57344650/config.json"
+      }
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T045612-real_004-a7b0f16c",
+        "task_id": "real_004",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 7,
+        "tool_calls": 10,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 1
+        },
+        "tokens": 86549,
+        "latency_seconds": 12.511,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045612-real_004-a7b0f16c/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 2,
+        "recovery_actions": {},
+        "observed_turn_tokens": 86549,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045612-real_004-a7b0f16c/trace.jsonl",
+        "diff.patch": "records/20260929T045612-real_004-a7b0f16c/diff.patch",
+        "verification.json": "records/20260929T045612-real_004-a7b0f16c/verification.json",
+        "result.json": "records/20260929T045612-real_004-a7b0f16c/result.json",
+        "config.json": "records/20260929T045612-real_004-a7b0f16c/config.json"
+      }
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045624-real_005-b9072327",
+        "task_id": "real_005",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 11,
+        "tool_calls": 18,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 3,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2,
+          "command": 1
+        },
+        "tokens": 123049,
+        "latency_seconds": 31.296,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045624-real_005-b9072327/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 2,
+        "recovery_actions": {
+          "alternative_action": 3
+        },
+        "observed_turn_tokens": 123049,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045624-real_005-b9072327/trace.jsonl",
+        "diff.patch": "records/20260929T045624-real_005-b9072327/diff.patch",
+        "verification.json": "records/20260929T045624-real_005-b9072327/verification.json",
+        "result.json": "records/20260929T045624-real_005-b9072327/result.json",
+        "config.json": "records/20260929T045624-real_005-b9072327/config.json"
+      }
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T045655-real_005-b95b9c16",
+        "task_id": "real_005",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 6,
+        "tool_calls": 10,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1
+        },
+        "tokens": 44633,
+        "latency_seconds": 18.207,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045655-real_005-b95b9c16/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {},
+        "observed_turn_tokens": 44633,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045655-real_005-b95b9c16/trace.jsonl",
+        "diff.patch": "records/20260929T045655-real_005-b95b9c16/diff.patch",
+        "verification.json": "records/20260929T045655-real_005-b95b9c16/verification.json",
+        "result.json": "records/20260929T045655-real_005-b95b9c16/result.json",
+        "config.json": "records/20260929T045655-real_005-b95b9c16/config.json"
+      }
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045714-real_006-a3dc41ec",
+        "task_id": "real_006",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 11,
+        "tool_calls": 19,
+        "failed_tool_calls": 4,
+        "retries": 0,
+        "recoveries": 4,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 3,
+          "command": 1
+        },
+        "tokens": 127637,
+        "latency_seconds": 33.675,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045714-real_006-a3dc41ec/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 3,
+        "recovery_actions": {
+          "alternative_action": 4
+        },
+        "observed_turn_tokens": 127637,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045714-real_006-a3dc41ec/trace.jsonl",
+        "diff.patch": "records/20260929T045714-real_006-a3dc41ec/diff.patch",
+        "verification.json": "records/20260929T045714-real_006-a3dc41ec/verification.json",
+        "result.json": "records/20260929T045714-real_006-a3dc41ec/result.json",
+        "config.json": "records/20260929T045714-real_006-a3dc41ec/config.json"
+      }
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T045747-real_006-11151c1f",
+        "task_id": "real_006",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 10,
+        "tool_calls": 19,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 2
+        },
+        "tokens": 120368,
+        "latency_seconds": 19.463,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045747-real_006-11151c1f/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {},
+        "observed_turn_tokens": 120368,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045747-real_006-11151c1f/trace.jsonl",
+        "diff.patch": "records/20260929T045747-real_006-11151c1f/diff.patch",
+        "verification.json": "records/20260929T045747-real_006-11151c1f/verification.json",
+        "result.json": "records/20260929T045747-real_006-11151c1f/result.json",
+        "config.json": "records/20260929T045747-real_006-11151c1f/config.json"
+      }
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045807-real_007-c433dde1",
+        "task_id": "real_007",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 12,
+        "tool_calls": 13,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 3,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 2,
+          "tool": 1
+        },
+        "tokens": 134071,
+        "latency_seconds": 21.517,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045807-real_007-c433dde1/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 3
+        },
+        "observed_turn_tokens": 134071,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045807-real_007-c433dde1/trace.jsonl",
+        "diff.patch": "records/20260929T045807-real_007-c433dde1/diff.patch",
+        "verification.json": "records/20260929T045807-real_007-c433dde1/verification.json",
+        "result.json": "records/20260929T045807-real_007-c433dde1/result.json",
+        "config.json": "records/20260929T045807-real_007-c433dde1/config.json"
+      }
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T045828-real_007-449d0d20",
+        "task_id": "real_007",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 8,
+        "tool_calls": 15,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2,
+          "command": 1
+        },
+        "tokens": 71520,
+        "latency_seconds": 22.461,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045828-real_007-449d0d20/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 71520,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045828-real_007-449d0d20/trace.jsonl",
+        "diff.patch": "records/20260929T045828-real_007-449d0d20/diff.patch",
+        "verification.json": "records/20260929T045828-real_007-449d0d20/verification.json",
+        "result.json": "records/20260929T045828-real_007-449d0d20/result.json",
+        "config.json": "records/20260929T045828-real_007-449d0d20/config.json"
+      }
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T045851-real_008-b06836be",
+        "task_id": "real_008",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 15,
+        "tool_calls": 17,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 3,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 2
+        },
+        "tokens": 127181,
+        "latency_seconds": 59.068,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045851-real_008-b06836be/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 3
+        },
+        "observed_turn_tokens": 127181,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045851-real_008-b06836be/trace.jsonl",
+        "diff.patch": "records/20260929T045851-real_008-b06836be/diff.patch",
+        "verification.json": "records/20260929T045851-real_008-b06836be/verification.json",
+        "result.json": "records/20260929T045851-real_008-b06836be/result.json",
+        "config.json": "records/20260929T045851-real_008-b06836be/config.json"
+      }
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T045950-real_008-aa832607",
+        "task_id": "real_008",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 10,
+        "tool_calls": 14,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1
+        },
+        "tokens": 86577,
+        "latency_seconds": 62.282,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T045950-real_008-aa832607/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {},
+        "observed_turn_tokens": 86577,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T045950-real_008-aa832607/trace.jsonl",
+        "diff.patch": "records/20260929T045950-real_008-aa832607/diff.patch",
+        "verification.json": "records/20260929T045950-real_008-aa832607/verification.json",
+        "result.json": "records/20260929T045950-real_008-aa832607/result.json",
+        "config.json": "records/20260929T045950-real_008-aa832607/config.json"
+      }
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T050052-real_009-b26d5f79",
+        "task_id": "real_009",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 12,
+        "tool_calls": 14,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 3,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 2,
+          "tool": 1
+        },
+        "tokens": 125696,
+        "latency_seconds": 25.271,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050052-real_009-b26d5f79/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 3
+        },
+        "observed_turn_tokens": 125696,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050052-real_009-b26d5f79/trace.jsonl",
+        "diff.patch": "records/20260929T050052-real_009-b26d5f79/diff.patch",
+        "verification.json": "records/20260929T050052-real_009-b26d5f79/verification.json",
+        "result.json": "records/20260929T050052-real_009-b26d5f79/result.json",
+        "config.json": "records/20260929T050052-real_009-b26d5f79/config.json"
+      }
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T050117-real_009-39db9c0a",
+        "task_id": "real_009",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 10,
+        "tool_calls": 14,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 127704,
+        "latency_seconds": 33.297,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050117-real_009-39db9c0a/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 2,
+        "recovery_actions": {},
+        "observed_turn_tokens": 127704,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050117-real_009-39db9c0a/trace.jsonl",
+        "diff.patch": "records/20260929T050117-real_009-39db9c0a/diff.patch",
+        "verification.json": "records/20260929T050117-real_009-39db9c0a/verification.json",
+        "result.json": "records/20260929T050117-real_009-39db9c0a/result.json",
+        "config.json": "records/20260929T050117-real_009-39db9c0a/config.json"
+      }
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 2,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T050151-real_010-80dafee2",
+        "task_id": "real_010",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 10,
+        "tool_calls": 18,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 3,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 2
+        },
+        "tokens": 136248,
+        "latency_seconds": 47.933,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050151-real_010-80dafee2/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 4,
+        "recovery_actions": {
+          "alternative_action": 3
+        },
+        "observed_turn_tokens": 136248,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050151-real_010-80dafee2/trace.jsonl",
+        "diff.patch": "records/20260929T050151-real_010-80dafee2/diff.patch",
+        "verification.json": "records/20260929T050151-real_010-80dafee2/verification.json",
+        "result.json": "records/20260929T050151-real_010-80dafee2/result.json",
+        "config.json": "records/20260929T050151-real_010-80dafee2/config.json"
+      }
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 2,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T050239-real_010-82f7276e",
+        "task_id": "real_010",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 9,
+        "tool_calls": 15,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 2
+        },
+        "tokens": 134361,
+        "latency_seconds": 33.227,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050239-real_010-82f7276e/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {},
+        "observed_turn_tokens": 134361,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050239-real_010-82f7276e/trace.jsonl",
+        "diff.patch": "records/20260929T050239-real_010-82f7276e/diff.patch",
+        "verification.json": "records/20260929T050239-real_010-82f7276e/verification.json",
+        "result.json": "records/20260929T050239-real_010-82f7276e/result.json",
+        "config.json": "records/20260929T050239-real_010-82f7276e/config.json"
+      }
+    },
+    {
+      "task_id": "real_001",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T050312-real_001-406cae77",
+        "task_id": "real_001",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 4,
+        "tool_calls": 7,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1
+        },
+        "tokens": 7219,
+        "latency_seconds": 8.055,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050312-real_001-406cae77/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 7219,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050312-real_001-406cae77/trace.jsonl",
+        "diff.patch": "records/20260929T050312-real_001-406cae77/diff.patch",
+        "verification.json": "records/20260929T050312-real_001-406cae77/verification.json",
+        "result.json": "records/20260929T050312-real_001-406cae77/result.json",
+        "config.json": "records/20260929T050312-real_001-406cae77/config.json"
+      }
+    },
+    {
+      "task_id": "real_001",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T050320-real_001-5ced1d3b",
+        "task_id": "real_001",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 5,
+        "tool_calls": 6,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 1,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1
+        },
+        "tokens": 9976,
+        "latency_seconds": 9.529,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050320-real_001-5ced1d3b/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 1
+        },
+        "observed_turn_tokens": 9976,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050320-real_001-5ced1d3b/trace.jsonl",
+        "diff.patch": "records/20260929T050320-real_001-5ced1d3b/diff.patch",
+        "verification.json": "records/20260929T050320-real_001-5ced1d3b/verification.json",
+        "result.json": "records/20260929T050320-real_001-5ced1d3b/result.json",
+        "config.json": "records/20260929T050320-real_001-5ced1d3b/config.json"
+      }
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T050330-real_002-3cd060f2",
+        "task_id": "real_002",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 6,
+        "tool_calls": 9,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 1
+        },
+        "tokens": 115387,
+        "latency_seconds": 79.564,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050330-real_002-3cd060f2/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 115387,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050330-real_002-3cd060f2/trace.jsonl",
+        "diff.patch": "records/20260929T050330-real_002-3cd060f2/diff.patch",
+        "verification.json": "records/20260929T050330-real_002-3cd060f2/verification.json",
+        "result.json": "records/20260929T050330-real_002-3cd060f2/result.json",
+        "config.json": "records/20260929T050330-real_002-3cd060f2/config.json"
+      }
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T050449-real_002-c17221df",
+        "task_id": "real_002",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 7,
+        "tool_calls": 11,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 130153,
+        "latency_seconds": 63.145,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050449-real_002-c17221df/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 130153,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050449-real_002-c17221df/trace.jsonl",
+        "diff.patch": "records/20260929T050449-real_002-c17221df/diff.patch",
+        "verification.json": "records/20260929T050449-real_002-c17221df/verification.json",
+        "result.json": "records/20260929T050449-real_002-c17221df/result.json",
+        "config.json": "records/20260929T050449-real_002-c17221df/config.json"
+      }
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T050552-real_003-3145f0b5",
+        "task_id": "real_003",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 9,
+        "tool_calls": 11,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "test": 1,
+          "command": 1
+        },
+        "tokens": 121578,
+        "latency_seconds": 37.498,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050552-real_003-3145f0b5/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 121578,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050552-real_003-3145f0b5/trace.jsonl",
+        "diff.patch": "records/20260929T050552-real_003-3145f0b5/diff.patch",
+        "verification.json": "records/20260929T050552-real_003-3145f0b5/verification.json",
+        "result.json": "records/20260929T050552-real_003-3145f0b5/result.json",
+        "config.json": "records/20260929T050552-real_003-3145f0b5/config.json"
+      }
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T050630-real_003-d2c72408",
+        "task_id": "real_003",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 7,
+        "tool_calls": 11,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 122471,
+        "latency_seconds": 49.486,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050630-real_003-d2c72408/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 122471,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050630-real_003-d2c72408/trace.jsonl",
+        "diff.patch": "records/20260929T050630-real_003-d2c72408/diff.patch",
+        "verification.json": "records/20260929T050630-real_003-d2c72408/verification.json",
+        "result.json": "records/20260929T050630-real_003-d2c72408/result.json",
+        "config.json": "records/20260929T050630-real_003-d2c72408/config.json"
+      }
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T050719-real_004-b7aef065",
+        "task_id": "real_004",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 7,
+        "tool_calls": 8,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 2
+        },
+        "tokens": 88561,
+        "latency_seconds": 10.983,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050719-real_004-b7aef065/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 2,
+        "recovery_actions": {},
+        "observed_turn_tokens": 88561,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050719-real_004-b7aef065/trace.jsonl",
+        "diff.patch": "records/20260929T050719-real_004-b7aef065/diff.patch",
+        "verification.json": "records/20260929T050719-real_004-b7aef065/verification.json",
+        "result.json": "records/20260929T050719-real_004-b7aef065/result.json",
+        "config.json": "records/20260929T050719-real_004-b7aef065/config.json"
+      }
+    },
+    {
+      "task_id": "real_004",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T050730-real_004-9a7fe47f",
+        "task_id": "real_004",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 11,
+        "tool_calls": 12,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 1
+        },
+        "tokens": 122548,
+        "latency_seconds": 16.893,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050730-real_004-9a7fe47f/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 122548,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050730-real_004-9a7fe47f/trace.jsonl",
+        "diff.patch": "records/20260929T050730-real_004-9a7fe47f/diff.patch",
+        "verification.json": "records/20260929T050730-real_004-9a7fe47f/verification.json",
+        "result.json": "records/20260929T050730-real_004-9a7fe47f/result.json",
+        "config.json": "records/20260929T050730-real_004-9a7fe47f/config.json"
+      }
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T050747-real_005-46ca2bf4",
+        "task_id": "real_005",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 11,
+        "tool_calls": 18,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2,
+          "command": 1
+        },
+        "tokens": 128346,
+        "latency_seconds": 29.917,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050747-real_005-46ca2bf4/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 2,
+        "recovery_actions": {},
+        "observed_turn_tokens": 128346,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050747-real_005-46ca2bf4/trace.jsonl",
+        "diff.patch": "records/20260929T050747-real_005-46ca2bf4/diff.patch",
+        "verification.json": "records/20260929T050747-real_005-46ca2bf4/verification.json",
+        "result.json": "records/20260929T050747-real_005-46ca2bf4/result.json",
+        "config.json": "records/20260929T050747-real_005-46ca2bf4/config.json"
+      }
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T050817-real_005-a7fdb50e",
+        "task_id": "real_005",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 12,
+        "tool_calls": 23,
+        "failed_tool_calls": 4,
+        "retries": 0,
+        "recoveries": 4,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 3,
+          "command": 1
+        },
+        "tokens": 128468,
+        "latency_seconds": 47.669,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050817-real_005-a7fdb50e/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 4
+        },
+        "observed_turn_tokens": 128468,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050817-real_005-a7fdb50e/trace.jsonl",
+        "diff.patch": "records/20260929T050817-real_005-a7fdb50e/diff.patch",
+        "verification.json": "records/20260929T050817-real_005-a7fdb50e/verification.json",
+        "result.json": "records/20260929T050817-real_005-a7fdb50e/result.json",
+        "config.json": "records/20260929T050817-real_005-a7fdb50e/config.json"
+      }
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T050905-real_006-3c175ef5",
+        "task_id": "real_006",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 11,
+        "tool_calls": 19,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 2,
+          "command": 1
+        },
+        "tokens": 120499,
+        "latency_seconds": 21.688,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050905-real_006-3c175ef5/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 3,
+        "recovery_actions": {},
+        "observed_turn_tokens": 120499,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050905-real_006-3c175ef5/trace.jsonl",
+        "diff.patch": "records/20260929T050905-real_006-3c175ef5/diff.patch",
+        "verification.json": "records/20260929T050905-real_006-3c175ef5/verification.json",
+        "result.json": "records/20260929T050905-real_006-3c175ef5/result.json",
+        "config.json": "records/20260929T050905-real_006-3c175ef5/config.json"
+      }
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T050927-real_006-34663788",
+        "task_id": "real_006",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 12,
+        "tool_calls": 20,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 3,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 2,
+          "tool": 1
+        },
+        "tokens": 127433,
+        "latency_seconds": 21.311,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050927-real_006-34663788/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 3
+        },
+        "observed_turn_tokens": 127433,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050927-real_006-34663788/trace.jsonl",
+        "diff.patch": "records/20260929T050927-real_006-34663788/diff.patch",
+        "verification.json": "records/20260929T050927-real_006-34663788/verification.json",
+        "result.json": "records/20260929T050927-real_006-34663788/result.json",
+        "config.json": "records/20260929T050927-real_006-34663788/config.json"
+      }
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T050948-real_007-4c345610",
+        "task_id": "real_007",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 12,
+        "tool_calls": 16,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 2,
+          "tool": 1
+        },
+        "tokens": 130100,
+        "latency_seconds": 29.427,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T050948-real_007-4c345610/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 130100,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T050948-real_007-4c345610/trace.jsonl",
+        "diff.patch": "records/20260929T050948-real_007-4c345610/diff.patch",
+        "verification.json": "records/20260929T050948-real_007-4c345610/verification.json",
+        "result.json": "records/20260929T050948-real_007-4c345610/result.json",
+        "config.json": "records/20260929T050948-real_007-4c345610/config.json"
+      }
+    },
+    {
+      "task_id": "real_007",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T051017-real_007-2c128f0f",
+        "task_id": "real_007",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 11,
+        "tool_calls": 14,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 1
+        },
+        "tokens": 130895,
+        "latency_seconds": 46.192,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T051017-real_007-2c128f0f/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 130895,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T051017-real_007-2c128f0f/trace.jsonl",
+        "diff.patch": "records/20260929T051017-real_007-2c128f0f/diff.patch",
+        "verification.json": "records/20260929T051017-real_007-2c128f0f/verification.json",
+        "result.json": "records/20260929T051017-real_007-2c128f0f/result.json",
+        "config.json": "records/20260929T051017-real_007-2c128f0f/config.json"
+      }
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T051104-real_008-440a8e82",
+        "task_id": "real_008",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "model_error",
+        "steps": 7,
+        "tool_calls": 13,
+        "failed_tool_calls": 3,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 2,
+          "model_service": 1
+        },
+        "tokens": null,
+        "latency_seconds": 61.266,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T051104-real_008-440a8e82/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 44597,
+        "unmeasured_model_requests": 1
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T051104-real_008-440a8e82/trace.jsonl",
+        "diff.patch": "records/20260929T051104-real_008-440a8e82/diff.patch",
+        "verification.json": "records/20260929T051104-real_008-440a8e82/verification.json",
+        "result.json": "records/20260929T051104-real_008-440a8e82/result.json",
+        "config.json": "records/20260929T051104-real_008-440a8e82/config.json"
+      }
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T051205-real_008-4f22ad82",
+        "task_id": "real_008",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 11,
+        "tool_calls": 15,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 1
+        },
+        "tokens": 106721,
+        "latency_seconds": 66.523,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T051205-real_008-4f22ad82/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 106721,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T051205-real_008-4f22ad82/trace.jsonl",
+        "diff.patch": "records/20260929T051205-real_008-4f22ad82/diff.patch",
+        "verification.json": "records/20260929T051205-real_008-4f22ad82/verification.json",
+        "result.json": "records/20260929T051205-real_008-4f22ad82/result.json",
+        "config.json": "records/20260929T051205-real_008-4f22ad82/config.json"
+      }
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T051311-real_009-a6e27be6",
+        "task_id": "real_009",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 9,
+        "tool_calls": 16,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 2
+        },
+        "tokens": 128019,
+        "latency_seconds": 40.78,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T051311-real_009-a6e27be6/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 2,
+        "recovery_actions": {},
+        "observed_turn_tokens": 128019,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T051311-real_009-a6e27be6/trace.jsonl",
+        "diff.patch": "records/20260929T051311-real_009-a6e27be6/diff.patch",
+        "verification.json": "records/20260929T051311-real_009-a6e27be6/verification.json",
+        "result.json": "records/20260929T051311-real_009-a6e27be6/result.json",
+        "config.json": "records/20260929T051311-real_009-a6e27be6/config.json"
+      }
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T051352-real_009-8a03a872",
+        "task_id": "real_009",
+        "model_id": "deepseek-flash",
+        "success": true,
+        "stop_reason": "verified",
+        "steps": 9,
+        "tool_calls": 13,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1,
+          "tool": 1
+        },
+        "tokens": 137725,
+        "latency_seconds": 75.282,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T051352-real_009-8a03a872/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 137725,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T051352-real_009-8a03a872/trace.jsonl",
+        "diff.patch": "records/20260929T051352-real_009-8a03a872/diff.patch",
+        "verification.json": "records/20260929T051352-real_009-8a03a872/verification.json",
+        "result.json": "records/20260929T051352-real_009-8a03a872/result.json",
+        "config.json": "records/20260929T051352-real_009-8a03a872/config.json"
+      }
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 3,
+      "variant": "off",
+      "result": {
+        "run_id": "20260929T051507-real_010-70ea9fe9",
+        "task_id": "real_010",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 8,
+        "tool_calls": 11,
+        "failed_tool_calls": 1,
+        "retries": 0,
+        "recoveries": 0,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "command": 1
+        },
+        "tokens": 120313,
+        "latency_seconds": 29.985,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T051507-real_010-70ea9fe9/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 0,
+        "recovery_actions": {},
+        "observed_turn_tokens": 120313,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T051507-real_010-70ea9fe9/trace.jsonl",
+        "diff.patch": "records/20260929T051507-real_010-70ea9fe9/diff.patch",
+        "verification.json": "records/20260929T051507-real_010-70ea9fe9/verification.json",
+        "result.json": "records/20260929T051507-real_010-70ea9fe9/result.json",
+        "config.json": "records/20260929T051507-real_010-70ea9fe9/config.json"
+      }
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 3,
+      "variant": "on",
+      "result": {
+        "run_id": "20260929T051537-real_010-006a3a9c",
+        "task_id": "real_010",
+        "model_id": "deepseek-flash",
+        "success": false,
+        "stop_reason": "token_budget",
+        "steps": 10,
+        "tool_calls": 12,
+        "failed_tool_calls": 2,
+        "retries": 0,
+        "recoveries": 2,
+        "manual_interventions": 0,
+        "failure_counts": {
+          "tool": 1,
+          "command": 1
+        },
+        "tokens": 127812,
+        "latency_seconds": 29.711,
+        "trace_path": "/home/ry/Public/Primuus-Agent/experiments/2026-09-29-real-recovery/records/20260929T051537-real_010-006a3a9c/trace.jsonl"
+      },
+      "trace_metrics": {
+        "repeated_tool_calls": 1,
+        "recovery_actions": {
+          "alternative_action": 2
+        },
+        "observed_turn_tokens": 127812,
+        "unmeasured_model_requests": 0
+      },
+      "artifacts": {
+        "trace.jsonl": "records/20260929T051537-real_010-006a3a9c/trace.jsonl",
+        "diff.patch": "records/20260929T051537-real_010-006a3a9c/diff.patch",
+        "verification.json": "records/20260929T051537-real_010-006a3a9c/verification.json",
+        "result.json": "records/20260929T051537-real_010-006a3a9c/result.json",
+        "config.json": "records/20260929T051537-real_010-006a3a9c/config.json"
+      }
+    }
+  ]
+}

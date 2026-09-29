@@ -1,0 +1,57 @@
+{
+  "config": {
+    "max_steps": 80,
+    "repository_max_steps": 80,
+    "max_tokens": 120000,
+    "context_max_chars": 60000,
+    "context_keep_messages": 12,
+    "project_instruction_files": [
+      "AGENTS.md"
+    ],
+    "skills": [],
+    "hooks": {
+      "before_tool": [],
+      "after_tool": []
+    },
+    "mcp_servers": [],
+    "memory": {
+      "mode": "off",
+      "max_entries": 3,
+      "max_chars": 2500
+    },
+    "recovery": {
+      "enabled": false,
+      "model_retries": 2,
+      "tool_retries": 1,
+      "validation_retries": 1,
+      "repeat_blocks": 2
+    },
+    "task_timeout_seconds": 1800,
+    "tool_timeout_seconds": 60,
+    "verifier_timeout_seconds": 30,
+    "model": {
+      "backend": "openai_compatible",
+      "name": "deepseek-flash",
+      "base_url": "https://api.deepseek.com",
+      "endpoint_host": "api.deepseek.com",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "max_output_tokens": 4096
+    },
+    "sandbox": {
+      "image": "sha256:4217cbc4df372b696f659c9f25d32dccbc52b4c33ddb8e8c2008c0aa8ae1f163",
+      "workspace": "/workspace",
+      "cpus": 1.0,
+      "memory_mb": 512,
+      "network_enabled": false
+    },
+    "results_dir": "runs",
+    "model_version": {
+      "name": "DeepSeek-V4.1-Flash",
+      "model_id": "deepseek-flash",
+      "checked_at": "2026-09-29T04:37:14.166193+00:00",
+      "source": "https://api.deepseek.com/models",
+      "release_documentation": "https://api-docs.deepseek.com/updates/"
+    }
+  },
+  "task_digest": "f188caa3abeb0f4627e7aa26e1753fb40dd7e3b14d65cbb1d7a5edd3bb614d96"
+}
