@@ -3,7 +3,6 @@
 from copy import deepcopy
 from datetime import datetime
 from hashlib import sha256
-from io import BytesIO
 import json
 import os
 from pathlib import Path
@@ -12,7 +11,6 @@ from shutil import copyfile
 from statistics import mean
 import subprocess
 from tempfile import TemporaryDirectory
-import tarfile
 
 from coding_agent.models.base import ModelBackend
 from coding_agent.session.app import RepositorySession
@@ -20,7 +18,10 @@ from coding_agent.session.memory import MemoryStore
 
 
 MODES = ("off", "summary", "retrieve")
-DISCOVERY = re.compile(r"(?:^|[;&|\n]\s*)(?:pwd|ls|find|rg|grep|git\s+ls-files)\b")
+DISCOVERY = re.compile(
+    r"\b(?:pwd|ls|find|rg|grep|tree)\b|\bgit\s+"
+    r"(?:ls-files|log|show|grep|status|branch|tag|remote)\b"
+)
 SHELL_EDIT = re.compile(r"(?:apply_patch|\bsed\s+-i\b|\btee\b|\bcat\s*>|\bwrite_text\(|\bopen\([^)]*['\"]w|\bperl\s+-[pi])")
 
 
@@ -79,8 +80,7 @@ def _prepare_source(output_dir: Path, manifest: dict) -> tuple[Path, list[dict]]
         check=True, capture_output=True,
     ).stdout
     source.mkdir()
-    with tarfile.open(fileobj=BytesIO(archive)) as tar:
-        tar.extractall(source, filter="data")
+    subprocess.run(["tar", "-x", "-C", str(source)], input=archive, check=True)
     subprocess.run(["git", "init", "--quiet", str(source)], check=True, capture_output=True)
     for name, content in manifest["generated_files"].items():
         path = source / name
@@ -199,16 +199,23 @@ def _aggregate(runs: list[dict]) -> dict:
             continue
         aggregates[mode] = {
             "runs": len(selected), "successes": sum(run["success"] for run in selected),
+            "normal_completions": sum(run["success"] and run["stop_reason"] == "completed"
+                                      for run in selected),
             "mean_steps": round(mean(run["steps"] for run in selected), 3),
             "mean_tool_calls": round(mean(run["tool_calls"] for run in selected), 3),
+            "known_token_runs": sum(run["tokens"] is not None for run in selected),
             "mean_tokens": round(mean(run["tokens"] for run in selected if run["tokens"] is not None), 3)
                 if any(run["tokens"] is not None for run in selected) else None,
             "mean_active_seconds": round(mean(run["active_seconds"] for run in selected), 3),
+            "runs_with_memory": sum(bool(run["memory_ids"]) for run in selected),
+            "mean_memory_chars": round(mean(run["memory_chars"] for run in selected), 3),
             "mean_discovery_commands": round(mean(run["metrics"]["repository_discovery_commands"]
                                                   for run in selected[1:]), 3) if len(selected) > 1 else None,
             "repeated_file_reads": sum(run["metrics"]["repeated_file_reads"] for run in selected),
             "repeated_discovery_commands": sum(run["metrics"]["repeated_discovery_commands"]
                                                 for run in selected),
+            "first_edit_runs": sum(run["metrics"]["time_to_first_useful_edit_seconds"] is not None
+                                   for run in selected),
             "mean_time_to_first_useful_edit_seconds": round(mean(
                 run["metrics"]["time_to_first_useful_edit_seconds"] for run in selected
                 if run["metrics"]["time_to_first_useful_edit_seconds"] is not None), 3)
@@ -284,6 +291,9 @@ def compare_memory_series(manifest_path: Path, config: dict, output_dir: Path,
     final_head = report.setdefault("final_head", _git(source, "rev-parse", "HEAD").strip())
     _write_json(report_path, report)
     probe = manifest["tasks"][3]
+    probe_prior = [run for run in report["runs"]
+                   if run["label"] == "clean"
+                   and run["task_id"] in {task["id"] for task in manifest["tasks"][:3]}]
     _git(source, "checkout", "--detach", "--force", report["source_heads"][probe["id"]])
     for mode in ("summary", "retrieve"):
         if any(run["task_id"] == probe["id"] and run["mode"] == mode and run["label"] == "wrong_memory"
@@ -301,7 +311,7 @@ def compare_memory_series(manifest_path: Path, config: dict, output_dir: Path,
             memory_id="r-wrong-intword-location",
         )
         run = _run_variant(source, probe, mode, config, output_dir, sessions_dir,
-                           make_model(), report["runs"], poisoned, "wrong_memory")
+                           make_model(), probe_prior, poisoned, "wrong_memory")
         if run["service_error"] is not None:
             report.setdefault("service_interruptions", []).append(run)
             report["status"] = "interrupted_model_service"

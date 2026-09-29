@@ -1,0 +1,40 @@
+{
+  "session_id": "459daca3fefc",
+  "source_repository": "/home/ry/Public/Primuus-Agent/runs/real-memory-2026-09-29-clean/repository",
+  "workspace": "/home/ry/Public/Primuus-Agent/runs/real-memory-2026-09-29-clean/sessions/459daca3fefc/workspace",
+  "base_commit": "1aa347d68eaa6383d3185cb7c9e37766a87d3468",
+  "model_id": "deepseek-flash",
+  "approval_mode": "auto",
+  "memory_mode": "retrieve",
+  "memory_ids": [
+    "d9f6409660989575",
+    "r-wrong-intword-location",
+    "02c7516e8ef32d81"
+  ],
+  "stop_reason": "token_budget",
+  "steps": 8,
+  "tool_calls": 13,
+  "failed_tool_calls": 1,
+  "tokens": 134704,
+  "retries": 0,
+  "recoveries": 0,
+  "manual_interventions": 0,
+  "active_seconds": 59.478,
+  "final_message": null,
+  "plan": [],
+  "snapshots": [
+    {
+      "commit": "1aa347d68eaa6383d3185cb7c9e37766a87d3468",
+      "label": "initial",
+      "plan": []
+    },
+    {
+      "commit": "1ea20af5512034c81f3268b555fc212fe4a7d7a5",
+      "label": "after step 8",
+      "plan": []
+    }
+  ],
+  "checks": [],
+  "diff_path": "/home/ry/Public/Primuus-Agent/runs/real-memory-2026-09-29-clean/sessions/459daca3fefc/diff.patch",
+  "trace_path": "/home/ry/Public/Primuus-Agent/runs/real-memory-2026-09-29-clean/sessions/459daca3fefc/trace.jsonl"
+}

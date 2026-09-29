@@ -1,0 +1,93 @@
+diff --git a/src/humanize/__init__.py b/src/humanize/__init__.py
+new file mode 100644
+index 0000000..81d9689
+--- /dev/null
++++ b/src/humanize/__init__.py
+@@ -0,0 +1,8 @@
++"""Python humanize utilities."""
++
++from __future__ import annotations
++
++from humanize._version import __version__
++from humanize.number import intcomma
++
++__all__ = ["__version__", "intcomma"]
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+new file mode 100644
+index 0000000..bb71d04
+--- /dev/null
++++ b/src/humanize/number.py
+@@ -0,0 +1,73 @@
++"""Humanizing functions for numbers."""
++
++from __future__ import annotations
++
++from decimal import Decimal
++
++__all__ = ["intcomma"]
++
++
++def _add_thousands_separator(value: str) -> str:
++    """Insert commas into the leading integer portion of ``value``.
++
++    Only the run of digits at the very start of the string (after an optional
++    leading ``-`` sign) is grouped.  Everything that follows -- a decimal
++    fraction, an exponent, units, ... -- is left untouched.  The grouping is
++    done on the string itself so that integers of any size can be handled
++    without ever being converted to a float.
++    """
++    sign = ""
++    start = 0
++    if value.startswith("-"):
++        sign = "-"
++        start = 1
++
++    end = start
++    length = len(value)
++    while end < length and value[end].isdigit():
++        end += 1
++
++    integer_part = value[start:end]
++
++    # Nothing to group: no digits, or just a single group of three (or fewer).
++    if len(integer_part) <= 3:
++        return value
++
++    first_group = len(integer_part) % 3 or 3
++    groups = [integer_part[:first_group]]
++    for index in range(first_group, len(integer_part), 3):
++        groups.append(integer_part[index : index + 3])
++
++    return f"{sign}{','.join(groups)}{value[end:]}"
++
++
++def intcomma(value, ndigits=None):
++    """Convert an integer to a string containing commas every three digits.
++
++    For example, ``3000`` becomes ``'3,000'`` and ``45000`` becomes
++    ``'45,000'``.  Optionally supports a ``ndigits`` argument to set the number
++    of decimal places, e.g. ``1000.1234`` becomes ``'1,000.1234'`` with no
++    ``ndigits``, or ``'1,000.12'`` with ``ndigits=2``.
++
++    Args:
++        value (int, float, str, Decimal): Integer to be converted.
++        ndigits (int): Number of decimal places.
++
++    Returns:
++        str: The converted integer.
++    """
++    if isinstance(value, str):
++        value = Decimal(value)
++
++    if ndigits is not None:
++        if isinstance(value, int):
++            # ``"{:.{n}f}".format(int)`` is implemented by converting to a C
++            # double, which raises ``OverflowError`` for integers larger than
++            # the float range.  ``Decimal`` keeps full precision and, unlike a
++            # float, has no upper bound, so route huge integers through it.
++            value = Decimal(value)
++        orig = f"{value:.{ndigits}f}"
++    else:
++        orig = str(value)
++
++    return _add_thousands_separator(orig)

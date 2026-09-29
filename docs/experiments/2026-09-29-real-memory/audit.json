@@ -1,0 +1,41 @@
+{
+  "valid_runs": 17,
+  "normal_runs": 15,
+  "wrong_memory_probes": 2,
+  "same_source_commit_per_task": true,
+  "same_non_memory_config_per_task": true,
+  "future_upstream_fix_objects_accessible_to_agent": false,
+  "trace_terminal_states_match_results": true,
+  "memory_selection_matches_trace": true,
+  "hidden_verifier_matches_report": true,
+  "nonempty_patches_checked_against_base": 6,
+  "preflight": [
+    {
+      "task_id": "intcomma_overflow",
+      "base_fails": true,
+      "reference_passes": true
+    },
+    {
+      "task_id": "metric_rounding_carry",
+      "base_fails": true,
+      "reference_passes": true
+    },
+    {
+      "task_id": "natural_list_iterables",
+      "base_fails": true,
+      "reference_passes": true
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "base_fails": true,
+      "reference_passes": true
+    },
+    {
+      "task_id": "naturaldelta_year_rounding",
+      "base_fails": true,
+      "reference_passes": true
+    }
+  ],
+  "interrupted_zero_step_runs_excluded": 14,
+  "docker_hidden_verifier_matches_host": true
+}

@@ -1,0 +1,36 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index 2dfeffe..55cf1e7 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -555,6 +555,10 @@ def metric(value: float, unit: str = "", precision: int = 3) -> str:
+         new_bucket = exponent // 3 * 3
+         value /= 10 ** (new_bucket - old_bucket)
+         digits = int(max(0, precision - exponent % 3 - 1))
++    elif digits and round(abs(value), digits) >= 10 ** (exponent % 3 + 1):
++        # Rounding carried the mantissa up to the next power of ten, which
++        # would otherwise add an extra significant digit to the output.
++        digits -= 1
+ 
+     if exponent >= 3:
+         ordinal_ = "kMGTPEZYRQ"[exponent // 3 - 1]
+diff --git a/tests/test_number.py b/tests/test_number.py
+index 6f0a664..b73ab34 100644
+--- a/tests/test_number.py
++++ b/tests/test_number.py
+@@ -273,6 +273,16 @@ def test_clamp(test_args: list[typing.Any], expected: str) -> None:
+         ([999.9, "V"], "1.00 kV"),
+         ([999.99, "V"], "1.00 kV"),
+         ([999_999, "V"], "1.00 MV"),
++        ([9.99999], "10.0"),
++        ([9999], "10.0 k"),
++        ([99999], "100 k"),
++        ([-9.99999], "-10.0"),
++        ([-9999], "-10.0 k"),
++        ([-99999], "-100 k"),
++        ([9.99999, "", 4], "10.00"),
++        ([9999, "", 4], "9.999 k"),
++        ([99999, "", 4], "100.0 k"),
++        ([9999, "", 2], "10 k"),
+         ([0.0009999, "V"], "1.00 mV"),
+         ([1e25, "m"], "10.0 Ym"),
+         ([1e26, "m"], "100 Ym"),

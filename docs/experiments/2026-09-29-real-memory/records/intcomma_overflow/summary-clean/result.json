@@ -1,0 +1,92 @@
+{
+  "session_id": "3153fab06672",
+  "source_repository": "/home/ry/Public/Primuus-Agent/runs/real-memory-2026-09-29-clean/repository",
+  "workspace": "/home/ry/Public/Primuus-Agent/runs/real-memory-2026-09-29-clean/sessions/3153fab06672/workspace",
+  "base_commit": "128dfc70bd74417a457aaf4be876bcfae8d70cd6",
+  "model_id": "deepseek-flash",
+  "approval_mode": "auto",
+  "memory_mode": "summary",
+  "memory_ids": [],
+  "stop_reason": "token_budget",
+  "steps": 13,
+  "tool_calls": 13,
+  "failed_tool_calls": 1,
+  "tokens": 123320,
+  "retries": 0,
+  "recoveries": 0,
+  "manual_interventions": 0,
+  "active_seconds": 89.597,
+  "final_message": null,
+  "plan": [
+    {
+      "description": "Recon repo state and confirm humanize package is absent",
+      "status": "completed"
+    },
+    {
+      "description": "Implement overflow-safe humanize.intcomma (arbitrary-size ints, +/- signs, ordinary formatting, ndigits)",
+      "status": "in_progress"
+    },
+    {
+      "description": "Add package exports and install metadata",
+      "status": "pending"
+    },
+    {
+      "description": "Validate behavior against expected humanize outputs and edge cases",
+      "status": "pending"
+    }
+  ],
+  "snapshots": [
+    {
+      "commit": "128dfc70bd74417a457aaf4be876bcfae8d70cd6",
+      "label": "initial",
+      "plan": []
+    },
+    {
+      "commit": "d57a249f14d34b0ef0660d23b268f58f7ff7a8d7",
+      "label": "plan milestone",
+      "plan": [
+        {
+          "description": "Recon repo state and confirm humanize package is absent",
+          "status": "completed"
+        },
+        {
+          "description": "Implement overflow-safe humanize.intcomma (arbitrary-size ints, +/- signs, ordinary formatting, ndigits)",
+          "status": "in_progress"
+        },
+        {
+          "description": "Add package exports and install metadata",
+          "status": "pending"
+        },
+        {
+          "description": "Validate behavior against expected humanize outputs and edge cases",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "commit": "6aa6720bb4a8af1f157673822a2da3e521493e6b",
+      "label": "after step 13",
+      "plan": [
+        {
+          "description": "Recon repo state and confirm humanize package is absent",
+          "status": "completed"
+        },
+        {
+          "description": "Implement overflow-safe humanize.intcomma (arbitrary-size ints, +/- signs, ordinary formatting, ndigits)",
+          "status": "in_progress"
+        },
+        {
+          "description": "Add package exports and install metadata",
+          "status": "pending"
+        },
+        {
+          "description": "Validate behavior against expected humanize outputs and edge cases",
+          "status": "pending"
+        }
+      ]
+    }
+  ],
+  "checks": [],
+  "diff_path": "/home/ry/Public/Primuus-Agent/runs/real-memory-2026-09-29-clean/sessions/3153fab06672/diff.patch",
+  "trace_path": "/home/ry/Public/Primuus-Agent/runs/real-memory-2026-09-29-clean/sessions/3153fab06672/trace.jsonl"
+}

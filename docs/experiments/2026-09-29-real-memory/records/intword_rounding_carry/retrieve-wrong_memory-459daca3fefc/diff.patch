@@ -1,0 +1,17 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index ebccfb9..14f9f59 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -282,8 +282,10 @@ def intword(value: NumberOrString, format: str = "%.1f") -> str:
+     chopped = value / power
+     rounded_value = float(format % chopped)
+ 
+-    if not largest_ordinal and rounded_value * power == powers[ordinal + 1]:
+-        # After rounding, we end up just at the next power
++    if not largest_ordinal and rounded_value == powers[ordinal + 1] / power:
++        # After rounding, we end up just at the next power. Compare against the
++        # ratio of the two powers rather than `rounded_value * power`, because the
++        # multiplication loses precision in floating point for large powers.
+         ordinal += 1
+         rounded_value = 1.0
+ 

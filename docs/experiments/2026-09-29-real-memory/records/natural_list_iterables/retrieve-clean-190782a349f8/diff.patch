@@ -1,0 +1,88 @@
+diff --git a/src/humanize/lists.py b/src/humanize/lists.py
+index 525f0e3..7021b4e 100644
+--- a/src/humanize/lists.py
++++ b/src/humanize/lists.py
+@@ -4,15 +4,15 @@ from __future__ import annotations
+ 
+ TYPE_CHECKING = False
+ if TYPE_CHECKING:
+-    from typing import Any
++    from typing import Any, Iterable
+ 
+ __all__ = ["natural_list"]
+ 
+ 
+-def natural_list(items: list[Any]) -> str:
++def natural_list(items: Iterable[Any]) -> str:
+     """Natural list.
+ 
+-    Convert a list of items into a human-readable string with commas and 'and'.
++    Convert an iterable of items into a human-readable string with commas and 'and'.
+ 
+     Examples:
+         >>> natural_list(["one", "two", "three"])
+@@ -23,11 +23,12 @@ def natural_list(items: list[Any]) -> str:
+         'one'
+ 
+     Args:
+-        items (list): An iterable of items.
++        items (Iterable): A finite iterable of items.
+ 
+     Returns:
+         str: A string with commas and 'and' in the right places.
+     """
++    items = list(items)
+     if not items:
+         return ""
+     if len(items) == 1:
+diff --git a/tests/test_lists.py b/tests/test_lists.py
+index cc514f3..b827f95 100644
+--- a/tests/test_lists.py
++++ b/tests/test_lists.py
+@@ -1,5 +1,7 @@
+ from __future__ import annotations
+ 
++import typing
++
+ import pytest
+ 
+ import humanize
+@@ -18,7 +20,35 @@ import humanize
+         ([[1, "two"]], "1 and two"),
+     ],
+ )
+-def test_natural_list(
+-    test_args: list[str] | list[int] | list[str | int], expected: str
+-) -> None:
++def test_natural_list(test_args: list[typing.Any], expected: str) -> None:
+     assert humanize.natural_list(*test_args) == expected
++
++
++def test_natural_list_accepts_iterables() -> None:
++    assert humanize.natural_list(("one", "two", "three")) == "one, two and three"
++    assert humanize.natural_list(("one",)) == "one"
++    assert humanize.natural_list(range(3)) == "0, 1 and 2"
++    assert humanize.natural_list(iter(["one", "two"])) == "one and two"
++    assert humanize.natural_list(iter(())) == ""
++
++
++def test_natural_list_accepts_mapping_key_views() -> None:
++    assert humanize.natural_list({"a": 1, "b": 2}.keys()) == "a and b"
++    assert humanize.natural_list({"a": 1, "b": 2, "c": 3}.keys()) == "a, b and c"
++
++
++def test_natural_list_stringifies_each_item_once() -> None:
++    calls: list[str] = []
++
++    class Item:
++        def __init__(self, value: str) -> None:
++            self.value = value
++
++        def __str__(self) -> str:
++            calls.append(self.value)
++            return self.value
++
++    assert humanize.natural_list([Item("one"), Item("two"), Item("three")]) == (
++        "one, two and three"
++    )
++    assert calls == ["one", "two", "three"]
