@@ -3,6 +3,7 @@
 from copy import deepcopy
 from datetime import datetime
 from hashlib import sha256
+from io import BytesIO
 import json
 import os
 from pathlib import Path
@@ -11,6 +12,7 @@ from shutil import copyfile
 from statistics import mean
 import subprocess
 from tempfile import TemporaryDirectory
+import tarfile
 
 from coding_agent.models.base import ModelBackend
 from coding_agent.session.app import RepositorySession
@@ -48,16 +50,17 @@ def _verify(workspace: Path, code: str) -> dict:
 
 
 def _prepare_source(output_dir: Path, manifest: dict) -> tuple[Path, list[dict]]:
+    reference = output_dir / "reference"
     source = output_dir / "repository"
     subprocess.run(
-        ["git", "clone", "--quiet", "--filter=blob:none", manifest["repository"], str(source)],
+        ["git", "clone", "--quiet", "--filter=blob:none", manifest["repository"], str(reference)],
         check=True, capture_output=True, text=True,
     )
     preflight = []
     for task in manifest["tasks"]:
         with TemporaryDirectory(prefix="primuus-memory-preflight-") as directory:
             worktree = Path(directory) / "repo"
-            _git(source, "worktree", "add", "--detach", "--quiet", str(worktree), task["base_commit"])
+            _git(reference, "worktree", "add", "--detach", "--quiet", str(worktree), task["base_commit"])
             try:
                 for name, content in manifest["generated_files"].items():
                     path = worktree / name
@@ -70,8 +73,15 @@ def _prepare_source(output_dir: Path, manifest: dict) -> tuple[Path, list[dict]]
                     raise ValueError(f"Verifier does not separate base and fix for {task['id']}: {before}, {after}")
                 preflight.append({"task_id": task["id"], "base_fails": True, "reference_passes": True})
             finally:
-                _git(source, "worktree", "remove", "--force", str(worktree))
-    _git(source, "checkout", "--detach", manifest["starting_commit"])
+                _git(reference, "worktree", "remove", "--force", str(worktree))
+    archive = subprocess.run(
+        ["git", "-C", str(reference), "archive", manifest["starting_commit"]],
+        check=True, capture_output=True,
+    ).stdout
+    source.mkdir()
+    with tarfile.open(fileobj=BytesIO(archive)) as tar:
+        tar.extractall(source, filter="data")
+    subprocess.run(["git", "init", "--quiet", str(source)], check=True, capture_output=True)
     for name, content in manifest["generated_files"].items():
         path = source / name
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -82,9 +92,9 @@ def _prepare_source(output_dir: Path, manifest: dict) -> tuple[Path, list[dict]]
     return source, preflight
 
 
-def _advance(source: Path, task: dict) -> str:
+def _advance(reference: Path, source: Path, task: dict) -> str:
     patch = subprocess.run(
-        ["git", "-C", str(source), "diff", "--binary", task["base_commit"], task["next_commit"]],
+        ["git", "-C", str(reference), "diff", "--binary", task["base_commit"], task["next_commit"]],
         check=True, capture_output=True,
     ).stdout
     _git(source, "apply", "--binary", input_bytes=patch)
@@ -248,7 +258,7 @@ def compare_memory_series(manifest_path: Path, config: dict, output_dir: Path,
             _write_json(report_path, report)
             print(json.dumps({"task": task["id"], "mode": mode, "success": run["success"],
                               "steps": run["steps"], "memory_ids": run["memory_ids"]}), flush=True)
-        _advance(source, task)
+        _advance(output_dir / "reference", source, task)
         report["completed_tasks"].append(task["id"])
         _write_json(report_path, report)
 
