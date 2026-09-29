@@ -87,7 +87,7 @@ class SessionRunner:
             if monotonic() - started >= self.timeout_seconds:
                 state.finish("timeout")
                 return state
-            if self.max_tokens is not None and state.tokens is not None and state.tokens >= self.max_tokens:
+            if self.max_tokens is not None and state.known_tokens >= self.max_tokens:
                 state.finish("token_budget")
                 return state
             if self.context_max_chars is not None:

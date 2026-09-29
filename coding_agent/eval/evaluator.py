@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import subprocess
+from collections import Counter
 from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -248,6 +249,141 @@ def run_baseline(
             report_path.write_text(json.dumps(summarize(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             print(f"{path.name} repeat {repetition}/{repeats}: {result.stop_reason} ",
                   f"steps={result.steps} tokens={result.tokens}", flush=True)
+    return summarize()
+
+
+def run_recovery_comparison(
+    task_paths: list[Path], make_model, config: dict, output_dir: Path, repeats: int,
+) -> dict:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    manifest_path = output_dir / "manifest.json"
+    report_path = output_dir / "report.json"
+    fixed = {
+        "code_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+        "base_config": config,
+        "task_digests": {path.name: task_digest(path) for path in task_paths},
+        "task_order": [path.name for path in task_paths],
+        "repeats": repeats,
+        "variant_order": "off/on for odd repetitions, on/off for even repetitions",
+    }
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if manifest != fixed:
+            raise ValueError("Comparison manifest differs from the current code, tasks, or config")
+        trials = json.loads(report_path.read_text(encoding="utf-8"))["trials"]
+    else:
+        if any(output_dir.iterdir()):
+            raise ValueError("Comparison output directory must be empty")
+        manifest_path.write_text(json.dumps(fixed, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        trials = []
+
+    def trace_metrics(path: Path) -> dict:
+        events = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        calls = [
+            json.dumps((event["data"]["name"], event["data"]["arguments"]), sort_keys=True)
+            for event in events if event["event_type"] == "tool_started"
+        ]
+        counts = Counter(calls)
+        actions = Counter(
+            event["data"]["kind"] for event in events
+            if event["event_type"] == "recovery_action"
+        )
+        return {
+            "repeated_tool_calls": sum(count - 1 for count in counts.values() if count > 1),
+            "recovery_actions": dict(actions),
+            "observed_turn_tokens": sum(
+                (event["data"]["response"]["input_tokens"] or 0)
+                + (event["data"]["response"]["output_tokens"] or 0)
+                for event in events if event["event_type"] == "model_action"
+            ),
+            "unmeasured_model_requests": sum(
+                event["event_type"] == "failure_detected" and event["data"]["category"] == "model_service"
+                for event in events
+            ),
+        }
+
+    def summarize() -> dict:
+        variants = {}
+        for variant in ("off", "on"):
+            group = [trial for trial in trials if trial["variant"] == variant]
+            results = [trial["result"] for trial in group]
+            count = len(results)
+            known_tokens = [result["tokens"] for result in results if result["tokens"] is not None]
+            with_failures = [result for result in results if result["failure_counts"]]
+            variants[variant] = {
+                "runs": count,
+                "successes": sum(result["success"] for result in results),
+                "success_rate": sum(result["success"] for result in results) / count if count else None,
+                "success_after_detected_failure": sum(result["success"] for result in with_failures),
+                "runs_with_detected_failure": len(with_failures),
+                "avg_steps": sum(result["steps"] for result in results) / count if count else None,
+                "avg_tool_calls": sum(result["tool_calls"] for result in results) / count if count else None,
+                "avg_failed_tool_calls": sum(result["failed_tool_calls"] for result in results) / count if count else None,
+                "avg_repeated_tool_calls": sum(trial["trace_metrics"]["repeated_tool_calls"] for trial in group) / count if count else None,
+                "avg_tokens": sum(known_tokens) / count if len(known_tokens) == count and count else None,
+                "known_token_runs": len(known_tokens),
+                "known_token_total": sum(known_tokens),
+                "observed_turn_token_total": sum(trial["trace_metrics"]["observed_turn_tokens"] for trial in group),
+                "unmeasured_model_requests": sum(trial["trace_metrics"]["unmeasured_model_requests"] for trial in group),
+                "avg_latency_seconds": sum(result["latency_seconds"] for result in results) / count if count else None,
+                "manual_interventions": sum(result["manual_interventions"] for result in results),
+                "stop_reasons": dict(Counter(result["stop_reason"] for result in results)),
+                "recovery_actions": dict(sum(
+                    (Counter(trial["trace_metrics"]["recovery_actions"]) for trial in group), Counter()
+                )),
+            }
+        matched = []
+        for repetition in range(1, repeats + 1):
+            for path in task_paths:
+                pair = {
+                    variant: next((trial for trial in trials if trial["task_id"] == path.name
+                                   and trial["repetition"] == repetition and trial["variant"] == variant), None)
+                    for variant in ("off", "on")
+                }
+                if all(pair.values()):
+                    matched.append({
+                        "task_id": path.name,
+                        "repetition": repetition,
+                        "off": {"run_id": pair["off"]["result"]["run_id"], "success": pair["off"]["result"]["success"]},
+                        "on": {"run_id": pair["on"]["result"]["run_id"], "success": pair["on"]["result"]["success"]},
+                    })
+        return {
+            "status": "complete" if len(trials) == 2 * repeats * len(task_paths) else "running",
+            "run_count": len(trials),
+            "planned_runs": 2 * repeats * len(task_paths),
+            "completed_pairs": len(matched),
+            "variants": variants,
+            "pairs": matched,
+            "trials": trials,
+        }
+
+    if not report_path.exists():
+        report_path.write_text(json.dumps(summarize(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    completed = {(trial["task_id"], trial["repetition"], trial["variant"]) for trial in trials}
+    for repetition in range(1, repeats + 1):
+        for path in task_paths:
+            order = ("off", "on") if repetition % 2 else ("on", "off")
+            for variant in order:
+                if (path.name, repetition, variant) in completed:
+                    continue
+                variant_config = deepcopy(config)
+                variant_config["recovery"]["enabled"] = variant == "on"
+                result = run_task(path, make_model(), variant_config, output_dir / "records")
+                run_id = result.run_id
+                trials.append({
+                    "task_id": path.name,
+                    "repetition": repetition,
+                    "variant": variant,
+                    "result": asdict(result),
+                    "trace_metrics": trace_metrics(output_dir / "records" / run_id / "trace.jsonl"),
+                    "artifacts": {
+                        name: f"records/{run_id}/{name}"
+                        for name in ("trace.jsonl", "diff.patch", "verification.json", "result.json", "config.json")
+                    },
+                })
+                report_path.write_text(json.dumps(summarize(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                print(f"{path.name} repeat {repetition}/{repeats} {variant}: {result.stop_reason} ",
+                      f"steps={result.steps} tokens={result.tokens}", flush=True)
     return summarize()
 
 

@@ -58,6 +58,8 @@ python3 -m coding_agent compare tasks --repeats 3
 
 真实仓库任务的重复基线使用固定的[阶段 O 配置](config/real-baseline-2026-09-28.json)：`python3 -m coding_agent baseline tasks/real --config config/real-baseline-2026-09-28.json --output-dir experiments/2026-09-28-real-baseline --repeats 3`。输出目录保存固定条件的 `manifest.json`、逐次更新的 `report.json` 和各题独立产物；命令中断后用相同参数重跑会继续未完成的次数。运行时仍需在环境中提供 `DEEPSEEK_API_KEY`。本次 30 次真实模型运行的结果见[节点 O 实施记录](docs/completed/节点O-真实模型基线实施记录.md)和[原始汇总](experiments/2026-09-28-real-baseline/report.json)，19 次失败的逐例分析见[节点 P 实施记录](docs/completed/节点P-失败分类实施记录.md)。
 
+真实任务上的恢复对照使用[阶段 Q 配置](config/real-recovery-2026-09-29.json)：`python3 -m coding_agent compare-recovery tasks/real --config config/real-recovery-2026-09-29.json --output-dir experiments/2026-09-29-real-recovery --repeats 3`。同一任务每轮各运行一次 Recovery OFF/ON，顺序逐轮交替；每次运行后保存报告和五类产物，相同参数可续跑未完成的次数。
+
 ## 在普通仓库中工作
 
 从本项目目录运行以下命令，仓库路径指向要修改的 Git 仓库：

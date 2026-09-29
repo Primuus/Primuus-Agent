@@ -48,6 +48,13 @@ class SessionState:
         return self.stop_reason in ("verified", "completed")
 
     @property
+    def known_tokens(self) -> int:
+        return sum(
+            (turn.response.input_tokens or 0) + (turn.response.output_tokens or 0)
+            for turn in self.turns
+        )
+
+    @property
     def tool_calls(self) -> int:
         return sum(len(turn.response.tool_calls) for turn in self.turns)
 
