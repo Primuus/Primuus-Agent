@@ -165,7 +165,11 @@ def _run_variant(source: Path, task: dict, mode: str, config: dict,
     metrics = _trace_metrics(trace, prior_reads, prior_discoveries, diff)
     memory_context = next((event["data"] for event in trace if event["event_type"] == "memory_context_set"),
                           {"entries": []})
-    artifact_dir = output_dir / "records" / task["id"] / f"{mode}-{label}"
+    service_error = next((event["data"]["message"] for event in reversed(trace)
+                          if event["event_type"] == "failure_detected"
+                          and event["data"]["category"] == "model_service"
+                          and not event["data"]["retryable"]), None)
+    artifact_dir = output_dir / "records" / task["id"] / f"{mode}-{label}-{result['session_id']}"
     artifact_dir.mkdir(parents=True)
     for name in ("session.json", "result.json", "trace.jsonl", "diff.patch", "status.txt"):
         copyfile(session.repository.session_dir / name, artifact_dir / name)
@@ -174,6 +178,7 @@ def _run_variant(source: Path, task: dict, mode: str, config: dict,
         "task_id": task["id"], "mode": mode, "label": label,
         "source_commit": result["base_commit"], "session_id": result["session_id"],
         "model_id": model.model_id, "success": verifier["passed"],
+        "service_error": service_error,
         "stop_reason": result["stop_reason"], "project_checks_passed": bool(result["checks"]) and all(
             check["status"] == "completed" and check["exit_code"] == 0 for check in result["checks"]),
         "steps": result["steps"], "tool_calls": result["tool_calls"],
@@ -223,6 +228,10 @@ def compare_memory_series(manifest_path: Path, config: dict, output_dir: Path,
         if report["manifest_sha256"] != sha256(manifest_path.read_bytes()).hexdigest():
             raise ValueError("Manifest changed during an unfinished comparison")
         source = output_dir / "repository"
+        if report["status"] == "completed":
+            return report
+        report["status"] = "running"
+        _write_json(report_path, report)
     else:
         source, preflight = _prepare_source(output_dir, manifest)
         report = {
@@ -253,6 +262,16 @@ def compare_memory_series(manifest_path: Path, config: dict, output_dir: Path,
                 MemoryStore(memory_dir).snapshot_to(output_dir / "snapshots" / task["id"] / mode)
             run = _run_variant(source, task, mode, config, output_dir, sessions_dir,
                                make_model(), report["runs"], memory_dir, "clean")
+            if run["service_error"] is not None:
+                if mode != "off":
+                    copyfile(output_dir / "snapshots" / task["id"] / mode / "memory.sqlite3",
+                             memory_dir / "memory.sqlite3")
+                report.setdefault("service_interruptions", []).append(run)
+                report["status"] = "interrupted_model_service"
+                _write_json(report_path, report)
+                print(json.dumps({"status": report["status"], "task": task["id"],
+                                  "mode": mode, "error": run["service_error"]}), flush=True)
+                return report
             report["runs"].append(run)
             report["aggregates"] = _aggregate(report["runs"])
             _write_json(report_path, report)
@@ -283,6 +302,14 @@ def compare_memory_series(manifest_path: Path, config: dict, output_dir: Path,
         )
         run = _run_variant(source, probe, mode, config, output_dir, sessions_dir,
                            make_model(), report["runs"], poisoned, "wrong_memory")
+        if run["service_error"] is not None:
+            report.setdefault("service_interruptions", []).append(run)
+            report["status"] = "interrupted_model_service"
+            _git(source, "checkout", "--detach", "--force", final_head)
+            _write_json(report_path, report)
+            print(json.dumps({"status": report["status"], "task": probe["id"],
+                              "mode": mode, "error": run["service_error"]}), flush=True)
+            return report
         report["runs"].append(run)
         _write_json(report_path, report)
         print(json.dumps({"task": probe["id"], "mode": mode, "label": "wrong_memory",

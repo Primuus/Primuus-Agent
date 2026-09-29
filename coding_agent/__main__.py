@@ -234,6 +234,8 @@ def main() -> None:
             arguments.sessions_dir.resolve(), make_model,
         )
         print(json.dumps({"status": report["status"], "run_count": len(report["runs"])}))
+        if report["status"] != "completed":
+            raise SystemExit(2)
         return
     if arguments.command == "parallel":
         if arguments.tasks_file is None or arguments.output_dir is None:
