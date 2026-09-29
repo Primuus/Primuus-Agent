@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 
 from coding_agent.eval.evaluator import compare_batch, run_baseline, run_batch, run_recovery_comparison, run_task
 from coding_agent.eval.memory_compare import compare_memory
+from coding_agent.eval.memory_series import compare_memory_series
 from coding_agent.models.factory import create_model
 from coding_agent.session.app import RepositorySession
 from coding_agent.session.memory import MEMORY_KINDS, MemoryStore, repository_identity
@@ -19,7 +20,7 @@ from coding_agent.session.parallel import run_parallel
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the coding agent")
     parser.add_argument("command", choices=[
-        "run", "batch", "baseline", "compare", "compare-recovery", "compare-memory", "parallel", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
+        "run", "batch", "baseline", "compare", "compare-recovery", "compare-memory", "compare-memory-series", "parallel", "exec", "ci", "chat", "resume", "inspect", "pause", "snapshot", "restore",
         "memory-add", "memory-list", "memory-update", "memory-remove", "memory-history",
     ])
     parser.add_argument("path", type=Path, help="Task path, Git repository, or session ID")
@@ -58,8 +59,8 @@ def main() -> None:
     parser.add_argument("--config", type=Path, default=Path("config/default.json"))
     arguments = parser.parse_args()
     default_memory_dir = Path.home() / ".local/state/primuus-agent/memory"
-    if arguments.output_dir is not None and arguments.command not in ("baseline", "compare-recovery", "ci", "compare-memory", "parallel"):
-        parser.error("--output-dir is only available with baseline, compare-recovery, ci, compare-memory or parallel")
+    if arguments.output_dir is not None and arguments.command not in ("baseline", "compare-recovery", "ci", "compare-memory", "compare-memory-series", "parallel"):
+        parser.error("--output-dir is only available with baseline, compare-recovery, ci, compare-memory, compare-memory-series or parallel")
     if arguments.tasks_file is not None and arguments.command != "parallel":
         parser.error("--tasks-file is only available with parallel")
     config = json.loads(arguments.config.read_text(encoding="utf-8"))
@@ -98,7 +99,7 @@ def main() -> None:
         if (arguments.instruction_file or arguments.skill or arguments.hooks_file
             or arguments.mcp_config or arguments.memory_mode or arguments.memory_dir):
             parser.error("project instructions, skills, Hooks, MCP and memory settings are available when creating a session")
-    elif arguments.command in ("exec", "ci", "chat", "compare-memory", "parallel"):
+    elif arguments.command in ("exec", "ci", "chat", "compare-memory", "compare-memory-series", "parallel"):
         if arguments.command == "compare-memory" and arguments.memory_mode:
             parser.error("compare-memory selects all three memory modes")
         config["memory"]["mode"] = arguments.memory_mode or config["memory"]["mode"]
@@ -107,7 +108,7 @@ def main() -> None:
         parser.error("memory settings are available for repository sessions")
     if arguments.max_steps is not None:
         config["max_steps"] = arguments.max_steps
-    elif arguments.command in ("exec", "ci", "chat", "compare-memory", "parallel"):
+    elif arguments.command in ("exec", "ci", "chat", "compare-memory", "compare-memory-series", "parallel"):
         config["max_steps"] = config["repository_max_steps"]
     if arguments.image:
         config["sandbox"]["image"] = arguments.image
@@ -220,6 +221,19 @@ def main() -> None:
             arguments.repeats,
         )
         print(json.dumps(report, ensure_ascii=False, indent=2))
+        return
+    if arguments.command == "compare-memory-series":
+        if arguments.output_dir is None or arguments.approval_mode:
+            parser.error("compare-memory-series requires --output-dir and uses auto approval")
+        if config["recovery"]["enabled"]:
+            parser.error("compare-memory-series requires recovery disabled in the base config")
+        if not os.getenv(config["model"]["api_key_env"]):
+            parser.error("compare-memory-series requires the configured model API key in the environment")
+        report = compare_memory_series(
+            arguments.path, config, arguments.output_dir.resolve(),
+            arguments.sessions_dir.resolve(), make_model,
+        )
+        print(json.dumps({"status": report["status"], "run_count": len(report["runs"])}))
         return
     if arguments.command == "parallel":
         if arguments.tasks_file is None or arguments.output_dir is None:
