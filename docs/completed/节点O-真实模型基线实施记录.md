@@ -9,7 +9,7 @@
 | 模型 | DeepSeek `deepseek-flash`；运行前后 `/models` 均返回 `DeepSeek-V4.1-Flash`，见[版本检查](../../experiments/2026-09-28-real-baseline/api_model_checks.json) |
 | 恢复、记忆、并行 | 均关闭；不启用技能、Hook 或 MCP 工具 |
 | 仓库与任务 | `tasks/real/real_001`～`real_010`；各题固定源码快照和任务摘要见清单 |
-| 工具集 | 固定代码提交中的 Session Runner、Repository Tools、Sandbox、Verifier 和 Evaluation |
+| 工具集 | Session Runner 实际向模型提供 `read_file`、`write_file`、`run_shell` 三种基础工具；同一执行器虽实现更多仓库工具，评测入口当时没有将它们加入模型工具清单 |
 | 预算 | 最多 80 步、120,000 Token；上下文字符预算 60,000 |
 | 超时 | 任务 1,800 秒、工具 60 秒、Verifier 30 秒 |
 | 沙箱 | 镜像 ID `sha256:4217cbc4df372b696f659c9f25d32dccbc52b4c33ddb8e8c2008c0aa8ae1f163`，1 CPU、512 MiB、容器断网 |
@@ -52,4 +52,4 @@
 
 正式运行时的补丁导出包含测试产生的 Python 缓存文件，并对新增文件保留了工作区路径。运行结束后仅规范化 30 份 `diff.patch`：移除缓存差异、改为仓库相对路径；原始与规范化后的 SHA-256、移除数量及可应用性见[产物规范化记录](../../experiments/2026-09-28-real-baseline/artifact_normalization.json)。Trace、Verifier 结果、运行配置和统计结果没有改动。后续运行的补丁导出逻辑已在提交 `df4a820` 修复；本次基线统计仍对应上述运行代码提交。
 
-节点 O 的验收项已完成。失败原因的细分和恢复策略的对照实验留待后续阶段。
+节点 O 的运行次数、记录与报告等产物验收项已完成；这组数据代表三工具基线，未测量完整仓库工具集。工具集的实际范围由运行代码和 Trace 核对；后续对照必须沿用这三种工具，或为扩展工具集重新建立成对基线。失败原因的细分见[节点 P 实施记录](节点P-失败分类实施记录.md)。

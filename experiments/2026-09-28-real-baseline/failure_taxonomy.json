@@ -1,0 +1,462 @@
+{
+  "source_evidence": "failure_evidence.json",
+  "classification_rule": "Primary category is the observed terminal mechanism. Process pattern records the dominant visible activity before termination; it does not assert an independent root cause. Candidate recovery points are untested.",
+  "cases": [
+    {
+      "task_id": "real_002",
+      "repetition": 1,
+      "run_id": "20260928T141155-real_002-c59d65bb",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 12,
+      "relevant_trace": {
+        "path": "records/20260928T141155-real_002-c59d65bb/trace.jsonl",
+        "line": 48
+      },
+      "final_diff": "records/20260928T141155-real_002-c59d65bb/diff.patch",
+      "observed_cause": "读过 number.py 与数值测试后，又查询文档、版本和仓库历史；直到预算终止仍未修改源码。",
+      "potential_recovery_point": {
+        "step": 5,
+        "action": "在完成源码与测试定位后，先针对进位边界尝试最小修改，再用现有检查验证。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 0,
+        "path_rejections": 1,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "Reference Search After Localization"
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 1,
+      "run_id": "20260928T141233-real_003-87920d9b",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 10,
+      "relevant_trace": {
+        "path": "records/20260928T141233-real_003-87920d9b/trace.jsonl",
+        "line": 41
+      },
+      "final_diff": "records/20260928T141233-real_003-87920d9b/diff.patch",
+      "observed_cause": "已读取 number.py 和数值测试并执行大整数探针，之后再次读取源码与测试；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 3,
+        "action": "在复现超大整数行为后，直接修改 intcomma 并检查大整数用例。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 1,
+        "path_rejections": 0,
+        "git_shell_calls": 0
+      },
+      "process_pattern": "Source and Test Investigation"
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 1,
+      "run_id": "20260928T141317-real_005-ca1326cc",
+      "failure_category": "Model Service Failure",
+      "critical_step": 5,
+      "relevant_trace": {
+        "path": "records/20260928T141317-real_005-ca1326cc/trace.jsonl",
+        "line": 30
+      },
+      "final_diff": "records/20260928T141317-real_005-ca1326cc/diff.patch",
+      "observed_cause": "读取 parser/tokenizer 并运行需求与标记探针后，模型 API 响应截断；本次无源码差异。",
+      "potential_recovery_point": {
+        "step": 5,
+        "action": "在截断事件处保留会话状态，有限重试同一模型请求。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 0,
+        "path_rejections": 2,
+        "git_shell_calls": 0
+      },
+      "process_pattern": "Service Response Truncated"
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 1,
+      "run_id": "20260928T141350-real_006-9a420b7b",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 11,
+      "relevant_trace": {
+        "path": "records/20260928T141350-real_006-9a420b7b/trace.jsonl",
+        "line": 60
+      },
+      "final_diff": "records/20260928T141350-real_006-9a420b7b/diff.patch",
+      "observed_cause": "读取 markers、requirements、parser 与测试，并反复查看序列化相关位置；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 5,
+        "action": "在 Value.serialize 及引号测试定位后，尝试序列化修复并验证。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 3,
+        "path_rejections": 2,
+        "git_shell_calls": 2
+      },
+      "process_pattern": "Parser Rule Investigation"
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 1,
+      "run_id": "20260928T141615-real_009-ac2e8e2b",
+      "failure_category": "Model Service Failure",
+      "critical_step": 6,
+      "relevant_trace": {
+        "path": "records/20260928T141615-real_009-ac2e8e2b/trace.jsonl",
+        "line": 40
+      },
+      "final_diff": "records/20260928T141615-real_009-ac2e8e2b/diff.patch",
+      "observed_cause": "读取 ioutils 与测试并做流对象探针后，模型 API 响应截断；本次无源码差异。",
+      "potential_recovery_point": {
+        "step": 6,
+        "action": "在截断事件处有限重试模型请求，沿用已定位的目标类。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 0,
+        "path_rejections": 1,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "Service Response Truncated"
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 1,
+      "run_id": "20260928T141653-real_010-0b2bf0e7",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 9,
+      "relevant_trace": {
+        "path": "records/20260928T141653-real_010-0b2bf0e7/trace.jsonl",
+        "line": 55
+      },
+      "final_diff": "records/20260928T141653-real_010-0b2bf0e7/diff.patch",
+      "observed_cause": "已读取 listutils、setutils 与对应测试，随后运行多组跨模块探针；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 4,
+        "action": "在两处目标实现定位后，分别尝试局部修改并运行目标检查。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 2,
+        "path_rejections": 4,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "Cross-Module Behavior Probing"
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 2,
+      "run_id": "20260928T141736-real_002-c2cd70b1",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 10,
+      "relevant_trace": {
+        "path": "records/20260928T141736-real_002-c2cd70b1/trace.jsonl",
+        "line": 53
+      },
+      "final_diff": "records/20260928T141736-real_002-c2cd70b1/diff.patch",
+      "observed_cause": "读过 number.py 与数值测试后，继续查找仓库历史、外部包和相关文档；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 3,
+        "action": "在定位 intword 与测试位置后，尝试并验证进位修复。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 0,
+        "path_rejections": 1,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "Reference Search After Localization"
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 2,
+      "run_id": "20260928T141819-real_003-cccbbcbc",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 8,
+      "relevant_trace": {
+        "path": "records/20260928T141819-real_003-cccbbcbc/trace.jsonl",
+        "line": 36
+      },
+      "final_diff": "records/20260928T141819-real_003-cccbbcbc/diff.patch",
+      "observed_cause": "已读取 number.py 和测试，运行项目检查与格式化探针后继续检索源码；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 4,
+        "action": "在格式化探针揭示问题后，尝试 intcomma 的局部修复。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 1,
+        "path_rejections": 0,
+        "git_shell_calls": 2
+      },
+      "process_pattern": "Source and Test Investigation"
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 2,
+      "run_id": "20260928T141911-real_005-bef849c4",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 10,
+      "relevant_trace": {
+        "path": "records/20260928T141911-real_005-bef849c4/trace.jsonl",
+        "line": 57
+      },
+      "final_diff": "records/20260928T141911-real_005-bef849c4/diff.patch",
+      "observed_cause": "一次读取 tokenizer、parser、requirements、markers 四个文件，随后继续做正则与尾换行探针；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 4,
+        "action": "在规则和尾换行行为确认后，修改解析入口或终止规则并验证。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 3,
+        "path_rejections": 4,
+        "git_shell_calls": 0
+      },
+      "process_pattern": "Parser Rule Investigation"
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 2,
+      "run_id": "20260928T141938-real_006-03d6c3d0",
+      "failure_category": "Model Service Failure",
+      "critical_step": 4,
+      "relevant_trace": {
+        "path": "records/20260928T141938-real_006-03d6c3d0/trace.jsonl",
+        "line": 29
+      },
+      "final_diff": "records/20260928T141938-real_006-03d6c3d0/diff.patch",
+      "observed_cause": "读取 markers/requirements 后，继续读取 parser/tokenizer 时模型 API 响应截断；本次无源码差异。",
+      "potential_recovery_point": {
+        "step": 4,
+        "action": "在截断事件处有限重试模型请求，保留已有读取结果。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 0,
+        "path_rejections": 3,
+        "git_shell_calls": 0
+      },
+      "process_pattern": "Service Response Truncated"
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 2,
+      "run_id": "20260928T142114-real_009-d7d588de",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 9,
+      "relevant_trace": {
+        "path": "records/20260928T142114-real_009-d7d588de/trace.jsonl",
+        "line": 41
+      },
+      "final_diff": "records/20260928T142114-real_009-d7d588de/diff.patch",
+      "observed_cause": "读取 ioutils 与测试并探查标准库流对象；第 9 步试图写入工作区外的 /tmp/patch.txt 被拒绝，预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 8,
+        "action": "在定位 ioutils 后直接编辑仓库内目标文件，并验证字节写入与文本定位。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 1,
+        "path_rejections": 2,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "I/O Behavior Probing"
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 2,
+      "run_id": "20260928T142209-real_010-b675b5ce",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 9,
+      "relevant_trace": {
+        "path": "records/20260928T142209-real_010-b675b5ce/trace.jsonl",
+        "line": 47
+      },
+      "final_diff": "records/20260928T142209-real_010-b675b5ce/diff.patch",
+      "observed_cause": "已读取 listutils、setutils 与测试，执行跨模块探针并再次读源码；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 4,
+        "action": "在两处目标实现定位后，修改边界逻辑并验证两个模块。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 2,
+        "path_rejections": 1,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "Cross-Module Behavior Probing"
+    },
+    {
+      "task_id": "real_002",
+      "repetition": 3,
+      "run_id": "20260928T142321-real_002-8c290152",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 9,
+      "relevant_trace": {
+        "path": "records/20260928T142321-real_002-8c290152/trace.jsonl",
+        "line": 46
+      },
+      "final_diff": "records/20260928T142321-real_002-8c290152/diff.patch",
+      "observed_cause": "读过 number.py、测试并运行数值探针，随后继续找历史版本与参考资料；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 4,
+        "action": "在数值探针确认边界行为后，修改 intword 并运行目标检查。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 2,
+        "path_rejections": 1,
+        "git_shell_calls": 2
+      },
+      "process_pattern": "Reference Search After Localization"
+    },
+    {
+      "task_id": "real_003",
+      "repetition": 3,
+      "run_id": "20260928T142402-real_003-3e9ad69a",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 12,
+      "relevant_trace": {
+        "path": "records/20260928T142402-real_003-3e9ad69a/trace.jsonl",
+        "line": 49
+      },
+      "final_diff": "records/20260928T142402-real_003-3e9ad69a/diff.patch",
+      "observed_cause": "已定位 intcomma、读取测试并运行大整数探针，最后再次读取 number.py；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 7,
+        "action": "在目标检查与探针完成后，修改 intcomma，再验证边界输入。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 0,
+        "path_rejections": 1,
+        "git_shell_calls": 0
+      },
+      "process_pattern": "Source and Test Investigation"
+    },
+    {
+      "task_id": "real_005",
+      "repetition": 3,
+      "run_id": "20260928T142457-real_005-09e9aceb",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 11,
+      "relevant_trace": {
+        "path": "records/20260928T142457-real_005-09e9aceb/trace.jsonl",
+        "line": 53
+      },
+      "final_diff": "records/20260928T142457-real_005-09e9aceb/diff.patch",
+      "observed_cause": "读取 parser/tokenizer 与相关测试、复现尾换行行为后继续查询环境和源码；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 8,
+        "action": "在复现目标输入后，修改相关终止规则并运行需求与标记检查。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 4,
+        "path_rejections": 2,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "Parser Rule Investigation"
+    },
+    {
+      "task_id": "real_006",
+      "repetition": 3,
+      "run_id": "20260928T142516-real_006-2fcc0ddd",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 9,
+      "relevant_trace": {
+        "path": "records/20260928T142516-real_006-2fcc0ddd/trace.jsonl",
+        "line": 58
+      },
+      "final_diff": "records/20260928T142516-real_006-2fcc0ddd/diff.patch",
+      "observed_cause": "读取 markers、requirements、parser 和测试后，继续检索引号与序列化逻辑并重复读 markers；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 6,
+        "action": "在定位 Value.serialize 后，进行局部修改并验证引号往返行为。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 5,
+        "path_rejections": 2,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "Parser Rule Investigation"
+    },
+    {
+      "task_id": "real_008",
+      "repetition": 3,
+      "run_id": "20260928T142618-real_008-a736d2ed",
+      "failure_category": "Model Service Failure",
+      "critical_step": 10,
+      "relevant_trace": {
+        "path": "records/20260928T142618-real_008-a736d2ed/trace.jsonl",
+        "line": 47
+      },
+      "final_diff": "records/20260928T142618-real_008-a736d2ed/diff.patch",
+      "observed_cause": "读取 jsonutils 和测试，运行相对定位探针与项目检查后模型 API 响应截断；本次无源码差异。",
+      "potential_recovery_point": {
+        "step": 10,
+        "action": "在截断事件处有限重试模型请求，沿用已有探针结果。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 0,
+        "path_rejections": 1,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "Service Response Truncated"
+    },
+    {
+      "task_id": "real_009",
+      "repetition": 3,
+      "run_id": "20260928T142806-real_009-e2d9575a",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 10,
+      "relevant_trace": {
+        "path": "records/20260928T142806-real_009-e2d9575a/trace.jsonl",
+        "line": 47
+      },
+      "final_diff": "records/20260928T142806-real_009-e2d9575a/diff.patch",
+      "observed_cause": "读取 ioutils 与测试后继续探查标准库流对象，最后再次读取 ioutils；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 3,
+        "action": "在目标类和测试定位后，先修改 ioutils，再用流对象探针验证。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 1,
+        "path_rejections": 1,
+        "git_shell_calls": 1
+      },
+      "process_pattern": "I/O Behavior Probing"
+    },
+    {
+      "task_id": "real_010",
+      "repetition": 3,
+      "run_id": "20260928T142855-real_010-c54f7998",
+      "failure_category": "Budget Exhaustion",
+      "critical_step": 9,
+      "relevant_trace": {
+        "path": "records/20260928T142855-real_010-c54f7998/trace.jsonl",
+        "line": 50
+      },
+      "final_diff": "records/20260928T142855-real_010-c54f7998/diff.patch",
+      "observed_cause": "已读取 listutils、setutils 与测试，持续运行长探针和查找实现位置；预算耗尽时补丁为空。",
+      "potential_recovery_point": {
+        "step": 4,
+        "action": "在源码与测试定位后，先对两个模块实施候选修复，再验证。"
+      },
+      "observed_signals": {
+        "final_diff_bytes": 0,
+        "context_compactions": 2,
+        "path_rejections": 2,
+        "git_shell_calls": 2
+      },
+      "process_pattern": "Cross-Module Behavior Probing"
+    }
+  ]
+}
