@@ -1,0 +1,12 @@
+{
+  "base": {
+    "passed": false,
+    "exit_code": 1,
+    "output": "Traceback (most recent call last):\n  File \"<string>\", line 2, in <module>\n  File \"/workspace/src/humanize/lists.py\", line 33, in natural_list\n    if len(items) == 1:\nTypeError: object of type 'tuple_iterator' has no len()\n"
+  },
+  "final": {
+    "passed": true,
+    "exit_code": 0,
+    "output": ""
+  }
+}

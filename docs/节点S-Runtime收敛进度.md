@@ -21,8 +21,26 @@
 
 ## S2：代表性真实任务复测
 
-接下来使用节点 R 中的 `natural_list_iterables`、`intcomma_overflow`、`intword_rounding_carry`，最多各运行一次，Recovery 与 Memory 均关闭。沿用固定代码基线、原任务文本、项目检查、独立隐藏断言和预算。
+使用节点 R 中的 `natural_list_iterables`、`intcomma_overflow`、`intword_rounding_carry`，最多各运行一次，Recovery 与 Memory 均关闭。沿用固定代码基线、原任务文本、项目检查、独立隐藏断言和预算。复测代码为 `3768e05`，模型 ID 为 `deepseek-flash`，预算为 80 步、120,000 个已知 Token；Docker 镜像沿用阶段 R 的固定 SHA-256。接口当时列出了该模型 ID，但不能冻结云端权重版本。
 
 一次复测通过要求：正常 `completed`、当前补丁的项目检查通过、独立隐藏断言通过。功能正确但预算耗尽也记为本轮未通过。若累计两个任务未通过，停止剩余任务与后续 Memory 扩展验证，记录本轮失败。该规则用于有限样本的工程准入判断，不推断未运行任务一定失败，也不用于统计机制收益。
 
-节点 S 尚未整体验收；当前未执行完整回归集。
+### 结果
+
+| 任务 | 隐藏断言 | 当前补丁项目检查 | 正常完成 | Token | 首次有效编辑轮次 |
+| --- | --- | --- | --- | ---: | ---: |
+| `natural_list_iterables` | 通过 | 通过 | 通过，`completed` | 26,764 | 3 |
+| `intcomma_overflow` | 通过 | 通过 | 未通过，`token_budget` | 123,138 | 11 |
+| `intword_rounding_carry` | 通过 | 通过 | 未通过，`token_budget` | 120,948 | 11 |
+
+三个真实会话重新加载后，最近批次、补丁摘要和 `checks_current` 均与加载前一致。Agent 工作区只有固定基线和本地初始提交，未包含未来上游修复历史；运行前后的隐藏断言均在同一 Docker 镜像中验证。三题基线均未通过隐藏断言，最终代码均通过。原始 Trace、结果、补丁及逐题验证见 [sample-report.json](../experiments/2026-09-30-runtime-convergence/sample-report.json)；固定条件见 [sample-manifest.json](../experiments/2026-09-30-runtime-convergence/sample-manifest.json)，模型接口检查见 [api-model-check.json](../experiments/2026-09-30-runtime-convergence/api-model-check.json)。
+
+本轮正常完成为 **1/3**。第 3 个样本结束时累计两个未通过，达到预设门槛，判定本轮工程验证失败，并停止扩展到完整回归集和 Memory 对照。三个预选样本已执行完，没有在测试集其余任务上继续花费额度。此处的失败指会话未按要求完成，不是三个最终补丁都错误；也不能把未运行任务计为实测失败。
+
+### 剩余问题与下一步
+
+检查触发和记录恢复已经在三个真实任务中观察到有效；预算提示尚不足以保证正常收尾。两个未完成任务均在第 11 轮才有效编辑，最后一次请求使累计用量越过 120,000。Runtime 随后执行了编辑和项目检查，但下一轮立即以 `token_budget` 结束，没有留下最终答复的预算。它们在第 9 轮之前收到过 60% 用量提示，仍继续诊断。逐轮 Token 和动作见 [sample-analysis.json](../experiments/2026-09-30-runtime-convergence/sample-analysis.json)。
+
+两个任务最后一次请求的输入分别为 18,178 和 19,003 Token。后续应优先减少长期保留的大段文件与命令输出，并明确分配定位、编辑、检查和最终答复的预算；继续添加提示或增加重试次数缺少依据。检查通过不应自动代替任务完成确认。
+
+本轮仅做有限样本工程筛查，没有修复前后的同期成对实验，不能将成功率差异归因于某一项改动。临时真实复测脚本、参考仓库和 Agent 工作区均已清理，仅保留审计产物。节点 S 尚未整体验收，当前未执行完整回归集。

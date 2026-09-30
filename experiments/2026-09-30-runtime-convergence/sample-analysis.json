@@ -1,0 +1,305 @@
+{
+  "normal_completions": 1,
+  "functional_passes": 3,
+  "current_project_check_passes": 3,
+  "reload_consistent_runs": 3,
+  "runs": [
+    {
+      "task_id": "natural_list_iterables",
+      "turns": [
+        {
+          "step": 1,
+          "input_tokens": 997,
+          "output_tokens": 29,
+          "cumulative_tokens": 1026,
+          "actions": [
+            "list_files"
+          ]
+        },
+        {
+          "step": 2,
+          "input_tokens": 2238,
+          "output_tokens": 76,
+          "cumulative_tokens": 3340,
+          "actions": [
+            "read_file",
+            "read_file"
+          ]
+        },
+        {
+          "step": 3,
+          "input_tokens": 3002,
+          "output_tokens": 858,
+          "cumulative_tokens": 7200,
+          "actions": [
+            "edit_file"
+          ]
+        },
+        {
+          "step": 4,
+          "input_tokens": 3959,
+          "output_tokens": 448,
+          "cumulative_tokens": 11607,
+          "actions": [
+            "edit_file"
+          ]
+        },
+        {
+          "step": 5,
+          "input_tokens": 4508,
+          "output_tokens": 86,
+          "cumulative_tokens": 16201,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 6,
+          "input_tokens": 4947,
+          "output_tokens": 68,
+          "cumulative_tokens": 21216,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 7,
+          "input_tokens": 5355,
+          "output_tokens": 193,
+          "cumulative_tokens": 26764,
+          "actions": [
+            "final"
+          ]
+        }
+      ],
+      "budget_warning_steps": [],
+      "useful_edit_steps": [
+        3,
+        4
+      ],
+      "remaining_issue": "none_observed_in_sample"
+    },
+    {
+      "task_id": "intcomma_overflow",
+      "turns": [
+        {
+          "step": 1,
+          "input_tokens": 991,
+          "output_tokens": 32,
+          "cumulative_tokens": 1023,
+          "actions": [
+            "list_files"
+          ]
+        },
+        {
+          "step": 2,
+          "input_tokens": 2237,
+          "output_tokens": 44,
+          "cumulative_tokens": 3304,
+          "actions": [
+            "read_file"
+          ]
+        },
+        {
+          "step": 3,
+          "input_tokens": 7577,
+          "output_tokens": 327,
+          "cumulative_tokens": 11208,
+          "actions": [
+            "search_text"
+          ]
+        },
+        {
+          "step": 4,
+          "input_tokens": 8875,
+          "output_tokens": 76,
+          "cumulative_tokens": 20159,
+          "actions": [
+            "read_file_range"
+          ]
+        },
+        {
+          "step": 5,
+          "input_tokens": 11135,
+          "output_tokens": 113,
+          "cumulative_tokens": 31407,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 6,
+          "input_tokens": 11360,
+          "output_tokens": 55,
+          "cumulative_tokens": 42822,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 7,
+          "input_tokens": 12114,
+          "output_tokens": 112,
+          "cumulative_tokens": 55048,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 8,
+          "input_tokens": 12335,
+          "output_tokens": 3230,
+          "cumulative_tokens": 70613,
+          "actions": [
+            "read_file_range"
+          ]
+        },
+        {
+          "step": 9,
+          "input_tokens": 15657,
+          "output_tokens": 100,
+          "cumulative_tokens": 86370,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 10,
+          "input_tokens": 16651,
+          "output_tokens": 1179,
+          "cumulative_tokens": 104200,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 11,
+          "input_tokens": 18178,
+          "output_tokens": 760,
+          "cumulative_tokens": 123138,
+          "actions": [
+            "edit_file"
+          ]
+        }
+      ],
+      "budget_warning_steps": [
+        9
+      ],
+      "useful_edit_steps": [
+        11
+      ],
+      "remaining_issue": "useful_edit_arrives_after_budget_is_already_consumed"
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "turns": [
+        {
+          "step": 1,
+          "input_tokens": 1010,
+          "output_tokens": 32,
+          "cumulative_tokens": 1042,
+          "actions": [
+            "list_files"
+          ]
+        },
+        {
+          "step": 2,
+          "input_tokens": 2256,
+          "output_tokens": 55,
+          "cumulative_tokens": 3353,
+          "actions": [
+            "read_file"
+          ]
+        },
+        {
+          "step": 3,
+          "input_tokens": 8018,
+          "output_tokens": 667,
+          "cumulative_tokens": 12038,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 4,
+          "input_tokens": 8839,
+          "output_tokens": 76,
+          "cumulative_tokens": 20953,
+          "actions": [
+            "read_file_range"
+          ]
+        },
+        {
+          "step": 5,
+          "input_tokens": 10280,
+          "output_tokens": 1061,
+          "cumulative_tokens": 32294,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 6,
+          "input_tokens": 11450,
+          "output_tokens": 153,
+          "cumulative_tokens": 43897,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 7,
+          "input_tokens": 11739,
+          "output_tokens": 56,
+          "cumulative_tokens": 55692,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 8,
+          "input_tokens": 12536,
+          "output_tokens": 157,
+          "cumulative_tokens": 68385,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 9,
+          "input_tokens": 13557,
+          "output_tokens": 841,
+          "cumulative_tokens": 82783,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 10,
+          "input_tokens": 14735,
+          "output_tokens": 4098,
+          "cumulative_tokens": 101616,
+          "actions": [
+            "run_shell"
+          ]
+        },
+        {
+          "step": 11,
+          "input_tokens": 19003,
+          "output_tokens": 329,
+          "cumulative_tokens": 120948,
+          "actions": [
+            "edit_file"
+          ]
+        }
+      ],
+      "budget_warning_steps": [
+        9
+      ],
+      "useful_edit_steps": [
+        11
+      ],
+      "remaining_issue": "useful_edit_arrives_after_budget_is_already_consumed"
+    }
+  ]
+}

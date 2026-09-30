@@ -1,0 +1,8 @@
+{
+  "checked_at": "2026-09-30T11:49:27.010970+00:00",
+  "endpoint": "https://api.deepseek.com/models",
+  "model_ids": [
+    "deepseek-flash",
+    "deepseek-v4-pro"
+  ]
+}

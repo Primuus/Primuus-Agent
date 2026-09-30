@@ -1,0 +1,127 @@
+{
+  "code_commit": "3768e05cae3746ac4015bedbf8b519f995ddad27",
+  "maximum_runs": 3,
+  "failure_stop_threshold": 2,
+  "planned_tasks": [
+    "natural_list_iterables",
+    "intcomma_overflow",
+    "intword_rounding_carry"
+  ],
+  "runs": [
+    {
+      "task_id": "natural_list_iterables",
+      "session_id": "ef5fda7bcd4c",
+      "passed": true,
+      "functional_passed": true,
+      "stop_reason": "completed",
+      "project_checks_passed": true,
+      "reload_checks_consistent": true,
+      "steps": 7,
+      "tool_calls": 7,
+      "tokens": 26764,
+      "active_seconds": 13.007,
+      "project_check_batches": 3,
+      "changed_paths": [
+        "src/humanize/lists.py",
+        "tests/test_lists.py"
+      ],
+      "metrics": {
+        "repository_discovery_commands": 1,
+        "repeated_discovery_commands": 0,
+        "file_reads": 2,
+        "repeated_file_reads": 0,
+        "time_to_first_useful_edit_seconds": 5.848,
+        "read_paths": [
+          "src/humanize/lists.py",
+          "tests/test_lists.py"
+        ],
+        "discovery_signatures": [
+          "list_files:"
+        ]
+      },
+      "service_errors": [],
+      "artifact_dir": "experiments/2026-09-30-runtime-convergence/records/natural_list_iterables/ef5fda7bcd4c"
+    },
+    {
+      "task_id": "intcomma_overflow",
+      "session_id": "ae49db246884",
+      "passed": false,
+      "functional_passed": true,
+      "stop_reason": "token_budget",
+      "project_checks_passed": true,
+      "reload_checks_consistent": true,
+      "steps": 11,
+      "tool_calls": 11,
+      "tokens": 123138,
+      "active_seconds": 34.26,
+      "project_check_batches": 1,
+      "changed_paths": [
+        "src/humanize/number.py"
+      ],
+      "metrics": {
+        "repository_discovery_commands": 4,
+        "repeated_discovery_commands": 0,
+        "file_reads": 3,
+        "repeated_file_reads": 0,
+        "time_to_first_useful_edit_seconds": 33.591,
+        "read_paths": [
+          "docs/number.md",
+          "src/humanize/number.py",
+          "tests/test_number.py"
+        ],
+        "discovery_signatures": [
+          "list_files:",
+          "search_text:intcomma",
+          "shell:cd /workspace && cat tox.ini && grep -rn \"doctest\" pyproject.toml tox.ini tests 2>/dev/null",
+          "shell:cd /workspace && ls && cat pyproject.toml | head -50"
+        ]
+      },
+      "service_errors": [],
+      "artifact_dir": "experiments/2026-09-30-runtime-convergence/records/intcomma_overflow/ae49db246884"
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "session_id": "8fb325ff3e6d",
+      "passed": false,
+      "functional_passed": true,
+      "stop_reason": "token_budget",
+      "project_checks_passed": true,
+      "reload_checks_consistent": true,
+      "steps": 11,
+      "tool_calls": 11,
+      "tokens": 120948,
+      "active_seconds": 55.763,
+      "project_check_batches": 1,
+      "changed_paths": [
+        "src/humanize/number.py"
+      ],
+      "metrics": {
+        "repository_discovery_commands": 2,
+        "repeated_discovery_commands": 0,
+        "file_reads": 2,
+        "repeated_file_reads": 0,
+        "time_to_first_useful_edit_seconds": 55.006,
+        "read_paths": [
+          "src/humanize/number.py",
+          "tests/test_number.py"
+        ],
+        "discovery_signatures": [
+          "list_files:",
+          "shell:cd /workspace && grep -n \"intword\" tests/test_number.py | head -60"
+        ]
+      },
+      "service_errors": [],
+      "artifact_dir": "experiments/2026-09-30-runtime-convergence/records/intword_rounding_carry/8fb325ff3e6d"
+    }
+  ],
+  "status": "failed_threshold",
+  "executed_runs": 3,
+  "failed_runs": 2,
+  "omitted_tasks": [],
+  "stopped_expansion": true,
+  "unexecuted_followup": [
+    "full_regression_suite",
+    "memory_comparison",
+    "stage_S_acceptance"
+  ]
+}

@@ -1,0 +1,49 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index 727435f..d2e65da 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -154,21 +154,36 @@ def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+     try:
+         if isinstance(value, str):
+             value = value.replace(thousands_sep, "").replace(decimal_sep, ".")
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+             if "." in value:
+                 value = float(value)
++                if not math.isfinite(value):
++                    return _format_not_finite(value)
+             else:
+-                value = int(value)
+-        else:
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+-            float(value)
++                try:
++                    value = int(value)
++                except ValueError:
++                    value = float(value)
++                    if not math.isfinite(value):
++                        return _format_not_finite(value)
++        elif isinstance(value, int):
++            # Python ints are arbitrary precision, so converting to float to
++            # check finiteness can raise OverflowError for very large values.
++            # They are always finite, so just format them directly.
++            pass
++        elif not math.isfinite(float(value)):
++            return _format_not_finite(float(value))
+     except (TypeError, ValueError):
+         return str(value)
+ 
+     if ndigits is not None:
+-        result = f"{value:,.{ndigits}f}"
++        try:
++            result = f"{value:,.{ndigits}f}"
++        except OverflowError:
++            # An int too large for float formatting; group the integer digits
++            # and append the requested number of (zero) decimal places.
++            result = f"{value:,}"
++            if ndigits > 0:
++                result += "." + "0" * ndigits
+     else:
+         result = f"{value:,}"
+     if thousands_sep != "," or decimal_sep != ".":

@@ -1,0 +1,72 @@
+diff --git a/src/humanize/lists.py b/src/humanize/lists.py
+index 525f0e3..78cd9a9 100644
+--- a/src/humanize/lists.py
++++ b/src/humanize/lists.py
+@@ -4,35 +4,38 @@ from __future__ import annotations
+ 
+ TYPE_CHECKING = False
+ if TYPE_CHECKING:
++    from collections.abc import Iterable
+     from typing import Any
+ 
+ __all__ = ["natural_list"]
+ 
+ 
+-def natural_list(items: list[Any]) -> str:
++def natural_list(items: Iterable[Any]) -> str:
+     """Natural list.
+ 
+-    Convert a list of items into a human-readable string with commas and 'and'.
++    Convert an iterable of items into a human-readable string with commas and
++    'and'.
+ 
+     Examples:
+         >>> natural_list(["one", "two", "three"])
+         'one, two and three'
+-        >>> natural_list(["one", "two"])
++        >>> natural_list(("one", "two"))
+         'one and two'
+-        >>> natural_list(["one"])
++        >>> natural_list(iter(["one"]))
+         'one'
+ 
+     Args:
+-        items (list): An iterable of items.
++        items (Iterable): An iterable of items.
+ 
+     Returns:
+         str: A string with commas and 'and' in the right places.
+     """
+-    if not items:
++    values = [str(item) for item in items]
++    if not values:
+         return ""
+-    if len(items) == 1:
+-        return str(items[0])
+-    elif len(items) == 2:
+-        return f"{str(items[0])} and {str(items[1])}"
++    if len(values) == 1:
++        return values[0]
++    elif len(values) == 2:
++        return f"{values[0]} and {values[1]}"
+     else:
+-        return ", ".join([str(item) for item in items[:-1]]) + f" and {str(items[-1])}"
++        return ", ".join(values[:-1]) + f" and {values[-1]}"
+diff --git a/tests/test_lists.py b/tests/test_lists.py
+index cc514f3..9324aa4 100644
+--- a/tests/test_lists.py
++++ b/tests/test_lists.py
+@@ -16,6 +16,13 @@ import humanize
+         ([[""]], ""),
+         ([[1, 2, 3]], "1, 2 and 3"),
+         ([[1, "two"]], "1 and two"),
++        ([("one", "two", "three")], "one, two and three"),
++        ([("one", "two")], "one and two"),
++        ([(i for i in ("one", "two", "three"))], "one, two and three"),
++        ([(i for i in ())], ""),
++        ([{"one": 1, "two": 2, "three": 3}.keys()], "one, two and three"),
++        ([range(1, 4)], "1, 2 and 3"),
++        ([range(1, 2)], "1"),
+     ],
+ )
+ def test_natural_list(
