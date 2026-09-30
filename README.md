@@ -1,97 +1,171 @@
-# Long-Horizon Coding Agent
+# Primuus-Agent
 
-本仓库用于实现一个可运行、可验证、可评测的 Coding / Terminal Agent。
+Primuus-Agent 是一个面向 Git 仓库的 **Long-Horizon Coding Agent** 研究原型。它通过模型与文件、终端工具协作，完成代码阅读、问题定位、修改和项目检查，并保存任务计划、执行轨迹与补丁，支持长任务暂停后继续执行。
 
-已完成[第一阶段执行方案](docs/completed/Long-Horizon-Coding-Agent-Phase-1-Execution-Plan.md)中的节点 A～G，建立了 10 个任务。默认模型服务为 DeepSeek V4.1 Flash；真实模型批量运行 10 个任务，均由独立 Verifier 判定通过。运行条件、逐题结果和完整 Trace 见[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
+目前提供命令行单任务执行、交互会话、隔离并行任务和评测入口。运行结果包含可审阅的代码差异、检查结果及资源消耗，便于日常开发使用和 Agent 行为研究。
 
-节点 H～M 已按[历史总体方案](docs/completed/方案.md)完成：评测与普通仓库会话共用同一 Session Runner，普通仓库会话支持持久记录、续跑、有限失败恢复、扩展接口、跨任务记忆和隔离的并行任务。节点 K 的受控故障注入结果见[实验记录](docs/experiments/2026-09-27-recovery-controlled/README.md)。后续按[Pre-SEA 阶段目标](docs/Primuus-Agent-Pre-SEA-Stage-Goals.md)推进真实仓库评测。
+## 现有功能
 
-阶段 N 已建立 3 个开源仓库的 10 个真实任务；来源、镜像、校准结果和运行入口见[节点 N 实施记录](docs/completed/节点N-实施记录.md)。真实模型重复运行的基线将在阶段 O 完成。
+| 功能 | 能力 |
+|---|---|
+| 仓库编码 | 文件列表、文本搜索、分段读取、文件写入、精确替换、Shell 执行及 Git 状态与差异查看 |
+| 隔离工作区 | 从目标仓库的 Git 提交创建独立副本，内置文件与终端工具在 Docker 中执行，容器默认关闭网络 |
+| 长任务会话 | 里程碑计划、上下文压缩、轮数与 Token 预算、超时控制、会话持久化、暂停与续跑 |
+| 检查与快照 | 代码变更后执行配置的项目检查，记录检查对应的补丁；支持 Git 快照与恢复 |
+| 有限失败恢复 | 部分模型服务错误与只读工具超时重试、重复失败动作拦截、失败反馈及工作区回退 |
+| 模型适配 | 支持具备工具调用能力的 OpenAI 兼容 Chat Completions 服务，以及 Anthropic Messages API |
+| 项目扩展 | 加载 `AGENTS.md`、项目 Skills、工具执行前后的 Hooks 和可选 MCP 工具 |
+| 仓库记忆 | 项目知识、历史失败及有效修复记录；支持摘要注入、相关记录检索与修订历史 |
+| 并行任务 | 独立会话并发执行、修改范围约束、补丁整合、冲突记录与整合检查 |
+| 评测与 CI | 独立 Verifier、批量评测、可续跑的重复基线、恢复与记忆对照，以及 CI 产物导出 |
 
-## 目前的文件
+## 快速开始
 
-```text
-coding_agent/       Python 包及共享数据契约
-coding_agent/harness/ 评测任务加载
-coding_agent/session/ 通用会话状态、上下文与 Agent Loop
-coding_agent/sandbox/ Docker 任务环境及镜像定义
-coding_agent/tools/   文件与终端工具
-coding_agent/verifier/ 独立容器验证器
-coding_agent/eval/   Trace 与批量评测
-config/default.json 初始运行配置
-docs/contracts.md   任务、动作、工具结果、运行结果约定
-tasks/task_001/     最小示例任务：说明、初始仓库、独立验证器
-```
+需要 Python 3.10 或更新版本、Git，以及可访问的 Docker 服务。基础 Python 包没有第三方运行依赖；运行 Agent 命令时请位于本项目根目录。
 
-任务包的读取方式、验证规则和结果位置见[契约文档](docs/completed/contracts.md)。
-
-## 检查示例任务
-
-示例任务的初始代码故意有错。在项目根目录执行：
+### 1. 获取项目并准备镜像
 
 ```bash
-cd tasks/task_001/repo
-python3 ../verifier.py
-```
-
-预期退出码为非零。Agent 的任务是修复 `calculator.py`，使同一验证器返回零退出码。
-
-Docker 工具使用前构建本地镜像：
-
-```bash
+git clone https://github.com/Primuus/Primuus-Agent.git
+cd Primuus-Agent
 docker build -t coding-agent-sandbox:local -f coding_agent/sandbox/Dockerfile .
 ```
 
-## 运行任务
+默认镜像包含 Python、Git 和 pytest。目标项目需要的其他依赖应准备在自定义镜像中，通过 `--image <镜像名>` 选择；文件工具需要镜像提供 Python 和 Git。容器需要联网时可显式使用 `--network`。
 
-默认使用 DeepSeek 的 `deepseek-flash` 与 `https://api.deepseek.com`。在运行环境中设置 `DEEPSEEK_API_KEY` 后即可执行；密钥不会写入仓库或运行结果。若使用其他兼容 Chat Completions 工具调用的服务，可通过 `--model` 和 `--base-url` 覆盖默认值，并使用 `OPENAI_API_KEY`。
+### 2. 配置模型凭据
 
-模型适配还支持 Anthropic Messages API。指定 `--backend anthropic --model <模型 ID>`，并在运行环境设置 `ANTHROPIC_API_KEY`；其他兼容服务可用 `--api-key-env <变量名>` 指定凭据来源。配置和会话记录只保存变量名，不保存密钥值。
-
-```bash
-python3 -m coding_agent run tasks/task_001
-python3 -m coding_agent batch tasks
-python3 -m coding_agent compare tasks --repeats 3
-```
-
-每次运行的 `trace.jsonl`、`diff.patch`、`verification.json`、`result.json` 和 `config.json` 保存在 `runs/<run_id>/`；批量汇总保存为 `runs/batch-<时间戳>.json`。`compare` 对同一任务分别运行关闭和开启恢复的版本，保存成对结果、成功率、恢复率、步数、Token、耗时和人工介入。真实模型结果有随机性，应重复运行并结合单次 Trace 分析。`runs/` 已加入 `.gitignore`。
-
-真实仓库任务的重复基线使用固定的[阶段 O 配置](config/real-baseline-2026-09-28.json)：`python3 -m coding_agent baseline tasks/real --config config/real-baseline-2026-09-28.json --output-dir experiments/2026-09-28-real-baseline --repeats 3`。输出目录保存固定条件的 `manifest.json`、逐次更新的 `report.json` 和各题独立产物；命令中断后用相同参数重跑会继续未完成的次数。运行时仍需在环境中提供 `DEEPSEEK_API_KEY`。本次 30 次真实模型运行的结果见[节点 O 实施记录](docs/completed/节点O-真实模型基线实施记录.md)和[原始汇总](experiments/2026-09-28-real-baseline/report.json)，19 次失败的逐例分析见[节点 P 实施记录](docs/completed/节点P-失败分类实施记录.md)。
-
-真实任务上的恢复对照使用[阶段 Q 配置](config/real-recovery-2026-09-29.json)：`python3 -m coding_agent compare-recovery tasks/real --config config/real-recovery-2026-09-29.json --output-dir experiments/2026-09-29-real-recovery --repeats 3`。同一任务每轮各运行一次 Recovery OFF/ON，顺序逐轮交替；每次运行后保存报告和五类产物，相同参数可续跑未完成的次数。本次结果见[节点 Q 实施记录](docs/completed/节点Q-恢复机制真实对照实施记录.md)和[原始报告](experiments/2026-09-29-real-recovery/report.json)。
-
-## 在普通仓库中工作
-
-从本项目目录运行以下命令，仓库路径指向要修改的 Git 仓库：
+默认配置使用模型名 `deepseek-flash`，服务地址为 `https://api.deepseek.com`：
 
 ```bash
-python3 -m coding_agent exec /path/to/repository --task '修复登录流程中的错误' --check 'git diff --check'
-python3 -m coding_agent chat /path/to/repository
-python3 -m coding_agent chat /path/to/repository --skill cleanup
+export DEEPSEEK_API_KEY='<你的密钥>'
 ```
 
-`exec` 是单次无交互运行，默认允许在隔离工作区内执行工具；`chat` 是可连续提问的交互会话，写文件和运行 Shell 时默认询问。可用 `--approval-mode auto|ask|read-only` 指定策略，`--max-steps` 调整模型轮数，`--recovery-mode on|off` 切换恢复策略。默认镜像包含 Python 和 Git；其他语言项目可用 `--image` 选择已准备好的镜像，镜像仍需包含 Python 和 Git 供文件工具使用。确需容器联网时显式加 `--network`。交互会话中可用 `/status`、`/diff`、`/exit`。
+凭据从运行环境读取，不写入项目配置或会话产物。模型名、服务地址和凭据变量可通过 `--model`、`--base-url`、`--api-key-env` 覆盖。
 
-CI 可使用无交互入口，并指定固定产物目录：
+### 3. 执行仓库任务
 
 ```bash
-python3 -m coding_agent ci /path/to/repository \
-  --task '修复登录流程中的错误' \
-  --check 'git diff --check' \
-  --output-dir /path/to/agent-artifacts
+python3 -m coding_agent exec /path/to/repository \
+  --task '修复 CSV 导出中的编码问题' \
+  --check 'python3 -m pytest -q' \
+  --check 'git diff --check'
 ```
 
-`ci` 不接受询问式权限。目录中保存 `summary.json`、`result.json`、`trace.jsonl`、`diff.patch` 和 `status.txt`；`summary.json` 给出成功标记、终止原因、检查结果和产物文件名。任务未完成或项目检查失败时退出码为 1，产物仍会写出供审阅。仓库内的 [GitHub Actions 工作流](.github/workflows/agent-ci.yml) 可手动触发：在 Actions 中填写任务，并设置 `DEEPSEEK_API_KEY` 仓库密钥后运行；工作流上传上述产物，不会把修改写回原仓库。
+将仓库路径和检查命令替换为目标项目的实际值。`--check` 可以重复传入，适用于测试、构建或其他验收命令；`git diff --check` 只检查补丁的空白格式。
 
-每次会话从目标仓库当前 `HEAD` 创建独立 Git 副本，原仓库及其未提交改动不会被修改。工作区、`session.json`、`diff.patch`、`status.txt`、`trace.jsonl` 和 `result.json` 默认保存在 `~/.local/state/primuus-agent/sessions/<session_id>/`；可用 `--sessions-dir` 修改位置。`--check` 指定的项目检查在模型给出最终回复后执行，检查失败时将结果交给模型进行有限次修复；检查命令保存在会话中供续跑使用。最终仍未通过时，`exec` 返回非零退出码。
+会话基于目标仓库当前 `HEAD` 创建独立工作区，未提交改动不会自动带入。修改产物保存在会话目录中，供审阅和应用到目标仓库。
 
-默认恢复策略只对可重试的模型服务错误和只读工具超时自动重试；相同的失败动作会被拦截，并提示模型检查原因、选择其他动作。写文件、构建或测试失败时，隔离工作区可回到操作前快照。恢复动作、失败类别、重试和人工介入计数都写入会话事件与结果。运行 `--recovery-mode off` 可取得无自动恢复的基线。
+## 仓库会话
 
-创建普通仓库会话时，根目录的 `AGENTS.md` 会作为项目指令加入模型上下文。`--instruction-file <相对路径>` 可再加入项目文件；`--skill <名称>` 会读取工作区中的 `.primuus/skills/<名称>/SKILL.md`。这些来源的内容与摘要记录在会话事件中，续跑时保持一致。
+### 单次执行与交互模式
 
-可用 `--hooks-file <JSON 文件>` 显式启用 `before_tool` 和 `after_tool` Shell Hooks。例如文件内容为 `{"before_tool": ["git diff --check"], "after_tool": []}`。Hook 在隔离工作区运行，遵守当前权限模式，并把命令、结果写入 Trace。前置 Hook 失败会阻止对应工具调用；后置 Hook 失败会作为本次工具错误反馈。会话续跑沿用创建时保存的 Hook 配置。
+```bash
+# 单次无交互执行
+python3 -m coding_agent exec /path/to/repository --task '修复配置读取错误'
 
-MCP 工具为可选扩展。先安装 `python3 -m pip install '.[mcp]'`，再通过 `--mcp-config <JSON 文件>` 为新会话配置受信任的 stdio 服务，例如：
+# 连续交互，使用项目检查
+python3 -m coding_agent chat /path/to/repository --check 'python3 -m pytest -q'
+```
+
+`exec` 默认使用 `auto` 权限，`chat` 默认使用 `ask`。可通过 `--approval-mode` 选择：
+
+| 模式 | 行为 |
+|---|---|
+| `auto` | 允许会话工具执行 |
+| `ask` | 写文件、运行 Shell 等操作先询问 |
+| `read-only` | 拒绝写入类工具，包括 Shell 工具 |
+
+显式配置的 `--check` 命令作为项目验收在容器内执行。检查在代码产生新补丁后触发，最终回复时确认当前补丁的检查结果；失败输出会反馈给模型。结果与补丁摘要关联，续跑保留最近一批完整结果；补丁变化后需要重新检查。项目检查通过后，模型仍需完成最终回复。
+
+`--recovery-mode on|off` 控制自动恢复。开启时，对可重试错误进行有限重试，拦截重复失败动作，并在失败的写入、构建或测试操作后按恢复策略回到快照。重试、恢复与人工介入均记录在执行轨迹中。
+
+### 暂停、续跑与快照
+
+运行中按 `Ctrl+C` 可暂停。使用命令输出中的 `session_id` 查看、续跑或恢复快照：
+
+```bash
+python3 -m coding_agent inspect <session_id>
+python3 -m coding_agent pause <session_id>
+python3 -m coding_agent resume <session_id>
+python3 -m coding_agent resume <session_id> --task '继续修复另一个问题'
+python3 -m coding_agent resume <session_id> --interactive
+python3 -m coding_agent snapshot <session_id>
+python3 -m coding_agent restore <session_id> --snapshot <commit>
+```
+
+若中断发生在工具调用内部，先查看工作区与补丁，再使用 `resume <session_id> --resolve-pending` 确认继续。该参数用于确认已检查未决操作，不会重放该工具调用。
+
+交互模式支持 `/status`、`/diff`、`/plan`、`/snapshots`、`/restore <commit>`、`/pause` 和 `/exit`。模型可维护里程碑计划；上下文过长时压缩旧消息，并保留摘要、近期消息和计划。
+
+### 会话产物
+
+默认位置为 `~/.local/state/primuus-agent/sessions/<session_id>/`，可通过 `--sessions-dir` 修改：
+
+```text
+<session_id>/
+├── workspace/       隔离 Git 工作区
+├── session.json     会话配置与元数据
+├── trace.jsonl      持续写入的执行事件
+├── diff.patch       相对初始提交的补丁
+├── status.txt       工作区 Git 状态
+└── result.json      终止原因、计划、检查结果及资源统计
+```
+
+`result.json` 包含步数、工具调用、Token、重试、恢复、人工介入及耗时。`checks_current` 表示检查结果是否对应当前补丁；是否通过需查看各项检查的状态与退出码。
+
+## 模型与运行配置
+
+运行参数默认来自 [config/default.json](config/default.json)，可用 `--config <文件>` 指定其他配置。
+
+| 配置项 | 默认值 |
+|---|---|
+| 模型后端 / 模型名 | `openai_compatible` / `deepseek-flash` |
+| 服务地址 | `https://api.deepseek.com` |
+| 轮数预算 | 普通仓库会话 80，评测任务 20 |
+| Token 预算 | 120,000 |
+| 单次任务 / 工具超时 | 600 秒 / 30 秒 |
+| 上下文压缩阈值 | 60,000 字符，保留近期 12 条消息 |
+| 自动恢复 / 仓库记忆 | 开启 / 关闭 |
+| 容器 CPU / 内存 / 网络 | 1 核 / 512 MB / 关闭 |
+
+`--max-steps` 可覆盖轮数预算。Token 用量由模型返回的统计累计，达到预算时停止后续调用；单次请求的返回可能使累计用量超过预算。
+
+其他模型服务可按以下方式使用：
+
+```bash
+# 兼容 Chat Completions 和工具调用的服务
+python3 -m coding_agent exec /path/to/repository --task '修复配置读取错误' \
+  --backend openai_compatible --model '<模型 ID>' \
+  --base-url 'https://your-provider.example/v1' --api-key-env MODEL_API_KEY
+
+# Anthropic Messages API，凭据从 ANTHROPIC_API_KEY 读取
+python3 -m coding_agent exec /path/to/repository --task '修复配置读取错误' \
+  --backend anthropic --model '<模型 ID>'
+```
+
+运行前在环境中设置对应的凭据变量。默认兼容后端读取 `DEEPSEEK_API_KEY`，未设置时可使用 `OPENAI_API_KEY`。
+
+## 项目指令与工具扩展
+
+新仓库会话默认加载根目录的 `AGENTS.md`。可以通过 `--instruction-file <相对路径>` 增加项目指令，通过 `--skill <名称>` 加载 `.primuus/skills/<名称>/SKILL.md`。指令内容与来源摘要写入会话记录，续跑使用保存的内容。
+
+### Hooks
+
+使用 `--hooks-file <JSON 文件>` 配置工具执行前后的 Shell 命令：
+
+```json
+{
+  "before_tool": ["git diff --check"],
+  "after_tool": []
+}
+```
+
+Hook 在容器工作区执行，遵守工具权限模式。前置 Hook 失败会阻止该工具调用，后置 Hook 失败会反馈为工具错误；命令与结果记录在 Trace 中。
+
+### MCP
+
+MCP 为可选依赖，先执行 `python3 -m pip install '.[mcp]'`，再使用 `--mcp-config <JSON 文件>` 配置 stdio 服务：
 
 ```json
 {
@@ -105,24 +179,11 @@ MCP 工具为可选扩展。先安装 `python3 -m pip install '.[mcp]'`，再通
 }
 ```
 
-服务工具会以 `mcp__project__lookup` 等名称提供给模型；未列入 `read_only_tools` 的工具按写入操作管理，在 `ask` 模式询问、在 `read-only` 模式拒绝。服务命令在 Agent 宿主机上以隔离 Git 副本为工作目录运行，只有 `env_from` 列出的环境变量会额外传给服务；只配置你信任的服务。工具发现、调用和权限决定写入会话 Trace，续跑沿用创建时的配置。未配置 MCP 时不需要安装可选依赖。
-
-会话事件在操作过程中持续写入 `trace.jsonl`。运行中按 `Ctrl+C` 可暂停；空闲时也可用命令标记暂停。记下输出中的 `session_id` 后，可查看并续跑：
-
-```bash
-python3 -m coding_agent inspect <session_id>
-python3 -m coding_agent pause <session_id>
-python3 -m coding_agent resume <session_id> --task '继续完成剩余工作'
-python3 -m coding_agent resume <session_id> --interactive
-python3 -m coding_agent snapshot <session_id>
-python3 -m coding_agent restore <session_id> --snapshot <commit>
-```
-
-恢复未完成的任务时可省略 `--task`。若中断恰好落在一个工具调用内部，该操作的结果可能无法确定；先查看会话工作区和 diff，再用 `resume <session_id> --resolve-pending` 确认继续。系统不会自动重放这次工具调用。交互模式还提供 `/plan`、`/snapshots`、`/restore <commit>` 和 `/pause`。复杂任务可由模型维护里程碑计划；上下文过长时，旧对话被压缩为摘要，近期消息和计划保留。会话总轮数和 Token 上限由配置控制。
+服务工具以 `mcp__project__lookup` 等名称注册。未列入 `read_only_tools` 的工具按写入操作管理。MCP 服务在宿主机启动，以隔离 Git 副本为工作目录，按 `env_from` 传入环境变量；应配置可信服务。工具发现、调用和权限决定均保存到 Trace。
 
 ## 仓库记忆
 
-可将项目知识、历史失败或有效修复保存到仓库外的记忆库。每条记录包含来源、原仓库提交、适用路径及修订历史；默认位置为 `~/.local/state/primuus-agent/memory/memory.sqlite3`，可用 `--memory-dir` 指定。手工维护入口如下：
+记忆按源仓库存储在仓库外的 SQLite 数据库中，支持 `project`、`failure`、`fix` 三类记录。每条记录带有来源、仓库提交、适用路径和修订历史。
 
 ```bash
 python3 -m coding_agent memory-add /path/to/repository --kind project \
@@ -134,61 +195,93 @@ python3 -m coding_agent memory-history /path/to/repository --memory-id <记忆 I
 python3 -m coding_agent memory-remove /path/to/repository --memory-id <记忆 ID>
 ```
 
-新会话可指定 `--memory-mode off|summary|retrieve`，默认为 `off`。`summary` 提供最近记录，`retrieve` 按当前任务关键词和适用路径选择相关记录，最多加入配置中的条数与字符数；所选记录及其来源写入 Trace，续跑时重新检索。开启记忆的会话会从本次 Trace 记录历史失败；仅在项目检查通过且确有代码变更时，才记录有效修复及补丁摘要。
+新会话通过 `--memory-mode off|summary|retrieve` 选择模式，默认 `off`。`summary` 加入最近记录；`retrieve` 按任务关键词与适用路径检索，默认最多加入 3 条、2,500 字符。选择结果与来源记录在 Trace 中。
 
-```bash
-python3 -m coding_agent exec /path/to/repository \
-  --task '修复 CSV 导出' --check 'git diff --check' --memory-mode retrieve
-```
+开启记忆后，会话可记录历史失败和通过检查的项目检查命令；有效修复仅在任务正常完成、当前补丁通过项目检查且存在代码变更时保存。记忆内容加入模型上下文，仍需结合当前仓库验证。
 
-跨任务记忆对照可用同一模型、任务、检查和预算重复运行三种模式。输出目录必须为空；其中保存记忆库快照、每次会话的配置与 Trace、补丁以及汇总报告。运行时模型仍可能随机变化，应结合重复次数和单次轨迹分析。
-
-```bash
-python3 -m coding_agent compare-memory /path/to/repository \
-  --task '修复 CSV 导出' --check 'python3 -m compileall -q .' \
-  --repeats 3 --output-dir runs/memory-comparison
-```
-
-检索链路的受控对照及其局限见[记忆实验记录](docs/experiments/2026-09-27-memory-controlled/README.md)。
+默认数据库为 `~/.local/state/primuus-agent/memory/memory.sqlite3`，可用 `--memory-dir` 调整位置。项目指令、Skills、Hooks、MCP 和记忆设置在创建会话时配置，续跑沿用保存的设置。
 
 ## 并行任务与补丁整合
 
-`parallel` 根据 JSON 清单把独立子任务交给各自的会话。每项任务需要指定 ID、指令、允许修改的相对路径和项目检查；清单还需指定整合后的检查。例如：
+`parallel` 按 JSON 清单执行独立子任务。每项任务定义 ID、指令、允许修改的相对路径及检查命令，另行指定整合检查：
 
 ```json
 {
   "tasks": [
-    {"id": "api", "instruction": "修复 API 分页", "paths": ["src/api.py"], "checks": ["python3 -m compileall -q src"]},
-    {"id": "export", "instruction": "修复导出格式", "paths": ["src/export.py"], "checks": ["python3 -m compileall -q src"]}
+    {"id": "api", "instruction": "修复 API 分页", "paths": ["src/api.py"], "checks": ["python3 -m pytest -q tests/test_api.py"]},
+    {"id": "export", "instruction": "修复导出格式", "paths": ["src/export.py"], "checks": ["python3 -m pytest -q tests/test_export.py"]}
   ],
-  "integration_checks": ["python3 -m compileall -q src"]
+  "integration_checks": ["python3 -m pytest -q"]
 }
 ```
+
+将上述清单保存为 `tasks.json` 并按目标项目调整路径与检查命令：
 
 ```bash
 python3 -m coding_agent parallel /path/to/repository \
   --tasks-file tasks.json --workers 2 --output-dir runs/parallel-review
 ```
 
-所有任务从同一个提交创建独立 Git 副本，在各自容器中运行；结果分别写入 `tasks/<id>/` 中的 `handoff.json`、Trace、结果和补丁。完成后按清单顺序在另一份 Git 副本中检查并应用成功任务的补丁，执行整合检查。范围外修改和补丁冲突不会进入整合结果，均在 `report.json` 中说明；原仓库不被修改。输出目录应为空，整合失败时命令返回非零退出码。并行任务应相互独立；有前后依赖的任务应分批执行。
+子任务从同一提交创建各自的 Git 副本和容器，分别导出交接信息、Trace、结果和补丁。成功任务的补丁按清单顺序应用到另一份整合工作区，再执行整合检查。范围外修改、冲突和整合结果写入 `report.json`；输出目录应为空，有依赖的任务应分批执行。
 
-## 任务集
+## 评测能力
 
-| 任务 | 内容 |
+项目内置三类评测资源：
+
+| 路径 | 内容 |
 |---|---|
-| `task_001` | 修复加法函数 |
-| `task_002` | 修复名称标准化 |
-| `task_003` | 修复本地模块导入 |
-| `task_004` | 修复 JSON 配置类型 |
-| `task_005` | 补全缺失函数 |
-| `task_006` | 修复按 ID 查询的 API |
-| `task_007` | 根据错误日志修复除零问题 |
-| `task_008` | 修复命令行输出格式 |
-| `task_009` | 修复键值配置解析 |
-| `task_010` | 修复依赖当前目录的文件读取 |
-| `task_011` | 跨模块修复带分页的问题搜索 |
-| `task_012` | 跨模块实现配置驱动的 CSV 导出 |
+| `tasks/task_001` ～ `tasks/task_012` | 12 个小型修复与跨文件开发任务 |
+| `tasks/real/real_001` ～ `tasks/real/real_010` | 来自 3 个开源仓库、固定源提交的 10 个真实任务 |
+| `tasks/memory_real/humanize-series.json` | 用于跨任务记忆研究的 5 个连续任务 |
 
-每个任务都包含 `task.md`、初始 `repo/` 和仅供 Harness 调用的 `verifier.py`。12 个任务均已确认初始版本验证失败、参考修复版本验证通过。最初 10 个任务用预设修复动作运行整条批量链路时全部通过，平均每任务 1 步、1 次工具调用；这只用于检查系统集成，**不是模型性能实验结果**。检查使用的临时文件已清理，任务 Verifier 属于评测数据并保留。
+任务包由 Harness 加载，独立 Verifier 在模型执行环境之外验证结果。评测保存 Trace、补丁、验证结果和配置，可分析成功率、失败类别、步数、Token 与恢复行为。
 
-真实模型的首轮基线实验对每个任务运行一次，结果为 10/10 通过，平均每任务 3.8 步、4.5 次工具调用、5.4569 秒。该结果仅对应这 10 个小型任务和这一次运行；原始结果及 Trace 已保存在[实验记录](docs/experiments/2026-09-26-deepseek-flash/README.md)。
+```bash
+# 单任务与批量评测，产物默认写入 runs/
+python3 -m coding_agent run tasks/task_001
+python3 -m coding_agent batch tasks
+
+# 固定条件的真实任务重复基线，支持使用相同参数续跑
+docker build -t coding-agent-real-benchmark:20260928 -f tasks/real/Dockerfile .
+python3 -m coding_agent baseline tasks/real --config config/real-benchmark.json \
+  --repeats 3 --output-dir runs/real-baseline
+
+# 相同任务与预算下的恢复开关对照，支持续跑
+python3 -m coding_agent compare-recovery tasks/real --config config/real-benchmark.json \
+  --repeats 3 --output-dir runs/recovery-comparison
+```
+
+`compare` 提供批量恢复对照；`compare-memory` 对普通仓库任务重复比较关闭记忆、摘要和检索三种模式；`compare-memory-series` 使用连续任务清单评估跨任务记忆。对照入口保留各次运行的配置、检查、轨迹和补丁。
+
+## CI 使用
+
+`ci` 提供无交互入口和固定产物目录：
+
+```bash
+python3 -m coding_agent ci /path/to/repository \
+  --task '修复配置读取错误' --check 'python3 -m pytest -q' \
+  --output-dir /path/to/agent-artifacts
+```
+
+产物包括 `summary.json`、`result.json`、`trace.jsonl`、`diff.patch` 和 `status.txt`。只有任务正常完成且配置的检查通过时返回退出码 0；`ci` 不接受 `ask` 权限模式。
+
+项目提供可手动触发的 [GitHub Actions 工作流](.github/workflows/agent-ci.yml)，从仓库 Secret `DEEPSEEK_API_KEY` 读取凭据，执行任务并上传补丁与运行产物供审阅。
+
+## 项目结构
+
+```text
+coding_agent/
+├── __main__.py      命令行入口
+├── contracts.py     共享数据契约
+├── models/          模型服务适配
+├── session/         会话、上下文、恢复、记忆与并行执行
+├── tools/           文件、终端与 Git 工具
+├── sandbox/         Docker 环境与默认镜像
+├── harness/         评测任务加载
+├── verifier/        独立验证器
+└── eval/            评测与对照运行
+config/              运行配置
+tasks/               评测任务及固定仓库副本
+experiments/         实验数据与运行产物
+docs/                相关文档
+```
