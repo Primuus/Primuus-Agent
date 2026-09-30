@@ -43,22 +43,6 @@ class RepositorySession:
         self.journal = EventJournal(repository.session_dir / "trace.jsonl")
         self.state = state or SessionState(self.session_id)
         self.state.event_sink = self.journal.append
-        last_run = max(
-            (index for index, event in enumerate(self.state.events)
-             if event["event_type"] in ("user_message", "session_resumed")
-             or (event["event_type"] == "model_action"
-                 and event["data"]["response"]["final_message"] is not None)),
-            default=0,
-        )
-        self.last_checks = [
-            event["data"] for event in self.state.events[last_run:]
-            if event["event_type"] == "project_check"
-        ]
-        self.check_commands = next(
-            (event["data"]["commands"] for event in reversed(self.state.events)
-             if event["event_type"] == "project_check_suite"),
-            [],
-        )
 
     @classmethod
     def create(
@@ -149,11 +133,9 @@ class RepositorySession:
         if self.state.pending_tools and resolve_pending:
             self.state.emit("manual_intervention", {"kind": "resolve_pending"})
         self.state.resolve_interrupted_turn(resolve_pending)
-        if checks:
-            if checks != self.check_commands:
-                self.state.emit("project_check_suite", {"commands": checks})
-            self.check_commands = checks
-        checks = self.check_commands
+        if checks and checks != self.state.project_check_commands:
+            self.state.set_project_check_suite(checks)
+        checks = self.state.project_check_commands
         last_user = max(
             (index for index, event in enumerate(self.state.events)
              if event["event_type"] == "user_message"), default=-1,
@@ -185,7 +167,6 @@ class RepositorySession:
             )
             self.state.set_memory_context(memory_mode, current_task, entries)
         sandbox_config = self.config["sandbox"]
-        check_results: list[dict] | None = None if checks else []
         with DockerSandbox(
             self.repository.workspace,
             sandbox_config["image"],
@@ -241,10 +222,12 @@ class RepositorySession:
             last_check_result: VerificationResult | None = None
 
             def verify_checks() -> VerificationResult:
-                nonlocal check_results, last_checked_patch, last_check_result
+                nonlocal last_checked_patch, last_check_result
                 patch = self.repository.diff()
                 if patch == last_checked_patch and last_check_result is not None and last_check_result.passed:
                     return last_check_result
+                patch_sha256 = hashlib.sha256(patch.encode()).hexdigest()
+                self.state.start_project_checks(patch_sha256)
                 checked_at = monotonic()
                 check_results = []
                 for index, command in enumerate(checks or [], 1):
@@ -265,15 +248,21 @@ class RepositorySession:
                             "source": "project_check", "exit_code": result.exit_code,
                         })
                         break
+                patch_unchanged = self.repository.diff() == patch
+                errors = [record["error"] for record in check_results if record["error"]]
+                if not patch_unchanged:
+                    errors.append("Project checks changed the patch; review the changes and rerun checks.")
+                    self.state.record_failure("verification", {"reason": "patch_changed_during_check"})
+                self.state.record_project_checks(check_results, patch_sha256)
                 result = VerificationResult(
-                    passed=all(record["category"] is None for record in check_results),
+                    passed=patch_unchanged and all(record["category"] is None for record in check_results),
                     output="\n".join(record["output"] for record in check_results),
-                    error="\n".join(record["error"] or "" for record in check_results) or None,
+                    error="\n".join(errors) or None,
                     exit_code=next((record["exit_code"] or 1 for record in check_results
-                                    if record["category"] is not None), 0),
+                                    if record["category"] is not None), 0 if patch_unchanged else 1),
                     duration_ms=int((monotonic() - checked_at) * 1000),
                 )
-                last_checked_patch = self.repository.diff()
+                last_checked_patch = patch
                 last_check_result = result
                 return result
 
@@ -314,10 +303,13 @@ class RepositorySession:
         self._snapshot(f"after step {self.state.steps}")
         if memory_store is not None and memory_settings.get("capture", True):
             diff = self.repository.diff()
+            current_checks = (self.state.project_checks
+                              if hashlib.sha256(diff.encode()).hexdigest() == self.state.project_check_patch_sha256
+                              else [])
             captured = memory_store.capture(
                 str(self.repository.source), self.session_id, self.repository.base_commit,
                 current_task, self.state.events[event_start:], self.state.stop_reason,
-                check_results or [], diff, self.repository.changed_files(),
+                current_checks, diff, self.repository.changed_files(),
                 self.repository.session_dir / "trace.jsonl",
             )
             for entry in captured:
@@ -325,7 +317,7 @@ class RepositorySession:
                     "memory_id": entry.memory_id, "kind": entry.kind,
                     "revision": entry.revision,
                 })
-        return self._save(check_results)
+        return self._save()
 
     def snapshot(self, label: str) -> str:
         with session_lock(self.repository.session_dir / "session.lock"):
@@ -350,7 +342,7 @@ class RepositorySession:
         self.state.emit("manual_intervention", {"kind": "restore", "commit": commit})
         self.state.update_plan(matching[-1]["plan"])
         self.state.record_restore(commit)
-        return self._save([])
+        return self._save()
 
     def pause(self) -> dict:
         with session_lock(self.repository.session_dir / "session.lock"):
@@ -367,9 +359,7 @@ class RepositorySession:
         if len(self.journal.read()) != len(self.state.events):
             raise RuntimeError("Session changed in another process; reload it")
 
-    def _save(self, checks: list[dict] | None = None) -> dict:
-        if checks is not None:
-            self.last_checks = checks
+    def _save(self) -> dict:
         directory = self.repository.session_dir
         diff = self.repository.diff()
         status = self.repository.status()
@@ -405,7 +395,11 @@ class RepositorySession:
             "final_message": self.state.turns[-1].response.final_message if self.state.turns else None,
             "plan": self.state.plan,
             "snapshots": self.state.snapshots,
-            "checks": self.last_checks,
+            "checks": self.state.project_checks,
+            "checks_patch_sha256": self.state.project_check_patch_sha256,
+            "checks_current": bool(self.state.project_checks) and (
+                hashlib.sha256(diff.encode()).hexdigest() == self.state.project_check_patch_sha256
+            ),
             "diff_path": str(directory / "diff.patch"),
             "trace_path": str(directory / "trace.jsonl"),
         }

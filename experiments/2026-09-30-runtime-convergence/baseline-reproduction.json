@@ -1,0 +1,19 @@
+{
+  "mode": "baseline_reproduction",
+  "cases": [
+    {
+      "case": "success_reload",
+      "passed": true,
+      "evidence": {
+        "stop_reason": "completed",
+        "executed_checks": 2,
+        "checks_before_load": 2,
+        "checks_after_load": 0
+      }
+    }
+  ],
+  "passed": true,
+  "failures": 0,
+  "planned_cases": 1,
+  "executed_cases": 1
+}

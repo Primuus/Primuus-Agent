@@ -100,6 +100,8 @@ tasks/task_001/
 
 Harness 在工具动作后调用任务 Verifier，并在模型最终回复时再次确认结果。Verifier 在独立环境中读取 Agent 工作区的快照；其代码与执行入口由 Harness 控制，Agent 无法修改。验证通过时 `success=true`，`stop_reason="verified"`。最终验证未通过时，可按恢复预算继续一轮；仍未通过时为 `final_unverified`。普通仓库会话在工作区补丁发生变化后执行保存的项目检查，并将结果反馈给 Agent；同一补丁通过后，最终回复可复用该检查结果。项目检查通过不会自动结束任务，模型仍须对照用户要求给出最终回复，随后才记为 `completed`。
 
+普通仓库会话保存最近一次完整检查及其补丁 SHA-256；最终回复复用结果时，重新加载仍保留该批记录。`result.json` 的 `checks_patch_sha256` 标识被检查的补丁，`checks_current` 表示它是否仍对应当前补丁，不代表检查通过。新任务、检查命令集变更和手动恢复快照会清空旧检查；续跑保留记录，但结束前重新检查当前工作区。旧 Trace 可恢复最后一批检查命令结果，缺少补丁摘要时不会将它认定为当前补丁的检查。检查命令若改动了补丁，该次验证失败。
+
 其余终止原因：
 
 | `stop_reason` | 含义 |
@@ -160,11 +162,13 @@ runs/<run_id>/
 - `trace.jsonl` 每行是一个带 `run_id`、`step`、`event_type`、`timestamp` 和事件数据的 JSON 对象。
 - 评测 Trace 包含 `user_message`、`model_action`、`tool_started`、`tool_result`、`verification_result`、`failure_detected`、`recovery_action` 和 `task_finished`。普通仓库会话还会记录计划、快照、上下文压缩、项目检查及其命令集、`workflow_guidance`、人工介入与恢复事件。`config.json` 记录不含密钥的运行参数与任务文件 SHA-256 摘要。`compare` 对同一任务成对运行关闭和开启恢复的版本，分别保存单次 Trace 与汇总 JSON。
 - 普通仓库会话从隔离副本读取项目指令与显式选择的技能，写入 `context_source_added` 事件，记录相对路径、内容与 SHA-256 摘要。续跑从事件恢复这些来源；模型密钥只从命名的环境变量读取。
+- `project_check_started` 标记一次项目检查开始，`project_check` 保留逐命令结果，`project_check_completed` 保存本批结果和起始补丁摘要。检查中断时不会把上一批结果作为本批结果恢复；`verification_result` 继续记录 Runner 的验证结论。
 - 显式启用的 `before_tool`、`after_tool` Hook 使用相同的命令权限入口，分别产生 `hook_started` 和 `hook_result` 事件。Hook 失败会反映在关联的工具结果中；未启用 Hooks 时不改变工具行为。
 - 普通仓库会话可显式配置 MCP stdio 服务。发现的工具以 `mcp__<服务名>__<工具名>` 暴露给模型，`mcp_tools_registered` 记录工具名；调用沿用 `tool_started`、`tool_result` 与权限事件。服务配置随会话保存，环境变量仅保存名称；未声明为只读的 MCP 工具按写操作审批。MCP 服务在宿主机执行，外部系统的副作用不属于 Git 快照，遇到未完成调用时仍需人工检查后确认续跑。
 - `ci` 与 `exec` 共用普通仓库会话及 Trace。`ci --output-dir` 将 `result.json`、`trace.jsonl`、`diff.patch`、`status.txt` 复制到指定目录，并生成 `summary.json`，字段为 `success`、`session_id`、`stop_reason`、`checks` 和 `artifacts`。成功退出码为 0，未完成或项目检查失败为 1；失败时仍保留可生成的会话产物。
 - 跨任务记忆位于仓库外的 SQLite 文件中，按原仓库绝对路径隔离。每条记录包含 `memory_id`、`kind`（`project`、`failure`、`fix`）、内容、相对路径适用范围、来源、修订号与启停状态。新增、修订和停用都保留版本快照；手工来源记录来源引用及当时的原仓库提交。
 - 普通仓库会话的记忆模式为 `off`、`summary` 或 `retrieve`。启动和续跑时选择的记录由 `memory_context_set` 事件保存快照，Context 标注记忆 ID、修订号、适用路径和来源；`result.json` 列出本次选择的 ID。`memory_stored` 记录从当前会话提取的失败、曾通过的项目检查命令，或完成并经过项目检查的修复。项目检查记忆仅说明命令曾在一个工作区通过，不代表任务完成；`fix` 仍要求最终回复、通过的检查和非空补丁。检索只读取同一原仓库的有效记录；停用条目不会进入新上下文。
+- 自动记忆捕获只接收补丁摘要仍匹配当前工作区的检查结果；检查后工作区发生变化时，不会据此写入项目检查或成功修复记忆。
 - `compare-memory` 固定原仓库基线、任务、检查、模型和预算，先复制记忆数据库，然后用 `off`、`summary`、`retrieve` 各运行指定次数。比较期间关闭记忆写入；`report.json` 汇总成功率、轮数、工具调用、Token、耗时与选择的记忆 ID，每次运行仍保留独立会话配置、Trace、结果和补丁。
 - `parallel` 清单含至少两个 `tasks`（每项有 `id`、`instruction`、`paths`、`checks`）及 `integration_checks`。各任务从相同原仓库提交创建会话，指令告知分配路径，执行后再检查实际改动路径；每份 `handoff.json` 记录范围、会话 ID、检查结果与产物目录。成功任务的补丁按清单顺序在第三份 Git 副本中应用，冲突和越界单独报告，最后在容器中执行整合检查。`report.json` 给出任务交接、补丁应用状态、整合结果和独立审阅路径；比较和并行任务均不会修改原仓库。
 

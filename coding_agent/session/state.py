@@ -41,6 +41,9 @@ class SessionState:
     pending_tools: dict[str, ToolCall] = field(default_factory=dict)
     last_failed_action: str | None = None
     repeat_blocks: int = 0
+    project_check_commands: list[str] = field(default_factory=list)
+    project_checks: list[dict[str, Any]] = field(default_factory=list)
+    project_check_patch_sha256: str | None = None
     event_sink: Callable[[dict[str, Any]], None] | None = field(default=None, repr=False)
 
     @property
@@ -84,6 +87,25 @@ class SessionState:
         self.emit("user_message", {"content": content})
         self.messages.append({"role": "user", "content": content})
         self.stop_reason = None
+        self._clear_project_checks()
+
+    def _clear_project_checks(self) -> None:
+        self.project_checks = []
+        self.project_check_patch_sha256 = None
+
+    def set_project_check_suite(self, commands: list[str]) -> None:
+        self.emit("project_check_suite", {"commands": commands})
+        self.project_check_commands = commands
+        self._clear_project_checks()
+
+    def start_project_checks(self, patch_sha256: str) -> None:
+        self.emit("project_check_started", {"patch_sha256": patch_sha256})
+        self._clear_project_checks()
+
+    def record_project_checks(self, checks: list[dict[str, Any]], patch_sha256: str) -> None:
+        self.emit("project_check_completed", {"checks": checks, "patch_sha256": patch_sha256})
+        self.project_checks = checks
+        self.project_check_patch_sha256 = patch_sha256
 
     def _accept_turn(self, response: ModelResponse, duration_ms: int, timestamp: str) -> Turn:
         self.steps += 1
@@ -185,6 +207,7 @@ class SessionState:
 
     def record_restore(self, commit: str) -> None:
         self.emit("workspace_restored", {"commit": commit})
+        self._clear_project_checks()
         self.messages.append({
             "role": "system",
             "content": f"Workspace restored to snapshot {commit}. Re-inspect files before editing.",
@@ -226,6 +249,7 @@ class SessionState:
     @classmethod
     def from_events(cls, session_id: str, events: list[dict[str, Any]]) -> "SessionState":
         state = cls(session_id)
+        pending_checks = []
         for event in events:
             data = event["data"]
             kind = event["event_type"]
@@ -234,6 +258,8 @@ class SessionState:
             if kind == "user_message":
                 state.messages.append({"role": "user", "content": data["content"]})
                 state.stop_reason = None
+                state._clear_project_checks()
+                pending_checks = []
             elif kind == "model_action":
                 raw = data["response"]
                 response = ModelResponse(
@@ -251,6 +277,23 @@ class SessionState:
             elif kind == "verification_result":
                 state.turns[-1].verification = VerificationResult(**data)
                 state.turns[-1].verification_at = timestamp
+                if pending_checks:
+                    state.project_checks = pending_checks
+                    state.project_check_patch_sha256 = None
+                    pending_checks = []
+            elif kind == "project_check_suite":
+                state.project_check_commands = data["commands"]
+                state._clear_project_checks()
+                pending_checks = []
+            elif kind == "project_check_started":
+                state._clear_project_checks()
+                pending_checks = []
+            elif kind == "project_check":
+                pending_checks.append(data)
+            elif kind == "project_check_completed":
+                state.project_checks = data["checks"]
+                state.project_check_patch_sha256 = data["patch_sha256"]
+                pending_checks = []
             elif kind == "plan_updated":
                 state.plan = data["items"]
             elif kind == "context_compacted":
@@ -276,6 +319,8 @@ class SessionState:
                     state.last_failed_action = None
                     state.repeat_blocks = 0
             elif kind == "workspace_restored":
+                state._clear_project_checks()
+                pending_checks = []
                 state.messages.append({
                     "role": "system",
                     "content": f"Workspace restored to snapshot {data['commit']}. Re-inspect files before editing.",

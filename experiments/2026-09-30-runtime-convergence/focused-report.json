@@ -1,0 +1,60 @@
+{
+  "mode": "focused_verification",
+  "cases": [
+    {
+      "case": "success_reload",
+      "passed": true,
+      "evidence": {
+        "stop_reason": "completed",
+        "executed_checks": 2,
+        "checks_before_load": 2,
+        "checks_after_load": 2,
+        "checks_current_after_load": true,
+        "memory_kinds": [
+          "fix",
+          "project"
+        ]
+      }
+    },
+    {
+      "case": "failed_then_fixed",
+      "passed": true,
+      "evidence": {
+        "stop_reason": "completed",
+        "steps": 3,
+        "latest_checks": 2,
+        "checks_after_restore": 0,
+        "memory_kinds": [
+          "failure",
+          "fix",
+          "project"
+        ]
+      }
+    },
+    {
+      "case": "changed_after_completion",
+      "passed": true,
+      "evidence": {
+        "checks_current_after_external_edit": false,
+        "stop_reason_after_resume": "final_unverified",
+        "resumed_check_exit": 1
+      }
+    },
+    {
+      "case": "check_changes_patch",
+      "passed": true,
+      "evidence": {
+        "stop_reason": "final_unverified",
+        "checks_current": false,
+        "command_exit": 0,
+        "memory_kinds": [
+          "failure"
+        ]
+      }
+    }
+  ],
+  "passed": true,
+  "failures": 0,
+  "planned_cases": 4,
+  "executed_cases": 4
+}

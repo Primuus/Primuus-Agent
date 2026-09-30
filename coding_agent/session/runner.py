@@ -64,14 +64,7 @@ class SessionRunner:
         validation_retries = 0
         budget_warning_sent = False
         if (spec.instructions is None and self.verify is not None and state.turns
-            and not state.turns[-1].response.tool_calls
-            and state.turns[-1].verification is not None
-            and state.turns[-1].verification.passed):
-            state.finish(self.verification_success_reason)
-            return state
-        if (spec.instructions is None and self.verify is not None and state.turns
-            and not state.turns[-1].response.tool_calls
-            and state.turns[-1].verification is None):
+            and not state.turns[-1].response.tool_calls):
             try:
                 state.add_verification(state.turns[-1], self.verify())
             except VerifierError:

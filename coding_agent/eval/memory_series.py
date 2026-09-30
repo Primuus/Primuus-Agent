@@ -179,7 +179,7 @@ def _run_variant(source: Path, task: dict, mode: str, config: dict,
         "source_commit": result["base_commit"], "session_id": result["session_id"],
         "model_id": model.model_id, "success": verifier["passed"],
         "service_error": service_error,
-        "stop_reason": result["stop_reason"], "project_checks_passed": bool(result["checks"]) and all(
+        "stop_reason": result["stop_reason"], "project_checks_passed": result["checks_current"] and all(
             check["status"] == "completed" and check["exit_code"] == 0 for check in result["checks"]),
         "steps": result["steps"], "tool_calls": result["tool_calls"],
         "tokens": result["tokens"], "active_seconds": result["active_seconds"],
