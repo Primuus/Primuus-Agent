@@ -38,6 +38,7 @@ class SessionRunner:
         budget_guidance: bool = False,
         context_tool_output_chars: int = 4000,
         max_output_tokens: int = 8192,
+        initial_edit_budget_tokens: int | None = None,
     ) -> None:
         self.model = model
         self.execute = execute
@@ -58,6 +59,7 @@ class SessionRunner:
         self.budget_guidance = budget_guidance
         self.context_tool_output_chars = context_tool_output_chars
         self.max_output_tokens = max_output_tokens
+        self.initial_edit_budget_tokens = initial_edit_budget_tokens
 
     def _estimate_input(self, state: SessionState, messages: list[dict], tools: list[dict]) -> tuple[int, int]:
         size = len(json.dumps({"messages": messages, "tools": tools}, ensure_ascii=False).encode("utf-8"))
@@ -68,12 +70,32 @@ class SessionRunner:
             estimate = max(estimate, ceil(state.turns[-1].response.input_tokens * size / previous["input_bytes"]))
         return ceil(estimate * 1.2), size
 
-    def _prepare_request(self, state: SessionState) -> tuple[list[dict], list[dict], int]:
-        messages = build_context(state)
+    def _request_phase(self, state: SessionState) -> str:
+        return next((event["data"]["phase"] for event in reversed(state.events)
+                     if event["event_type"] == "model_request"), "work")
+
+    def _prepare_request(self, state: SessionState) -> tuple[list[dict], list[dict], int, str]:
         tools = self.tool_specs
-        estimate, size = self._estimate_input(state, messages, tools)
         output_limit = self.max_output_tokens
         phase = "work"
+        task_start_step = next((event["step"] for event in reversed(state.events)
+                                if event["event_type"] == "user_message"), 0)
+        task_tokens = sum((turn.response.input_tokens or 0) + (turn.response.output_tokens or 0)
+                          for turn in state.turns[task_start_step:])
+        if (self.initial_edit_budget_tokens is not None
+            and task_tokens >= self.initial_edit_budget_tokens
+            and state.project_check_commands and state.project_check_patch_sha256 is None):
+            phase = "edit"
+            tools = [tool for tool in tools if tool["name"] in ("write_file", "edit_file")]
+            if self._request_phase(state) != "edit":
+                state.add_workflow_guidance(
+                    "The initial investigation allowance is used. This request offers only file "
+                    "editing tools. Apply the focused patch using the code and observations already "
+                    "available; configured checks will run automatically and return failures. "
+                    "If the evidence is insufficient, explain what is missing instead of claiming completion."
+                )
+        messages = build_context(state)
+        estimate, size = self._estimate_input(state, messages, tools)
         ready = (bool(state.project_checks) and state.project_check_patch_sha256 is not None
                  and all(check["status"] == "completed" and check["exit_code"] == 0 for check in state.project_checks)
                  and all(item["status"] == "completed" for item in state.plan))
@@ -98,7 +120,7 @@ class SessionRunner:
                 messages = [{key: value for key, value in message.items() if key != "reasoning_content"}
                             for message in messages]
             estimate, size = self._estimate_input(state, messages, tools)
-            reserve = estimate + self.max_output_tokens if phase == "work" else 0
+            reserve = estimate + self.max_output_tokens if phase != "final" else 0
         if remaining is not None:
             output_limit = min(output_limit, remaining - estimate - reserve)
         state.emit("model_request", {
@@ -106,7 +128,7 @@ class SessionRunner:
             "max_output_tokens": output_limit, "reserved_tokens": reserve,
             "remaining_tokens": remaining,
         }, state.steps + 1)
-        return messages, tools, output_limit
+        return messages, tools, output_limit, phase
 
     def run(self, spec: SessionSpec, state: SessionState | None = None) -> SessionState:
         state = state or SessionState(spec.session_id)
@@ -119,7 +141,7 @@ class SessionRunner:
         validation_retries = 0
         budget_warning_sent = False
         if (spec.instructions is None and self.verify is not None and state.turns
-            and not state.turns[-1].response.tool_calls):
+            and not state.turns[-1].response.tool_calls and self._request_phase(state) != "edit"):
             try:
                 state.add_verification(state.turns[-1], self.verify())
             except VerifierError:
@@ -154,7 +176,7 @@ class SessionRunner:
                 budget_warning_sent = True
             if self.context_max_chars is not None:
                 state.compact(self.context_max_chars, self.context_keep_messages, self.context_tool_output_chars)
-            messages, tools, output_limit = self._prepare_request(state)
+            messages, tools, output_limit, phase = self._prepare_request(state)
             if output_limit <= 0:
                 state.finish("token_budget")
                 return state
@@ -183,7 +205,7 @@ class SessionRunner:
                         state.finish("model_error")
                         return state
                     model_attempt += 1
-                    messages, tools, output_limit = self._prepare_request(state)
+                    messages, tools, output_limit, phase = self._prepare_request(state)
                     if output_limit <= 0:
                         state.finish("token_budget")
                         return state
@@ -192,6 +214,10 @@ class SessionRunner:
                               max(0, self.timeout_seconds - (monotonic() - started))))
             turn = state.add_turn(response, int((monotonic() - model_started) * 1000))
             if not response.tool_calls:
+                if phase == "edit":
+                    state.record_failure("verification", {"reason": "initial_edit_missing"})
+                    state.finish("final_unverified")
+                    return state
                 if self.verify is None:
                     state.finish("completed")
                     return state

@@ -1,0 +1,19 @@
+{
+  "source_trace": "experiments/2026-10-05-runtime-fix/records/intword_rounding_carry/a0f4a5a5a300/trace.jsonl",
+  "prefix_through_step": 7,
+  "initial_edit_budget_tokens": 40000,
+  "initial_request": {
+    "phase": "edit",
+    "tools": [
+      "write_file",
+      "edit_file"
+    ],
+    "output_limit": 8192
+  },
+  "refusal_stop_reason": "final_unverified",
+  "reload_resume_stop_reason": "final_unverified",
+  "baseline_verifier_calls": 0,
+  "new_task_request_phase": "work",
+  "passed": true,
+  "temporary_test_files_created": false
+}
