@@ -1,0 +1,24 @@
+{
+  "source_trace": "experiments/2026-10-05-runtime-edit-budget/records/intword_rounding_carry/3d250e09d064/trace.jsonl",
+  "passed": true,
+  "tool_sets": [
+    [
+      "write_file",
+      "read_file_range",
+      "edit_file"
+    ],
+    [
+      "write_file",
+      "edit_file"
+    ],
+    [
+      "write_file",
+      "edit_file"
+    ]
+  ],
+  "read_refresh_turns": 1,
+  "reload_refresh_allowance_reset": false,
+  "final_stop_reason": "final_unverified",
+  "baseline_verifier_calls": 0,
+  "temporary_test_files_created": false
+}

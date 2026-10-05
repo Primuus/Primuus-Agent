@@ -1,0 +1,50 @@
+{
+  "code_commit": "3d433be69695a602d5975efa0b860fd036adab67",
+  "status": "service_failure",
+  "maximum_runs": 1,
+  "failure_stop_threshold": 1,
+  "runs": [
+    {
+      "task_id": "intword_rounding_carry",
+      "session_id": "3d250e09d064",
+      "upstream_base_commit": "f971127ce7e7770d3ff5be05cfc484bdf9302e04",
+      "baseline_tree": "bb9697854d90744efbed79432285fe1ed67f09a8",
+      "passed": false,
+      "functional_passed": false,
+      "stop_reason": "model_error",
+      "project_checks_passed": false,
+      "reload_checks_consistent": true,
+      "steps": 8,
+      "tool_calls": 10,
+      "failed_tool_calls": 0,
+      "tokens": 63420,
+      "active_seconds": 51.1,
+      "changed_paths": [],
+      "first_effective_direct_edit_step": null,
+      "project_check_batches": 0,
+      "context_compactions": 4,
+      "final_mode_requests": 0,
+      "metrics": {
+        "repository_discovery_commands": 3,
+        "repeated_discovery_commands": 0,
+        "file_reads": 4,
+        "repeated_file_reads": 0,
+        "time_to_first_useful_edit_seconds": null,
+        "read_paths": [
+          "src/humanize/number.py",
+          "tests/test_number.py"
+        ],
+        "discovery_signatures": [
+          "list_files:",
+          "search_text:decillion",
+          "search_text:def intword"
+        ]
+      },
+      "artifact_dir": "experiments/2026-10-05-runtime-edit-budget/records/intword_rounding_carry/3d250e09d064"
+    }
+  ],
+  "executed_runs": 1,
+  "passed_runs": 0,
+  "omitted_tasks": [],
+  "finished_at": "2026-10-05T09:07:13.995976+00:00"
+}

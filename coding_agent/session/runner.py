@@ -86,12 +86,22 @@ class SessionRunner:
             and task_tokens >= self.initial_edit_budget_tokens
             and state.project_check_commands and state.project_check_patch_sha256 is None):
             phase = "edit"
-            tools = [tool for tool in tools if tool["name"] in ("write_file", "edit_file")]
+            edit_steps = {event["step"] for event in state.events
+                          if event["event_type"] == "model_request" and event["data"]["phase"] == "edit"}
+            refreshed = any(
+                step in edit_steps and any(call.name == "read_file_range" for call in turn.response.tool_calls)
+                for step, turn in enumerate(state.turns[task_start_step:], task_start_step + 1)
+            )
+            edit_tools = {"write_file", "edit_file"}
+            if not refreshed:
+                edit_tools.add("read_file_range")
+            tools = [tool for tool in tools if tool["name"] in edit_tools]
             if self._request_phase(state) != "edit":
                 state.add_workflow_guidance(
-                    "The initial investigation allowance is used. This request offers only file "
-                    "editing tools. Apply the focused patch using the code and observations already "
-                    "available; configured checks will run automatically and return failures. "
+                    "The initial investigation allowance is used. Broad discovery tools are closed. "
+                    "One turn of focused read_file_range calls is available to recover source omitted "
+                    "by compaction, followed by file editing tools. Prefer edit_file for the smallest "
+                    "exact replacements. Configured checks run automatically and return failures. "
                     "If the evidence is insufficient, explain what is missing instead of claiming completion."
                 )
         messages = build_context(state)
