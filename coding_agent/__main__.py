@@ -166,7 +166,8 @@ def main() -> None:
         "base_url": endpoint,
         "endpoint_host": parsed_url.hostname,
         "api_key_env": key_env,
-        "max_output_tokens": arguments.max_output_tokens or configured_model.get("max_output_tokens", 4096),
+        "max_output_tokens": arguments.max_output_tokens or configured_model.get(
+            "max_output_tokens", 4096 if backend == "anthropic" else 8192),
     }
 
     def make_model():

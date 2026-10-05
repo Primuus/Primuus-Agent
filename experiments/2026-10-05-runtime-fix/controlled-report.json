@@ -1,0 +1,109 @@
+{
+  "repository_budget_scenarios": [
+    {
+      "patch": "correct",
+      "passed": true,
+      "stop_reason": "completed",
+      "tokens": 7100,
+      "requests": [
+        {
+          "tools": [
+            "read_file",
+            "write_file",
+            "run_shell",
+            "list_files",
+            "search_text",
+            "read_file_range",
+            "edit_file",
+            "git_status",
+            "git_diff",
+            "update_plan"
+          ],
+          "output_limit": 2000
+        },
+        {
+          "tools": [],
+          "output_limit": 2000
+        }
+      ],
+      "budget_events": [
+        {
+          "phase": "work",
+          "input_bytes": 3687,
+          "estimated_input_tokens": 2213,
+          "max_output_tokens": 2000,
+          "reserved_tokens": 4213,
+          "remaining_tokens": 15000
+        },
+        {
+          "phase": "final",
+          "input_bytes": 2208,
+          "estimated_input_tokens": 3594,
+          "max_output_tokens": 2000,
+          "reserved_tokens": 0,
+          "remaining_tokens": 9000
+        }
+      ]
+    },
+    {
+      "patch": "wrong",
+      "passed": true,
+      "stop_reason": "token_budget",
+      "tokens": 6000,
+      "requests": [
+        {
+          "tools": [
+            "read_file",
+            "write_file",
+            "run_shell",
+            "list_files",
+            "search_text",
+            "read_file_range",
+            "edit_file",
+            "git_status",
+            "git_diff",
+            "update_plan"
+          ],
+          "output_limit": 2000
+        }
+      ],
+      "budget_events": [
+        {
+          "phase": "work",
+          "input_bytes": 3687,
+          "estimated_input_tokens": 2213,
+          "max_output_tokens": 2000,
+          "reserved_tokens": 4213,
+          "remaining_tokens": 15000
+        },
+        {
+          "phase": "work",
+          "input_bytes": 4649,
+          "estimated_input_tokens": 7566,
+          "max_output_tokens": -8132,
+          "reserved_tokens": 9566,
+          "remaining_tokens": 9000
+        }
+      ]
+    }
+  ],
+  "adapter_output_limits": [
+    {
+      "backend": "OpenAICompatibleBackend",
+      "passed": true,
+      "max_tokens": 500,
+      "tools_omitted": true
+    },
+    {
+      "backend": "AnthropicBackend",
+      "passed": true,
+      "max_tokens": 500,
+      "tools_omitted": true
+    }
+  ],
+  "limited_response_usage": {
+    "passed": true,
+    "known_tokens": 500,
+    "stop_reason": "model_error"
+  }
+}

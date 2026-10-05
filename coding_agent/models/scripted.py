@@ -11,6 +11,7 @@ class ScriptedBackend:
         self.responses = iter(responses)
 
     def generate(
-        self, messages: list[dict[str, Any]], tools: list[dict]
+        self, messages: list[dict[str, Any]], tools: list[dict],
+        *, max_output_tokens: int | None = None,
     ) -> ModelResponse:
         return next(self.responses)

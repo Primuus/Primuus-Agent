@@ -1,6 +1,8 @@
 """Model and tool loop used by both real repositories and task evaluation."""
 
 from collections.abc import Callable
+import json
+from math import ceil
 from time import monotonic, sleep
 
 from coding_agent.contracts import ToolCall, ToolResult, VerificationResult
@@ -35,6 +37,7 @@ class SessionRunner:
         post_tool_verify: Callable[[], VerificationResult | None] | None = None,
         budget_guidance: bool = False,
         context_tool_output_chars: int = 4000,
+        max_output_tokens: int = 8192,
     ) -> None:
         self.model = model
         self.execute = execute
@@ -54,6 +57,56 @@ class SessionRunner:
         self.post_tool_verify = post_tool_verify
         self.budget_guidance = budget_guidance
         self.context_tool_output_chars = context_tool_output_chars
+        self.max_output_tokens = max_output_tokens
+
+    def _estimate_input(self, state: SessionState, messages: list[dict], tools: list[dict]) -> tuple[int, int]:
+        size = len(json.dumps({"messages": messages, "tools": tools}, ensure_ascii=False).encode("utf-8"))
+        estimate = ceil(size / 2)
+        previous = next((event["data"] for event in reversed(state.events)
+                         if event["event_type"] == "model_request" and event["step"] == state.steps), None)
+        if previous is not None and state.turns[-1].response.input_tokens is not None:
+            estimate = max(estimate, ceil(state.turns[-1].response.input_tokens * size / previous["input_bytes"]))
+        return ceil(estimate * 1.2), size
+
+    def _prepare_request(self, state: SessionState) -> tuple[list[dict], list[dict], int]:
+        messages = build_context(state)
+        tools = self.tool_specs
+        estimate, size = self._estimate_input(state, messages, tools)
+        output_limit = self.max_output_tokens
+        phase = "work"
+        ready = (bool(state.project_checks) and state.project_check_patch_sha256 is not None
+                 and all(check["status"] == "completed" and check["exit_code"] == 0 for check in state.project_checks)
+                 and all(item["status"] == "completed" for item in state.plan))
+        remaining = self.max_tokens - state.known_tokens if self.max_tokens is not None else None
+        reserve = estimate + self.max_output_tokens if self.budget_guidance else 0
+        closing = self.budget_guidance and (
+            self.max_steps - state.steps == 1
+            or remaining is not None and remaining <= estimate + output_limit + reserve
+        )
+        if closing:
+            state.compact(min(self.context_max_chars or 8000, 8000), 2, self.context_tool_output_chars)
+            if ready:
+                phase = "final"
+                tools = []
+                state.add_workflow_guidance(
+                    "The current patch passed the project checks and the remaining budget is reserved "
+                    "for your final answer. Review the original requirements and report the changes, "
+                    "verification and any remaining limitations. Do not call more tools."
+                )
+            messages = build_context(state)
+            if phase == "final":
+                messages = [{key: value for key, value in message.items() if key != "reasoning_content"}
+                            for message in messages]
+            estimate, size = self._estimate_input(state, messages, tools)
+            reserve = estimate + self.max_output_tokens if phase == "work" else 0
+        if remaining is not None:
+            output_limit = min(output_limit, remaining - estimate - reserve)
+        state.emit("model_request", {
+            "phase": phase, "input_bytes": size, "estimated_input_tokens": estimate,
+            "max_output_tokens": output_limit, "reserved_tokens": reserve,
+            "remaining_tokens": remaining,
+        }, state.steps + 1)
+        return messages, tools, output_limit
 
     def run(self, spec: SessionSpec, state: SessionState | None = None) -> SessionState:
         state = state or SessionState(spec.session_id)
@@ -92,28 +145,37 @@ class SessionRunner:
                 return state
             if (self.budget_guidance and not budget_warning_sent
                 and self.max_tokens is not None
-                and state.known_tokens >= self.max_tokens * 0.6):
+                and state.known_tokens >= self.max_tokens / 3):
                 state.add_workflow_guidance(
-                    "The token budget is over 60% used. Focus on the requested change and "
-                    "finish as soon as the requirements and project checks are satisfied."
+                    "One third of the token budget is used. If the relevant code and failure are "
+                    "understood, make the focused edit now and use the configured checks. "
+                    "Avoid more broad searches or unrelated edge cases; leave budget for the final answer."
                 )
                 budget_warning_sent = True
             if self.context_max_chars is not None:
                 state.compact(self.context_max_chars, self.context_keep_messages, self.context_tool_output_chars)
+            messages, tools, output_limit = self._prepare_request(state)
+            if output_limit <= 0:
+                state.finish("token_budget")
+                return state
             model_attempt = 0
             while True:
                 try:
                     model_started = monotonic()
-                    response = self.model.generate(build_context(state), self.tool_specs)
+                    response = self.model.generate(messages, tools, max_output_tokens=output_limit)
                     break
                 except (StopIteration, ValueError):
                     state.finish("invalid_model_action")
                     return state
                 except ModelServiceError as error:
-                    state.tokens = None
+                    if error.input_tokens is None or error.output_tokens is None:
+                        state.tokens = None
+                    elif state.tokens is not None:
+                        state.tokens += error.input_tokens + error.output_tokens
                     state.record_failure("model_service", {
                         "retryable": error.retryable, "message": str(error),
                         "attempt": model_attempt + 1,
+                        "input_tokens": error.input_tokens, "output_tokens": error.output_tokens,
                     })
                     if (not self.recovery.enabled or not error.retryable
                         or model_attempt >= self.recovery.model_retries
@@ -121,6 +183,10 @@ class SessionRunner:
                         state.finish("model_error")
                         return state
                     model_attempt += 1
+                    messages, tools, output_limit = self._prepare_request(state)
+                    if output_limit <= 0:
+                        state.finish("token_budget")
+                        return state
                     state.emit("recovery_action", {"kind": "model_retry", "attempt": model_attempt})
                     sleep(min(0.5 * 2 ** (model_attempt - 1),
                               max(0, self.timeout_seconds - (monotonic() - started))))

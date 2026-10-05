@@ -55,6 +55,10 @@ class SessionState:
         return sum(
             (turn.response.input_tokens or 0) + (turn.response.output_tokens or 0)
             for turn in self.turns
+        ) + sum(
+            (event["data"].get("input_tokens") or 0) + (event["data"].get("output_tokens") or 0)
+            for event in self.events
+            if event["event_type"] == "failure_detected" and event["data"]["category"] == "model_service"
         )
 
     @property
@@ -324,6 +328,9 @@ class SessionState:
                 state.project_checks = data["checks"]
                 state.project_check_patch_sha256 = data["patch_sha256"]
                 pending_checks = []
+            elif kind == "project_check_invalidated":
+                state._clear_project_checks()
+                pending_checks = []
             elif kind == "plan_updated":
                 state.plan = data["items"]
             elif kind == "context_compacted":
@@ -341,7 +348,10 @@ class SessionState:
                 state.last_failed_action = data["signature"]
                 state.repeat_blocks = 0
             elif kind == "failure_detected" and data["category"] == "model_service":
-                state.tokens = None
+                if data.get("input_tokens") is None or data.get("output_tokens") is None:
+                    state.tokens = None
+                elif state.tokens is not None:
+                    state.tokens += data["input_tokens"] + data["output_tokens"]
             elif kind == "recovery_action":
                 if data["kind"] == "repeat_block":
                     state.repeat_blocks = data["count"]

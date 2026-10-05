@@ -18,30 +18,35 @@ class OpenAICompatibleBackend:
         base_url: str,
         api_key: str | None,
         timeout_seconds: int = 120,
+        max_output_tokens: int = 8192,
     ) -> None:
         self.model_id = model_id
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.timeout_seconds = timeout_seconds
+        self.max_output_tokens = max_output_tokens
 
     def generate(
-        self, messages: list[dict[str, Any]], tools: list[dict]
+        self, messages: list[dict[str, Any]], tools: list[dict],
+        *, max_output_tokens: int | None = None,
     ) -> ModelResponse:
         payload = {
             "model": self.model_id,
             "messages": messages,
-            "tools": [
+            "max_tokens": min(self.max_output_tokens, max_output_tokens or self.max_output_tokens),
+        }
+        if tools:
+            payload["tools"] = [
                 {"type": "function", "function": tool}
                 for tool in tools
-            ],
-            "parallel_tool_calls": False,
-        }
+            ]
+            payload["parallel_tool_calls"] = False
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
         request = Request(
             f"{self.base_url}/chat/completions",
-            data=json.dumps(payload).encode("utf-8"),
+            data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
             headers=headers,
             method="POST",
         )
@@ -62,6 +67,11 @@ class OpenAICompatibleBackend:
 
         message = completion["choices"][0]["message"]
         usage = completion.get("usage") or {}
+        if completion["choices"][0]["finish_reason"] == "length":
+            raise ModelServiceError(
+                "Model response reached the configured output limit", retryable=False,
+                input_tokens=usage.get("prompt_tokens"), output_tokens=usage.get("completion_tokens"),
+            )
         calls = message.get("tool_calls") or []
         if calls:
             return ModelResponse(

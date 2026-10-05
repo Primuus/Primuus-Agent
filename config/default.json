@@ -23,7 +23,8 @@
   "model": {
     "backend": "openai_compatible",
     "name": "deepseek-flash",
-    "base_url": "https://api.deepseek.com"
+    "base_url": "https://api.deepseek.com",
+    "max_output_tokens": 8192
   },
   "sandbox": {
     "image": "coding-agent-sandbox:local",

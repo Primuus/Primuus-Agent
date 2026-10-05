@@ -59,22 +59,24 @@ class AnthropicBackend:
 
     def generate(
         self, messages: list[dict[str, Any]], tools: list[dict],
+        *, max_output_tokens: int | None = None,
     ) -> ModelResponse:
         system, conversation = self._conversation(messages)
         payload = {
             "model": self.model_id,
-            "max_tokens": self.max_output_tokens,
+            "max_tokens": min(self.max_output_tokens, max_output_tokens or self.max_output_tokens),
             "system": system,
             "messages": conversation,
-            "tools": [{
+        }
+        if tools:
+            payload["tools"] = [{
                 "name": tool["name"],
                 "description": tool["description"],
                 "input_schema": tool["parameters"],
-            } for tool in tools],
-        }
+            } for tool in tools]
         request = Request(
             f"{self.base_url}/v1/messages",
-            data=json.dumps(payload).encode("utf-8"),
+            data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
             headers={
                 "Content-Type": "application/json",
                 "anthropic-version": "2023-06-01",
@@ -96,6 +98,11 @@ class AnthropicBackend:
             raise ModelServiceError("Model API request timed out", retryable=True) from error
 
         usage = completion.get("usage") or {}
+        if completion["stop_reason"] == "max_tokens":
+            raise ModelServiceError(
+                "Model response reached the configured output limit", retryable=False,
+                input_tokens=usage.get("input_tokens"), output_tokens=usage.get("output_tokens"),
+            )
         calls = [block for block in completion["content"] if block["type"] == "tool_use"]
         if calls:
             return ModelResponse(

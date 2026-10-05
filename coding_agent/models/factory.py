@@ -21,5 +21,8 @@ def create_model(config: dict) -> ModelBackend:
         key = os.getenv(key_name)
         if key is None and key_name == "DEEPSEEK_API_KEY":
             key = os.getenv("OPENAI_API_KEY")
-        return OpenAICompatibleBackend(model["name"], model["base_url"], key)
+        return OpenAICompatibleBackend(
+            model["name"], model["base_url"], key,
+            max_output_tokens=model.get("max_output_tokens", 8192),
+        )
     raise ValueError(f"Unknown model backend: {backend}")

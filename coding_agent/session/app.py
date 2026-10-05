@@ -274,6 +274,8 @@ class RepositorySession:
                     return None
                 last_observed_patch = patch
                 if not patch:
+                    self.state.emit("project_check_invalidated", {"reason": "empty_patch"})
+                    self.state._clear_project_checks()
                     last_check_result = None
                     return None
                 result = verify_checks()
@@ -289,6 +291,7 @@ class RepositorySession:
                     context_max_chars=self.config.get("context_max_chars"),
                     context_keep_messages=self.config.get("context_keep_messages", 12),
                     context_tool_output_chars=self.config.get("context_tool_output_chars", 4000),
+                    max_output_tokens=self.config["model"].get("max_output_tokens", 8192),
                     recovery=RecoveryPolicy.from_config(self.config),
                     checkpoint=self._snapshot,
                     rollback=self.repository.restore,
