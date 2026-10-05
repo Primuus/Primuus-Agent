@@ -1,0 +1,15 @@
+{
+  "temporary_script_removed": true,
+  "trial_roots": [
+    "runtime-fix",
+    "runtime-edit-budget",
+    "runtime-source-refresh",
+    "runtime-reasoning-budget",
+    "runtime-tool-enforcement",
+    "runtime-default-recovery"
+  ],
+  "temporary_repositories_and_sessions_removed": true,
+  "project_check_patch_hashes_match": true,
+  "temporary_test_scripts_retained": 0,
+  "credential_patterns_found": 0
+}

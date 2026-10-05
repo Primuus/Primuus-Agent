@@ -1,0 +1,17 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index ebccfb9..7265f32 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -282,7 +282,11 @@ def intword(value: NumberOrString, format: str = "%.1f") -> str:
+     chopped = value / power
+     rounded_value = float(format % chopped)
+ 
+-    if not largest_ordinal and rounded_value * power == powers[ordinal + 1]:
++    if (
++        not largest_ordinal
++        and rounded_value == 1000
++        and power * 1000 == powers[ordinal + 1]
++    ):
+         # After rounding, we end up just at the next power
+         ordinal += 1
+         rounded_value = 1.0

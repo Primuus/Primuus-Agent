@@ -1,0 +1,34 @@
+{
+  "code_commit": "846345b",
+  "task_id": "intword_rounding_carry",
+  "normal_completion": true,
+  "tokens": 83993,
+  "previous_s3_tokens": 127705,
+  "token_reduction_percent": 34.23,
+  "input_tokens": 78656,
+  "output_tokens": 5337,
+  "first_edit_step": 8,
+  "initial_edit_request_step": 8,
+  "final_request": {
+    "request": 12,
+    "message_chars": 9538,
+    "input_bytes": 9565,
+    "tools_count": 0,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 0,
+    "input_tokens": 3012,
+    "output_tokens": 416,
+    "reasoning_chars": 0,
+    "tool_names": [],
+    "final_reply": true
+  },
+  "retries": 0,
+  "recoveries": 0,
+  "service_failures": 0,
+  "final_check_count": 240,
+  "comparison_limits": [
+    "Latest successful intcomma run used fce2aeb with recovery off. This intword run uses 846345b with recovery on.",
+    "No retries occurred here; this run does not verify recovery from the observed transfer failures.",
+    "These selected tasks do not establish full regression acceptance or isolate causal effects."
+  ]
+}
