@@ -1,0 +1,40 @@
+{
+  "scenarios": [
+    {
+      "scenario": "context_and_replay",
+      "passed": true,
+      "full_tool_output_chars": 7049,
+      "summary_chars": 724
+    },
+    {
+      "scenario": "tool_scope",
+      "passed": true,
+      "unavailable_tool_executed": false
+    },
+    {
+      "scenario": "failed_project_checks",
+      "passed": true,
+      "stop_reason": "final_unverified"
+    },
+    {
+      "scenario": "bounded_truncation_retry",
+      "passed": true,
+      "cases": [
+        {
+          "recovered": true,
+          "attempts": 2,
+          "tokens": null,
+          "known_tokens": 18
+        },
+        {
+          "recovered": false,
+          "attempts": 3,
+          "tokens": null,
+          "known_tokens": 0
+        }
+      ],
+      "scope": "Controlled error injection; not evidence of live transport reliability."
+    }
+  ],
+  "all_passed": true
+}

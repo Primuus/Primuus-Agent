@@ -13,7 +13,8 @@ SYSTEM_PROMPT = (
     "the result. Once the requirements are met and checks pass, give a final reply "
     "without continuing unrelated exploration. Tool result fields listed in "
     "context_truncated_fields contain only a prefix and suffix; use line ranges or "
-    "focused queries for the omitted content."
+    "focused queries for the omitted content. Earlier summaries contain observed excerpts, "
+    "not complete files or inferred conclusions; refresh a relevant range if exact source is missing."
 )
 
 
@@ -47,6 +48,14 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
         })
     if state.plan:
         messages.append({"role": "system", "content": "Current plan: " + str(state.plan)})
+    if state.project_checks and state.project_check_patch_sha256 is not None:
+        messages.append({
+            "role": "system",
+            "content": "Last checked patch " + state.project_check_patch_sha256[:12] + ":\n" + "\n".join(
+                f"{check['command']}: {check['status']}, exit={check['exit_code']}"
+                for check in state.project_checks
+            ),
+        })
     if state.summary:
         messages.append({"role": "system", "content": "Earlier session summary: " + state.summary})
     latest_task = next((event["data"]["content"] for event in reversed(state.events)

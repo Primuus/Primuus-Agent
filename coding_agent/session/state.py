@@ -149,10 +149,17 @@ class SessionState:
 
     def _accept_observation(self, turn: Turn, result: ToolResult, timestamp: str) -> None:
         turn.observations.append((result, timestamp))
+        content = {"status": result.status}
+        if result.output:
+            content["output"] = result.output
+        if result.error:
+            content["error"] = result.error
+        if result.exit_code is not None:
+            content["exit_code"] = result.exit_code
         self.messages.append({
             "role": "tool",
             "tool_call_id": result.call_id,
-            "content": json.dumps(asdict(result), ensure_ascii=False),
+            "content": json.dumps(content, ensure_ascii=False, separators=(",", ":")),
         })
         self.pending_tools.pop(result.call_id, None)
 
@@ -226,14 +233,14 @@ class SessionState:
             if message["role"] == "tool":
                 result = json.loads(message["content"])
                 for field in ("output", "error"):
-                    text = result[field]
+                    text = result.get(field)
                     if text and len(text) > tool_output_chars:
                         head = (tool_output_chars - 1) * 3 // 4
                         tail = tool_output_chars - 1 - head
                         result[field] = text[:head] + "…" + text[len(text) - tail:]
                         result["context_truncated_fields"] = [*result.get("context_truncated_fields", []), field]
                         trimmed += 1
-                message = {**message, "content": json.dumps(result, ensure_ascii=False)}
+                message = {**message, "content": json.dumps(result, ensure_ascii=False, separators=(",", ":"))}
             messages.append(message)
         start = 0
         if len(json.dumps(messages, ensure_ascii=False)) > max_chars:
@@ -251,16 +258,62 @@ class SessionState:
             start = following
         if start == 0 and trimmed == 0:
             return
-        discarded = messages[:start]
-        lines = [f"{message['role']}: {str(message.get('content') or message.get('tool_calls'))[:240]}" for message in discarded]
-        summary = (self.summary + "\n" + "\n".join(lines)).strip()[-4000:]
         messages = messages[start:]
+        summary = self._history_summary(messages) if start else self.summary
         self.emit("context_compacted", {
             "summary": summary, "messages": messages,
             "discarded_messages": start, "trimmed_outputs": trimmed,
         })
         self.summary = summary
         self.messages = messages
+
+    def _history_summary(self, retained: list[dict[str, Any]]) -> str:
+        """Keep observed source, edits and command outcomes without summarizing reasoning."""
+        retained_ids = {message["tool_call_id"] for message in retained if message["role"] == "tool"}
+        task_step = next((event["step"] for event in reversed(self.events)
+                          if event["event_type"] == "user_message"), 0)
+        restored_step = max((event["step"] for event in self.events
+                             if event["event_type"] == "workspace_restored"
+                             or event["event_type"] == "recovery_action"
+                             and event["data"]["kind"] == "snapshot_rollback"), default=-1)
+        sources, changes, commands, failures = {}, {}, {}, {}
+        edited_at = {}
+        for step, turn in enumerate(self.turns[task_step:], task_step + 1):
+            calls = {call.call_id: call for call in turn.response.tool_calls}
+            for result, _ in turn.observations:
+                call = calls[result.call_id]
+                args = call.arguments
+                passed = result.status == "completed" and result.exit_code in (None, 0)
+                if passed and call.name in ("write_file", "edit_file"):
+                    edited_at[args["path"]] = step
+                if result.call_id in retained_ids or step <= restored_step:
+                    continue
+                if not passed:
+                    failures[result.call_id] = f"{call.name}: {result.status}, exit={result.exit_code}; {(result.error or result.output)[:250]}"
+                elif call.name in ("read_file", "read_file_range"):
+                    path = args["path"]
+                    location = f"{path}:{args['start_line']}-{args['end_line']}" if call.name == "read_file_range" else path
+                    excerpt = result.output if len(result.output) <= 700 else result.output[:500] + "\n[excerpt omitted]\n" + result.output[-180:]
+                    sources[location] = (path, step, f"Observed {location}:\n{excerpt}")
+                elif call.name in ("write_file", "edit_file"):
+                    path = args["path"]
+                    replacement = args["new_text"] if call.name == "edit_file" else args["content"]
+                    changes.pop(path, None)
+                    changes[path] = f"Applied {call.name} to {path}; replacement excerpt:\n{replacement[:350]}"
+                elif call.name == "run_shell":
+                    command = args["command"]
+                    commands.pop(command, None)
+                    commands[command] = f"Ran {command[:200]}: exit={result.exit_code}\n{result.output[-300:]}"
+        source_lines = [line for path, step, line in sorted(sources.values(), key=lambda entry: entry[1])
+                        if step > edited_at.get(path, -1)][-3:]
+        sections = [*list(changes.values())[-3:], *source_lines,
+                    *list(commands.values())[-2:], *list(failures.values())[-2:]]
+        lines = []
+        for section in sections:
+            if sum(len(line) + 1 for line in lines) + len(section) > 4000:
+                break
+            lines.append(section)
+        return "\n".join(lines)
 
     def finish(self, reason: StopReason) -> None:
         self.emit("task_finished", {"success": reason in ("verified", "completed"), "stop_reason": reason})
