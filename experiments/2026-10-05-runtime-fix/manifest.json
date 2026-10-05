@@ -1,0 +1,77 @@
+{
+  "code_commit": "26924c6da4851bedb2fef9b72c4270bb84b75810",
+  "repository": "https://github.com/python-humanize/humanize.git",
+  "tasks": [
+    {
+      "id": "intcomma_overflow",
+      "base_commit": "14965a74953eb5119859975e7c452a04b481cdae",
+      "next_commit": "984526c02448110a8392dde3f5e26096dfd7c729",
+      "instruction": "humanize.intcomma raises an overflow error for Python integers larger than the float range. Format arbitrarily large positive and negative integers with comma grouping, while preserving ordinary integer formatting.",
+      "check": "PYTHONPATH=src python -m pytest -q tests/test_number.py",
+      "verifier_code": "import humanize\nv = 10**400 + 123\nassert humanize.intcomma(v) == f'{v:,}'\nassert humanize.intcomma(-v) == f'{-v:,}'\nassert humanize.intcomma(1234567) == '1,234,567'"
+    },
+    {
+      "id": "intword_rounding_carry",
+      "base_commit": "f971127ce7e7770d3ff5be05cfc484bdf9302e04",
+      "next_commit": "ca892b368a535a79cc5e2181d052245b94fd6652",
+      "instruction": "humanize.intword can display a value just below the next named power as 1000.0 of the lower unit. When formatting rounds to the next named unit, carry the result to that unit. Preserve the documented gap between decillion and googol.",
+      "check": "PYTHONPATH=src python -m pytest -q tests/test_number.py",
+      "verifier_code": "import humanize\nfor power, unit in [(24, 'septillion'), (27, 'octillion'), (30, 'nonillion'), (33, 'decillion')]:\n    assert humanize.intword(10**power - 1) == f'1.0 {unit}'\n    assert humanize.intword(10**power - 1, '%.0f') == f'1 {unit}'\nassert humanize.intword(10**36) == '1000.0 decillion'\nassert humanize.intword(2 * 10**100) == '2.0 googol'"
+    }
+  ],
+  "config": {
+    "max_steps": 80,
+    "repository_max_steps": 80,
+    "max_tokens": 120000,
+    "context_max_chars": 24000,
+    "context_keep_messages": 8,
+    "project_instruction_files": [
+      "AGENTS.md"
+    ],
+    "skills": [],
+    "hooks": {
+      "before_tool": [],
+      "after_tool": []
+    },
+    "mcp_servers": [],
+    "memory": {
+      "mode": "off",
+      "max_entries": 3,
+      "max_chars": 2500
+    },
+    "recovery": {
+      "enabled": false,
+      "model_retries": 2,
+      "tool_retries": 1,
+      "validation_retries": 1,
+      "repeat_blocks": 2
+    },
+    "task_timeout_seconds": 1800,
+    "tool_timeout_seconds": 60,
+    "verifier_timeout_seconds": 30,
+    "model": {
+      "backend": "openai_compatible",
+      "name": "deepseek-flash",
+      "base_url": "https://api.deepseek.com",
+      "max_output_tokens": 8192
+    },
+    "sandbox": {
+      "image": "sha256:4217cbc4df372b696f659c9f25d32dccbc52b4c33ddb8e8c2008c0aa8ae1f163",
+      "workspace": "/workspace",
+      "cpus": 1.0,
+      "memory_mb": 512,
+      "network_enabled": false
+    },
+    "results_dir": "runs",
+    "context_tool_output_chars": 4000
+  },
+  "maximum_runs": 2,
+  "failure_stop_threshold": 2,
+  "changed_policy": {
+    "context_max_chars": 24000,
+    "context_keep_messages": 8,
+    "context_tool_output_chars": 4000,
+    "model_max_output_tokens": 8192
+  },
+  "pass_gate": "completed + current passing checks + hidden verifier + reload consistency"
+}

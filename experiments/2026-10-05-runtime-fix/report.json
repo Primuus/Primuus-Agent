@@ -1,0 +1,96 @@
+{
+  "code_commit": "26924c6da4851bedb2fef9b72c4270bb84b75810",
+  "status": "bounded_complete",
+  "maximum_runs": 2,
+  "failure_stop_threshold": 2,
+  "runs": [
+    {
+      "task_id": "intcomma_overflow",
+      "session_id": "e952bb9b98d0",
+      "upstream_base_commit": "14965a74953eb5119859975e7c452a04b481cdae",
+      "baseline_tree": "96d212774619d94120b0686754678a52d372f131",
+      "passed": true,
+      "functional_passed": true,
+      "stop_reason": "completed",
+      "project_checks_passed": true,
+      "reload_checks_consistent": true,
+      "steps": 13,
+      "tool_calls": 14,
+      "failed_tool_calls": 1,
+      "tokens": 83569,
+      "active_seconds": 38.877,
+      "changed_paths": [
+        "src/humanize/number.py"
+      ],
+      "first_effective_direct_edit_step": 5,
+      "project_check_batches": 3,
+      "context_compactions": 6,
+      "final_mode_requests": 1,
+      "metrics": {
+        "repository_discovery_commands": 3,
+        "repeated_discovery_commands": 0,
+        "file_reads": 6,
+        "repeated_file_reads": 0,
+        "time_to_first_useful_edit_seconds": 18.638,
+        "read_paths": [
+          "src/humanize/number.py",
+          "tests/test_number.py"
+        ],
+        "discovery_signatures": [
+          "list_files:",
+          "search_text:intcomma",
+          "shell:cd /workspace && grep -n \"intcomma\" tests/test_number.py"
+        ]
+      },
+      "artifact_dir": "experiments/2026-10-05-runtime-fix/records/intcomma_overflow/e952bb9b98d0"
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "session_id": "a0f4a5a5a300",
+      "upstream_base_commit": "f971127ce7e7770d3ff5be05cfc484bdf9302e04",
+      "baseline_tree": "bb9697854d90744efbed79432285fe1ed67f09a8",
+      "passed": false,
+      "functional_passed": false,
+      "stop_reason": "token_budget",
+      "project_checks_passed": false,
+      "reload_checks_consistent": true,
+      "steps": 15,
+      "tool_calls": 25,
+      "failed_tool_calls": 0,
+      "tokens": 98340,
+      "active_seconds": 43.192,
+      "changed_paths": [],
+      "first_effective_direct_edit_step": null,
+      "project_check_batches": 0,
+      "context_compactions": 9,
+      "final_mode_requests": 0,
+      "metrics": {
+        "repository_discovery_commands": 9,
+        "repeated_discovery_commands": 0,
+        "file_reads": 12,
+        "repeated_file_reads": 0,
+        "time_to_first_useful_edit_seconds": null,
+        "read_paths": [
+          "docs/number.md",
+          "src/humanize/number.py",
+          "tests/test_number.py"
+        ],
+        "discovery_signatures": [
+          "list_files:",
+          "search_text:intword",
+          "shell:cd /workspace && git log --oneline -3 && ls",
+          "shell:cd /workspace && git log --oneline -8 && echo --- && git remote -v",
+          "shell:cd /workspace && git show --stat head | head -30",
+          "shell:cd /workspace && grep -n \"intword\" tests/test_number.py",
+          "shell:cd /workspace && grep -rn \"googol\\|decillion\\|gap\" --include=*.py --include=*.md . | grep -vi \"test_number.py:1[0-4]\" | head -40",
+          "shell:ls -la /tmp/primuus-s-fix-y_nqyjbv/ 2>/dev/null; ls -la /tmp/primuus-s-fix-y_nqyjbv/source 2>/dev/null | head; cd /workspace && git log --all --oneline | head -20"
+        ]
+      },
+      "artifact_dir": "experiments/2026-10-05-runtime-fix/records/intword_rounding_carry/a0f4a5a5a300"
+    }
+  ],
+  "executed_runs": 2,
+  "passed_runs": 1,
+  "omitted_tasks": [],
+  "finished_at": "2026-10-05T08:59:18.582281+00:00"
+}

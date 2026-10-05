@@ -1,0 +1,53 @@
+{
+  "session_id": "e952bb9b98d0",
+  "source_repository": "/tmp/primuus-s-fix-41ht8dvo/source",
+  "workspace": "/tmp/primuus-s-fix-41ht8dvo/sessions/e952bb9b98d0/workspace",
+  "base_commit": "475bc9abc3dca2b9187d10448c5fb52253e1ba6e",
+  "approval_mode": "auto",
+  "config": {
+    "max_steps": 80,
+    "repository_max_steps": 80,
+    "max_tokens": 120000,
+    "context_max_chars": 24000,
+    "context_keep_messages": 8,
+    "project_instruction_files": [
+      "AGENTS.md"
+    ],
+    "skills": [],
+    "hooks": {
+      "before_tool": [],
+      "after_tool": []
+    },
+    "mcp_servers": [],
+    "memory": {
+      "mode": "off",
+      "max_entries": 3,
+      "max_chars": 2500
+    },
+    "recovery": {
+      "enabled": false,
+      "model_retries": 2,
+      "tool_retries": 1,
+      "validation_retries": 1,
+      "repeat_blocks": 2
+    },
+    "task_timeout_seconds": 1800,
+    "tool_timeout_seconds": 60,
+    "verifier_timeout_seconds": 30,
+    "model": {
+      "backend": "openai_compatible",
+      "name": "deepseek-flash",
+      "base_url": "https://api.deepseek.com",
+      "max_output_tokens": 8192
+    },
+    "sandbox": {
+      "image": "sha256:4217cbc4df372b696f659c9f25d32dccbc52b4c33ddb8e8c2008c0aa8ae1f163",
+      "workspace": "/workspace",
+      "cpus": 1.0,
+      "memory_mb": 512,
+      "network_enabled": false
+    },
+    "results_dir": "runs",
+    "context_tool_output_chars": 4000
+  }
+}

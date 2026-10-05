@@ -1,0 +1,395 @@
+{
+  "runs": [
+    {
+      "task_id": "intcomma_overflow",
+      "before_tokens": 123482,
+      "after_tokens": 83569,
+      "token_reduction_percent": 32.32,
+      "input_tokens": 77164,
+      "output_tokens": 6405,
+      "tokens_before_first_edit": 20710,
+      "first_edit_step": 5,
+      "maximum_message_chars": 24413,
+      "context_compactions": [
+        {
+          "step": 2,
+          "discarded_messages": 0,
+          "trimmed_outputs": 1
+        },
+        {
+          "step": 4,
+          "discarded_messages": 4,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 5,
+          "discarded_messages": 3,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 7,
+          "discarded_messages": 4,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 10,
+          "discarded_messages": 7,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 12,
+          "discarded_messages": 10,
+          "trimmed_outputs": 0
+        }
+      ],
+      "budget_requests": [
+        {
+          "step": 1,
+          "phase": "work",
+          "input_bytes": 3839,
+          "estimated_input_tokens": 2304,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 10496,
+          "remaining_tokens": 120000
+        },
+        {
+          "step": 2,
+          "phase": "work",
+          "input_bytes": 10520,
+          "estimated_input_tokens": 6312,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 14504,
+          "remaining_tokens": 118832
+        },
+        {
+          "step": 3,
+          "phase": "work",
+          "input_bytes": 20873,
+          "estimated_input_tokens": 12525,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 20717,
+          "remaining_tokens": 115372
+        },
+        {
+          "step": 4,
+          "phase": "work",
+          "input_bytes": 24668,
+          "estimated_input_tokens": 14801,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 22993,
+          "remaining_tokens": 108598
+        },
+        {
+          "step": 5,
+          "phase": "work",
+          "input_bytes": 26184,
+          "estimated_input_tokens": 15711,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 23903,
+          "remaining_tokens": 99290
+        },
+        {
+          "step": 6,
+          "phase": "work",
+          "input_bytes": 25359,
+          "estimated_input_tokens": 15216,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 23408,
+          "remaining_tokens": 89967
+        },
+        {
+          "step": 7,
+          "phase": "work",
+          "input_bytes": 27078,
+          "estimated_input_tokens": 16247,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 24439,
+          "remaining_tokens": 83268
+        },
+        {
+          "step": 8,
+          "phase": "work",
+          "input_bytes": 21395,
+          "estimated_input_tokens": 12838,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 21030,
+          "remaining_tokens": 75483
+        },
+        {
+          "step": 9,
+          "phase": "work",
+          "input_bytes": 23980,
+          "estimated_input_tokens": 14388,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 22580,
+          "remaining_tokens": 69884
+        },
+        {
+          "step": 10,
+          "phase": "work",
+          "input_bytes": 26551,
+          "estimated_input_tokens": 15932,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 24124,
+          "remaining_tokens": 62969
+        },
+        {
+          "step": 11,
+          "phase": "work",
+          "input_bytes": 20099,
+          "estimated_input_tokens": 12060,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 20252,
+          "remaining_tokens": 55753
+        },
+        {
+          "step": 12,
+          "phase": "work",
+          "input_bytes": 23387,
+          "estimated_input_tokens": 14033,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 22225,
+          "remaining_tokens": 48011
+        },
+        {
+          "step": 13,
+          "phase": "final",
+          "input_bytes": 7532,
+          "estimated_input_tokens": 4520,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 0,
+          "remaining_tokens": 39244
+        }
+      ],
+      "last_request_plan": {
+        "step": 13,
+        "phase": "final",
+        "input_bytes": 7532,
+        "estimated_input_tokens": 4520,
+        "max_output_tokens": 8192,
+        "reserved_tokens": 0,
+        "remaining_tokens": 39244
+      },
+      "functional_passed": true,
+      "normal_completion": true
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "before_tokens": 127705,
+      "after_tokens": 98340,
+      "token_reduction_percent": 22.99,
+      "input_tokens": 91381,
+      "output_tokens": 6959,
+      "tokens_before_first_edit": 98340,
+      "first_edit_step": null,
+      "maximum_message_chars": 28622,
+      "context_compactions": [
+        {
+          "step": 4,
+          "discarded_messages": 5,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 5,
+          "discarded_messages": 3,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 7,
+          "discarded_messages": 5,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 9,
+          "discarded_messages": 6,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 10,
+          "discarded_messages": 4,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 10,
+          "discarded_messages": 6,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 13,
+          "discarded_messages": 6,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 14,
+          "discarded_messages": 2,
+          "trimmed_outputs": 0
+        },
+        {
+          "step": 15,
+          "discarded_messages": 2,
+          "trimmed_outputs": 0
+        }
+      ],
+      "budget_requests": [
+        {
+          "step": 1,
+          "phase": "work",
+          "input_bytes": 3858,
+          "estimated_input_tokens": 2315,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 10507,
+          "remaining_tokens": 120000
+        },
+        {
+          "step": 2,
+          "phase": "work",
+          "input_bytes": 10329,
+          "estimated_input_tokens": 6198,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 14390,
+          "remaining_tokens": 118772
+        },
+        {
+          "step": 3,
+          "phase": "work",
+          "input_bytes": 19406,
+          "estimated_input_tokens": 11644,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 19836,
+          "remaining_tokens": 115413
+        },
+        {
+          "step": 4,
+          "phase": "work",
+          "input_bytes": 20964,
+          "estimated_input_tokens": 12579,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 20771,
+          "remaining_tokens": 109184
+        },
+        {
+          "step": 5,
+          "phase": "work",
+          "input_bytes": 27302,
+          "estimated_input_tokens": 16382,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 24574,
+          "remaining_tokens": 101057
+        },
+        {
+          "step": 6,
+          "phase": "work",
+          "input_bytes": 21681,
+          "estimated_input_tokens": 13010,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 21202,
+          "remaining_tokens": 91015
+        },
+        {
+          "step": 7,
+          "phase": "work",
+          "input_bytes": 26327,
+          "estimated_input_tokens": 15797,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 23989,
+          "remaining_tokens": 82898
+        },
+        {
+          "step": 8,
+          "phase": "work",
+          "input_bytes": 22996,
+          "estimated_input_tokens": 13798,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 21990,
+          "remaining_tokens": 72460
+        },
+        {
+          "step": 9,
+          "phase": "work",
+          "input_bytes": 29556,
+          "estimated_input_tokens": 17734,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 25926,
+          "remaining_tokens": 64698
+        },
+        {
+          "step": 10,
+          "phase": "work",
+          "input_bytes": 31331,
+          "estimated_input_tokens": 18800,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 26992,
+          "remaining_tokens": 54031
+        },
+        {
+          "step": 11,
+          "phase": "work",
+          "input_bytes": 11208,
+          "estimated_input_tokens": 6725,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 14917,
+          "remaining_tokens": 44366
+        },
+        {
+          "step": 12,
+          "phase": "work",
+          "input_bytes": 14342,
+          "estimated_input_tokens": 8606,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 16798,
+          "remaining_tokens": 40594
+        },
+        {
+          "step": 13,
+          "phase": "work",
+          "input_bytes": 15232,
+          "estimated_input_tokens": 9140,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 17332,
+          "remaining_tokens": 36009
+        },
+        {
+          "step": 14,
+          "phase": "work",
+          "input_bytes": 11950,
+          "estimated_input_tokens": 7170,
+          "max_output_tokens": 8192,
+          "reserved_tokens": 15362,
+          "remaining_tokens": 31194
+        },
+        {
+          "step": 15,
+          "phase": "work",
+          "input_bytes": 14896,
+          "estimated_input_tokens": 8938,
+          "max_output_tokens": 695,
+          "reserved_tokens": 17130,
+          "remaining_tokens": 26763
+        },
+        {
+          "step": 16,
+          "phase": "work",
+          "input_bytes": 19429,
+          "estimated_input_tokens": 11658,
+          "max_output_tokens": -9848,
+          "reserved_tokens": 19850,
+          "remaining_tokens": 21660
+        }
+      ],
+      "last_request_plan": {
+        "step": 16,
+        "phase": "work",
+        "input_bytes": 19429,
+        "estimated_input_tokens": 11658,
+        "max_output_tokens": -9848,
+        "reserved_tokens": 19850,
+        "remaining_tokens": 21660
+      },
+      "functional_passed": false,
+      "normal_completion": false
+    }
+  ],
+  "conclusion": "Context reduction and final-reply reservation worked for intcomma. intword still consumed its investigation budget without editing; overall acceptance is not satisfied.",
+  "incomplete_attempt_record": "archive-interruption.json",
+  "comparison_limit": "Two selected tasks, no paired same-time repeated experiment; cloud alias not frozen."
+}

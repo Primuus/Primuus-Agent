@@ -1,0 +1,38 @@
+{
+  "session_id": "a0f4a5a5a300",
+  "source_repository": "/tmp/primuus-s-fix-y_nqyjbv/source",
+  "workspace": "/tmp/primuus-s-fix-y_nqyjbv/sessions/a0f4a5a5a300/workspace",
+  "base_commit": "752863100cfc8c9d00d17837b75234dcdf92bfc9",
+  "model_id": "deepseek-flash",
+  "approval_mode": "auto",
+  "memory_mode": "off",
+  "memory_ids": [],
+  "stop_reason": "token_budget",
+  "steps": 15,
+  "tool_calls": 25,
+  "failed_tool_calls": 0,
+  "tokens": 98340,
+  "retries": 0,
+  "recoveries": 0,
+  "manual_interventions": 0,
+  "active_seconds": 43.192,
+  "final_message": null,
+  "plan": [],
+  "snapshots": [
+    {
+      "commit": "752863100cfc8c9d00d17837b75234dcdf92bfc9",
+      "label": "initial",
+      "plan": []
+    },
+    {
+      "commit": "3875d1df92f0861169e406ff81e336de624e961c",
+      "label": "after step 15",
+      "plan": []
+    }
+  ],
+  "checks": [],
+  "checks_patch_sha256": null,
+  "checks_current": false,
+  "diff_path": "/tmp/primuus-s-fix-y_nqyjbv/sessions/a0f4a5a5a300/diff.patch",
+  "trace_path": "/tmp/primuus-s-fix-y_nqyjbv/sessions/a0f4a5a5a300/trace.jsonl"
+}

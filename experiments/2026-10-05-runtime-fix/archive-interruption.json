@@ -1,0 +1,65 @@
+{
+  "task_id": "intcomma_overflow",
+  "status": "archive_failed",
+  "reason": "Temporary verification driver read Turn.tool_results instead of Turn.observations after the agent returned. TemporaryDirectory cleanup removed the trace and patch before archival.",
+  "agent_final_reply_observed": true,
+  "requests_observed": 10,
+  "known_tokens_observed": 74220,
+  "request_usage_observed": [
+    {
+      "step": 1,
+      "input_tokens": 1110,
+      "output_tokens": 64
+    },
+    {
+      "step": 2,
+      "input_tokens": 3349,
+      "output_tokens": 145
+    },
+    {
+      "step": 3,
+      "input_tokens": 6916,
+      "output_tokens": 94
+    },
+    {
+      "step": 4,
+      "input_tokens": 8305,
+      "output_tokens": 515
+    },
+    {
+      "step": 5,
+      "input_tokens": 10234,
+      "output_tokens": 140
+    },
+    {
+      "step": 6,
+      "input_tokens": 7196,
+      "output_tokens": 1869
+    },
+    {
+      "step": 7,
+      "input_tokens": 8814,
+      "output_tokens": 145
+    },
+    {
+      "step": 8,
+      "input_tokens": 7541,
+      "output_tokens": 611
+    },
+    {
+      "step": 9,
+      "input_tokens": 8253,
+      "output_tokens": 181
+    },
+    {
+      "step": 10,
+      "input_tokens": 8582,
+      "output_tokens": 156
+    }
+  ],
+  "combined_pass_gate": "not established: complete artifact unavailable",
+  "retained_in_primary_pass_count": false,
+  "repeated_task_reason": "Re-run the same task to retain the patch, trace, checks and hidden-verifier evidence.",
+  "runtime_code_changed_between_attempts": false,
+  "temporary_workspace_removed": true
+}

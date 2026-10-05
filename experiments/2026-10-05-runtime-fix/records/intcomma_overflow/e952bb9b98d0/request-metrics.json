@@ -1,0 +1,197 @@
+[
+  {
+    "request": 1,
+    "message_chars": 1224,
+    "input_bytes": 3839,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 0,
+    "input_tokens": 1110,
+    "output_tokens": 58,
+    "reasoning_chars": 30,
+    "tool_names": [
+      "list_files",
+      "search_text"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 2,
+    "message_chars": 7905,
+    "input_bytes": 10520,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 30,
+    "input_tokens": 3350,
+    "output_tokens": 110,
+    "reasoning_chars": 0,
+    "tool_names": [
+      "read_file",
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 3,
+    "message_chars": 18231,
+    "input_bytes": 20873,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 30,
+    "input_tokens": 6660,
+    "output_tokens": 114,
+    "reasoning_chars": 154,
+    "tool_names": [
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 4,
+    "message_chars": 22024,
+    "input_bytes": 24668,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 184,
+    "input_tokens": 7801,
+    "output_tokens": 1507,
+    "reasoning_chars": 6065,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 5,
+    "message_chars": 23536,
+    "input_bytes": 26184,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 6219,
+    "input_tokens": 7497,
+    "output_tokens": 1826,
+    "reasoning_chars": 6306,
+    "tool_names": [
+      "edit_file"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 6,
+    "message_chars": 22694,
+    "input_bytes": 25359,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 12525,
+    "input_tokens": 6390,
+    "output_tokens": 309,
+    "reasoning_chars": 267,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 7,
+    "message_chars": 24413,
+    "input_bytes": 27078,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 12792,
+    "input_tokens": 6922,
+    "output_tokens": 863,
+    "reasoning_chars": 3182,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 8,
+    "message_chars": 18700,
+    "input_bytes": 21395,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 9755,
+    "input_tokens": 5523,
+    "output_tokens": 76,
+    "reasoning_chars": 0,
+    "tool_names": [
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 9,
+    "message_chars": 21285,
+    "input_bytes": 23980,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 9755,
+    "input_tokens": 6475,
+    "output_tokens": 440,
+    "reasoning_chars": 620,
+    "tool_names": [
+      "edit_file"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 10,
+    "message_chars": 23854,
+    "input_bytes": 26551,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 10375,
+    "input_tokens": 7015,
+    "output_tokens": 201,
+    "reasoning_chars": 51,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 11,
+    "message_chars": 17482,
+    "input_bytes": 20099,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 671,
+    "input_tokens": 7619,
+    "output_tokens": 123,
+    "reasoning_chars": 201,
+    "tool_names": [
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 12,
+    "message_chars": 20770,
+    "input_bytes": 23387,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 872,
+    "input_tokens": 8522,
+    "output_tokens": 245,
+    "reasoning_chars": 666,
+    "tool_names": [
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 13,
+    "message_chars": 7505,
+    "input_bytes": 7532,
+    "tools_count": 0,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 0,
+    "input_tokens": 2280,
+    "output_tokens": 533,
+    "reasoning_chars": 902,
+    "tool_names": [],
+    "final_reply": true
+  }
+]
