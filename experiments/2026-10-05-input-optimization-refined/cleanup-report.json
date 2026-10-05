@@ -1,0 +1,11 @@
+{
+  "temporary_sources_removed": true,
+  "temporary_workspaces_removed": true,
+  "temporary_scripts_removed": true,
+  "persistent_test_scripts": [],
+  "credential_matches": 0,
+  "live_validation_containers": [],
+  "artifact_files_preserved": true,
+  "all_cleanup_passed": true,
+  "runtime_depends_on_temporary_tests": false
+}

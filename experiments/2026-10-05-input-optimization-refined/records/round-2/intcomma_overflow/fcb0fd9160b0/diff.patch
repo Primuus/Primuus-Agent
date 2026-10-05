@@ -1,0 +1,45 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index 727435f..ecbc78b 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -154,12 +154,23 @@ def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+     try:
+         if isinstance(value, str):
+             value = value.replace(thousands_sep, "").replace(decimal_sep, ".")
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+             if "." in value:
+                 value = float(value)
++                if not math.isfinite(value):
++                    return _format_not_finite(value)
+             else:
+-                value = int(value)
++                # Parse as an arbitrary-precision integer first so that values
++                # outside the float range don't raise OverflowError.
++                try:
++                    value = int(value)
++                except ValueError:
++                    float_value = float(value)
++                    if not math.isfinite(float_value):
++                        return _format_not_finite(float_value)
++                    raise
++        elif isinstance(value, int):
++            # Python ints are arbitrary precision and always finite.
++            pass
+         else:
+             if not math.isfinite(float(value)):
+                 return _format_not_finite(float(value))
+diff --git a/tests/test_number.py b/tests/test_number.py
+index cf55ee1..e0d0d0c 100644
+--- a/tests/test_number.py
++++ b/tests/test_number.py
+@@ -52,6 +52,9 @@ def test_ordinal(test_input: str, expected: str) -> None:
+         (["10123"], "10,123"),
+         (["10311"], "10,311"),
+         (["1000000"], "1,000,000"),
++        ([10**30], "1,000,000,000,000,000,000,000,000,000,000"),
++        ([-10**30], "-1,000,000,000,000,000,000,000,000,000,000"),
++        ([str(10**30)], "1,000,000,000,000,000,000,000,000,000,000"),
+         (["1234567.1234567"], "1,234,567.1234567"),
+         (["1234567.1234567", 0], "1,234,567"),
+         (["1234567.1234567", 1], "1,234,567.1"),

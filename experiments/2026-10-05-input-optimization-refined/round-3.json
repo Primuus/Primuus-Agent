@@ -1,0 +1,12 @@
+{
+  "runtime_commit": "07fed4eeba313d9e6fe8b60ccc21b3dc4c1c6a93",
+  "status": "not_run",
+  "reason": "Round 2 contained an unresolved hidden-verifier failure.",
+  "runs": [],
+  "omitted_tasks": [
+    "intcomma_overflow",
+    "intword_rounding_carry",
+    "real_010"
+  ],
+  "omitted_tasks_counted_as_failures": false
+}

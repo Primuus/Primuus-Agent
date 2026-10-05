@@ -1,0 +1,260 @@
+{
+  "requests": [
+    {
+      "request": 1,
+      "tools": 10,
+      "message_chars": 1476,
+      "history_reasoning_chars": 0,
+      "max_output_tokens": 8192,
+      "input_tokens": 1165,
+      "output_tokens": 58,
+      "tool_names": [
+        "list_files",
+        "search_text"
+      ],
+      "final": false,
+      "response_reasoning_chars": 30,
+      "seconds": 1.118
+    },
+    {
+      "request": 2,
+      "tools": 10,
+      "message_chars": 7302,
+      "history_reasoning_chars": 30,
+      "max_output_tokens": 8192,
+      "input_tokens": 3054,
+      "output_tokens": 145,
+      "tool_names": [
+        "read_file_range",
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 0,
+      "seconds": 1.069
+    },
+    {
+      "request": 3,
+      "tools": 10,
+      "message_chars": 15690,
+      "history_reasoning_chars": 30,
+      "max_output_tokens": 8192,
+      "input_tokens": 5824,
+      "output_tokens": 604,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 2346,
+      "seconds": 3.178
+    },
+    {
+      "request": 4,
+      "tools": 10,
+      "message_chars": 12747,
+      "history_reasoning_chars": 2346,
+      "max_output_tokens": 8192,
+      "input_tokens": 4561,
+      "output_tokens": 155,
+      "tool_names": [
+        "read_file_range",
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 31,
+      "seconds": 0.946
+    },
+    {
+      "request": 5,
+      "tools": 10,
+      "message_chars": 16515,
+      "history_reasoning_chars": 2377,
+      "max_output_tokens": 8192,
+      "input_tokens": 5803,
+      "output_tokens": 1965,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 8277,
+      "seconds": 9.21
+    },
+    {
+      "request": 6,
+      "tools": 10,
+      "message_chars": 17231,
+      "history_reasoning_chars": 8308,
+      "max_output_tokens": 8192,
+      "input_tokens": 5331,
+      "output_tokens": 95,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 57,
+      "seconds": 1.161
+    },
+    {
+      "request": 7,
+      "tools": 10,
+      "message_chars": 18392,
+      "history_reasoning_chars": 8365,
+      "max_output_tokens": 8192,
+      "input_tokens": 5677,
+      "output_tokens": 383,
+      "tool_names": [
+        "edit_file"
+      ],
+      "final": false,
+      "response_reasoning_chars": 15,
+      "seconds": 1.798
+    },
+    {
+      "request": 8,
+      "tools": 10,
+      "message_chars": 16429,
+      "history_reasoning_chars": 8349,
+      "max_output_tokens": 8192,
+      "input_tokens": 4696,
+      "output_tokens": 230,
+      "tool_names": [
+        "run_shell"
+      ],
+      "final": false,
+      "response_reasoning_chars": 138,
+      "seconds": 1.452
+    },
+    {
+      "request": 9,
+      "tools": 10,
+      "message_chars": 17556,
+      "history_reasoning_chars": 8487,
+      "max_output_tokens": 8192,
+      "input_tokens": 5032,
+      "output_tokens": 241,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 503,
+      "seconds": 1.881
+    },
+    {
+      "request": 10,
+      "tools": 10,
+      "message_chars": 8427,
+      "history_reasoning_chars": 641,
+      "max_output_tokens": 8192,
+      "input_tokens": 3282,
+      "output_tokens": 252,
+      "tool_names": [
+        "edit_file"
+      ],
+      "final": false,
+      "response_reasoning_chars": 68,
+      "seconds": 1.394
+    },
+    {
+      "request": 11,
+      "tools": 10,
+      "message_chars": 9606,
+      "history_reasoning_chars": 709,
+      "max_output_tokens": 8192,
+      "input_tokens": 3592,
+      "output_tokens": 87,
+      "tool_names": [
+        "run_shell"
+      ],
+      "final": false,
+      "response_reasoning_chars": 98,
+      "seconds": 1.177
+    },
+    {
+      "request": 12,
+      "tools": 10,
+      "message_chars": 15362,
+      "history_reasoning_chars": 807,
+      "max_output_tokens": 8192,
+      "input_tokens": 6733,
+      "output_tokens": 77,
+      "tool_names": [
+        "run_shell"
+      ],
+      "final": false,
+      "response_reasoning_chars": 147,
+      "seconds": 1.085
+    },
+    {
+      "request": 13,
+      "tools": 10,
+      "message_chars": 18153,
+      "history_reasoning_chars": 954,
+      "max_output_tokens": 8192,
+      "input_tokens": 7487,
+      "output_tokens": 116,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 171,
+      "seconds": 1.188
+    },
+    {
+      "request": 14,
+      "tools": 10,
+      "message_chars": 16211,
+      "history_reasoning_chars": 416,
+      "max_output_tokens": 8192,
+      "input_tokens": 6860,
+      "output_tokens": 443,
+      "tool_names": [
+        "run_shell"
+      ],
+      "final": false,
+      "response_reasoning_chars": 1232,
+      "seconds": 2.505
+    },
+    {
+      "request": 15,
+      "tools": 10,
+      "message_chars": 17256,
+      "history_reasoning_chars": 1648,
+      "max_output_tokens": 8192,
+      "input_tokens": 7142,
+      "output_tokens": 171,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 435,
+      "seconds": 1.343
+    },
+    {
+      "request": 16,
+      "tools": 10,
+      "message_chars": 11915,
+      "history_reasoning_chars": 1838,
+      "max_output_tokens": 8192,
+      "input_tokens": 4098,
+      "output_tokens": 288,
+      "tool_names": [
+        "run_shell"
+      ],
+      "final": false,
+      "response_reasoning_chars": 1022,
+      "seconds": 2.193
+    },
+    {
+      "request": 17,
+      "tools": 0,
+      "message_chars": 6515,
+      "history_reasoning_chars": 0,
+      "max_output_tokens": 8192,
+      "input_tokens": 1734,
+      "output_tokens": 357,
+      "tool_names": [],
+      "final": true,
+      "response_reasoning_chars": 0,
+      "seconds": 2.203
+    }
+  ]
+}

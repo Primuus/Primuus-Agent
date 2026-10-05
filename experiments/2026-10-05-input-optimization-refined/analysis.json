@@ -1,0 +1,69 @@
+{
+  "runtime_commit": "07fed4eeba313d9e6fe8b60ccc21b3dc4c1c6a93",
+  "real_runs": 4,
+  "passed_runs": 3,
+  "round_3_status": "not_run_after_round_2_failure",
+  "failure_gate_applied": true,
+  "runs": [
+    {
+      "task_id": "real_010",
+      "passed": false,
+      "input_tokens": 93911,
+      "requests": 21,
+      "mean_input_tokens_per_request": 4471.95,
+      "service_errors": 0,
+      "changed_paths": [
+        "notes_check.txt"
+      ],
+      "reload_consistent": true
+    },
+    {
+      "task_id": "intcomma_overflow",
+      "passed": true,
+      "input_tokens": 82071,
+      "requests": 17,
+      "mean_input_tokens_per_request": 4827.71,
+      "service_errors": 0,
+      "changed_paths": [
+        "src/humanize/number.py",
+        "tests/test_number.py"
+      ],
+      "reload_consistent": true
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "passed": true,
+      "input_tokens": 61927,
+      "requests": 14,
+      "mean_input_tokens_per_request": 4423.36,
+      "service_errors": 0,
+      "changed_paths": [
+        "src/humanize/number.py"
+      ],
+      "reload_consistent": true
+    },
+    {
+      "task_id": "real_004",
+      "passed": true,
+      "input_tokens": 57312,
+      "requests": 15,
+      "mean_input_tokens_per_request": 3820.8,
+      "service_errors": 0,
+      "changed_paths": [
+        "src/packaging/tags.py"
+      ],
+      "reload_consistent": true
+    }
+  ],
+  "original_tasks_input_before": 136249,
+  "original_tasks_input_after": 143998,
+  "original_tasks_input_reduction_percent": -5.69,
+  "cost_target_met": false,
+  "comparison_limit": "Historical versions and Recovery differ; descriptive, not causal.",
+  "real_test_config_is_current_default": false,
+  "current_default_context": {
+    "context_max_chars": 24000,
+    "context_keep_messages": 8,
+    "context_tool_output_chars": 4000
+  }
+}
