@@ -288,6 +288,7 @@ class RepositorySession:
                     max_tokens=self.config.get("max_tokens"),
                     context_max_chars=self.config.get("context_max_chars"),
                     context_keep_messages=self.config.get("context_keep_messages", 12),
+                    context_tool_output_chars=self.config.get("context_tool_output_chars", 4000),
                     recovery=RecoveryPolicy.from_config(self.config),
                     checkpoint=self._snapshot,
                     rollback=self.repository.restore,

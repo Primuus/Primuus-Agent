@@ -122,11 +122,13 @@ class SessionState:
                 "tool_calls": [{
                     "id": call.call_id,
                     "type": "function",
-                    "function": {"name": call.name, "arguments": json.dumps(call.arguments)},
+                    "function": {"name": call.name, "arguments": json.dumps(call.arguments, ensure_ascii=False)},
                 } for call in response.tool_calls],
             })
         else:
             self.messages.append({"role": "assistant", "content": response.final_message})
+        if response.reasoning_content is not None:
+            self.messages[-1]["reasoning_content"] = response.reasoning_content
         return turn
 
     def add_turn(self, response: ModelResponse, model_duration_ms: int) -> Turn:
@@ -146,7 +148,7 @@ class SessionState:
         self.messages.append({
             "role": "tool",
             "tool_call_id": result.call_id,
-            "content": json.dumps(asdict(result)),
+            "content": json.dumps(asdict(result), ensure_ascii=False),
         })
         self.pending_tools.pop(result.call_id, None)
 
@@ -213,19 +215,46 @@ class SessionState:
             "content": f"Workspace restored to snapshot {commit}. Re-inspect files before editing.",
         })
 
-    def compact(self, max_chars: int, keep_messages: int) -> None:
-        if len(json.dumps(self.messages, ensure_ascii=False)) <= max_chars:
-            return
-        start = max(0, len(self.messages) - keep_messages)
-        while start > 0 and self.messages[start]["role"] == "tool":
+    def compact(self, max_chars: int, keep_messages: int, tool_output_chars: int = 4000) -> None:
+        messages = []
+        trimmed = 0
+        for message in self.messages:
+            if message["role"] == "tool":
+                result = json.loads(message["content"])
+                for field in ("output", "error"):
+                    text = result[field]
+                    if text and len(text) > tool_output_chars:
+                        head = (tool_output_chars - 1) * 3 // 4
+                        tail = tool_output_chars - 1 - head
+                        result[field] = text[:head] + "…" + text[len(text) - tail:]
+                        result["context_truncated_fields"] = [*result.get("context_truncated_fields", []), field]
+                        trimmed += 1
+                message = {**message, "content": json.dumps(result, ensure_ascii=False)}
+            messages.append(message)
+        start = 0
+        if len(json.dumps(messages, ensure_ascii=False)) > max_chars:
+            start = max(0, len(messages) - keep_messages)
+        while start > 0 and messages[start]["role"] == "tool":
             start -= 1
-        if start == 0:
+        newest_turn = max((index for index, message in enumerate(messages)
+                           if message["role"] == "assistant"), default=len(messages) - 1)
+        while len(json.dumps(messages[start:], ensure_ascii=False)) > max_chars:
+            following = start + 1
+            while following < len(messages) and messages[following]["role"] == "tool":
+                following += 1
+            if following > newest_turn:
+                break
+            start = following
+        if start == 0 and trimmed == 0:
             return
-        discarded = self.messages[:start]
+        discarded = messages[:start]
         lines = [f"{message['role']}: {str(message.get('content') or message.get('tool_calls'))[:240]}" for message in discarded]
-        summary = (self.summary + "\n" + "\n".join(lines)).strip()[-8000:]
-        messages = self.messages[start:]
-        self.emit("context_compacted", {"summary": summary, "messages": messages})
+        summary = (self.summary + "\n" + "\n".join(lines)).strip()[-4000:]
+        messages = messages[start:]
+        self.emit("context_compacted", {
+            "summary": summary, "messages": messages,
+            "discarded_messages": start, "trimmed_outputs": trimmed,
+        })
         self.summary = summary
         self.messages = messages
 
@@ -267,6 +296,7 @@ class SessionState:
                     final_message=raw["final_message"],
                     input_tokens=raw["input_tokens"],
                     output_tokens=raw["output_tokens"],
+                    reasoning_content=raw.get("reasoning_content"),
                 )
                 state._accept_turn(response, data["duration_ms"], timestamp)
             elif kind == "tool_started":

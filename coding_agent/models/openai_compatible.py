@@ -75,9 +75,11 @@ class OpenAICompatibleBackend:
                 ),
                 input_tokens=usage.get("prompt_tokens"),
                 output_tokens=usage.get("completion_tokens"),
+                reasoning_content=message.get("reasoning_content"),
             )
         return ModelResponse(
             final_message=message.get("content"),
             input_tokens=usage.get("prompt_tokens"),
             output_tokens=usage.get("completion_tokens"),
+            reasoning_content=message.get("reasoning_content"),
         )

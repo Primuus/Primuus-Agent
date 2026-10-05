@@ -55,6 +55,7 @@ class ModelResponse:
     final_message: str | None = None
     input_tokens: int | None = None
     output_tokens: int | None = None
+    reasoning_content: str | None = None
 
     def __post_init__(self) -> None:
         if bool(self.tool_calls) == (self.final_message is not None):

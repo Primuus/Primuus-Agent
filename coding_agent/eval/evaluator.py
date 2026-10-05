@@ -91,6 +91,7 @@ def run_task(
             max_tokens=config["max_tokens"],
             context_max_chars=config["context_max_chars"],
             context_keep_messages=config["context_keep_messages"],
+            context_tool_output_chars=config.get("context_tool_output_chars", 4000),
             recovery=RecoveryPolicy.from_config(config),
         ).run(SessionSpec(run_id, task.instructions))
         patch = evaluation_patch(task.repository, sandbox.workspace)

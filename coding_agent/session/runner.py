@@ -34,6 +34,7 @@ class SessionRunner:
         expose_verification_output: bool = False,
         post_tool_verify: Callable[[], VerificationResult | None] | None = None,
         budget_guidance: bool = False,
+        context_tool_output_chars: int = 4000,
     ) -> None:
         self.model = model
         self.execute = execute
@@ -52,6 +53,7 @@ class SessionRunner:
         self.expose_verification_output = expose_verification_output
         self.post_tool_verify = post_tool_verify
         self.budget_guidance = budget_guidance
+        self.context_tool_output_chars = context_tool_output_chars
 
     def run(self, spec: SessionSpec, state: SessionState | None = None) -> SessionState:
         state = state or SessionState(spec.session_id)
@@ -97,7 +99,7 @@ class SessionRunner:
                 )
                 budget_warning_sent = True
             if self.context_max_chars is not None:
-                state.compact(self.context_max_chars, self.context_keep_messages)
+                state.compact(self.context_max_chars, self.context_keep_messages, self.context_tool_output_chars)
             model_attempt = 0
             while True:
                 try:
