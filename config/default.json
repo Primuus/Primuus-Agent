@@ -25,7 +25,8 @@
     "name": "deepseek-flash",
     "base_url": "https://api.deepseek.com",
     "max_output_tokens": 8192,
-    "reasoning_effort": "low"
+    "reasoning_effort": "low",
+    "final_reasoning_effort": "none"
   },
   "sandbox": {
     "image": "coding-agent-sandbox:local",

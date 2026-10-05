@@ -1,0 +1,93 @@
+{
+  "code_commit": "fce2aeb9b0b2e58e901c39c73f8681ce4434f79a",
+  "status": "service_failure",
+  "maximum_runs": 2,
+  "failure_stop_threshold": 2,
+  "runs": [
+    {
+      "task_id": "intcomma_overflow",
+      "session_id": "77d58a7c0104",
+      "upstream_base_commit": "14965a74953eb5119859975e7c452a04b481cdae",
+      "baseline_tree": "96d212774619d94120b0686754678a52d372f131",
+      "passed": true,
+      "functional_passed": true,
+      "stop_reason": "completed",
+      "project_checks_passed": true,
+      "reload_checks_consistent": true,
+      "steps": 9,
+      "tool_calls": 10,
+      "failed_tool_calls": 1,
+      "tokens": 62300,
+      "active_seconds": 28.531,
+      "changed_paths": [
+        "src/humanize/number.py"
+      ],
+      "first_effective_direct_edit_step": 7,
+      "project_check_batches": 2,
+      "context_compactions": 5,
+      "final_mode_requests": 0,
+      "metrics": {
+        "repository_discovery_commands": 2,
+        "repeated_discovery_commands": 0,
+        "file_reads": 4,
+        "repeated_file_reads": 0,
+        "time_to_first_useful_edit_seconds": 22.836,
+        "read_paths": [
+          "/workspace/src/humanize/number.py",
+          "src/humanize/number.py",
+          "tests/test_number.py"
+        ],
+        "discovery_signatures": [
+          "list_files:",
+          "search_text:def intcomma"
+        ]
+      },
+      "artifact_dir": "experiments/2026-10-05-runtime-reasoning-budget/records/intcomma_overflow/77d58a7c0104"
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "session_id": "372532dca3ab",
+      "upstream_base_commit": "f971127ce7e7770d3ff5be05cfc484bdf9302e04",
+      "baseline_tree": "bb9697854d90744efbed79432285fe1ed67f09a8",
+      "passed": false,
+      "functional_passed": true,
+      "stop_reason": "model_error",
+      "project_checks_passed": true,
+      "reload_checks_consistent": true,
+      "steps": 13,
+      "tool_calls": 17,
+      "failed_tool_calls": 1,
+      "tokens": 94675,
+      "active_seconds": 86.032,
+      "changed_paths": [
+        "src/humanize/number.py"
+      ],
+      "first_effective_direct_edit_step": 13,
+      "project_check_batches": 1,
+      "context_compactions": 5,
+      "final_mode_requests": 1,
+      "metrics": {
+        "repository_discovery_commands": 3,
+        "repeated_discovery_commands": 0,
+        "file_reads": 6,
+        "repeated_file_reads": 0,
+        "time_to_first_useful_edit_seconds": 49.773,
+        "read_paths": [
+          "/workspace/src/humanize/number.py",
+          "src/humanize/number.py",
+          "tests/test_number.py"
+        ],
+        "discovery_signatures": [
+          "list_files:",
+          "shell:grep -n \"intword\" /workspace/tests/test_number.py",
+          "shell:grep -rn \"intword\" /workspace/src | head -50"
+        ]
+      },
+      "artifact_dir": "experiments/2026-10-05-runtime-reasoning-budget/records/intword_rounding_carry/372532dca3ab"
+    }
+  ],
+  "executed_runs": 2,
+  "passed_runs": 1,
+  "omitted_tasks": [],
+  "finished_at": "2026-10-05T09:19:49.267094+00:00"
+}

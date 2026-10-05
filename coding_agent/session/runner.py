@@ -252,6 +252,7 @@ class SessionRunner:
                 state.add_guidance("Final project check failed. Inspect the failure, fix the code, and rerun checks before finishing." + detail)
                 continue
             guidance = []
+            offered_tools = {tool["name"] for tool in tools}
             for call in response.tool_calls:
                 signature = action_signature(call)
                 repeated = self.recovery.enabled and signature == state.last_failed_action
@@ -264,6 +265,13 @@ class SessionRunner:
                     result = ToolResult(
                         call.call_id, call.name, "error", "",
                         "Repeated failed action blocked; inspect the failure and choose another action",
+                        None, 0,
+                    )
+                    category = "tool"
+                elif call.name not in offered_tools:
+                    result = ToolResult(
+                        call.call_id, call.name, "error", "",
+                        f"Tool unavailable in {phase} phase; available tools: {', '.join(sorted(offered_tools)) or 'none'}",
                         None, 0,
                     )
                     category = "tool"

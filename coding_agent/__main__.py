@@ -173,12 +173,17 @@ def main() -> None:
     }
     if arguments.reasoning_effort is not None and backend != "openai_compatible":
         parser.error("--reasoning-effort requires the openai_compatible backend")
+    same_model = (backend == configured_model["backend"] and model_id == configured_model["name"]
+                  and endpoint == configured_model["base_url"].rstrip("/"))
     effort = arguments.reasoning_effort
-    if (effort is None and backend == configured_model["backend"]
-        and model_id == configured_model["name"] and endpoint == configured_model["base_url"].rstrip("/")):
+    if effort is None and same_model:
         effort = configured_model.get("reasoning_effort")
     if backend == "openai_compatible" and effort is not None:
         config["model"]["reasoning_effort"] = effort
+    if backend == "openai_compatible" and same_model:
+        final_effort = configured_model.get("final_reasoning_effort")
+        if final_effort is not None:
+            config["model"]["final_reasoning_effort"] = final_effort
 
     def make_model():
         return create_model(config)

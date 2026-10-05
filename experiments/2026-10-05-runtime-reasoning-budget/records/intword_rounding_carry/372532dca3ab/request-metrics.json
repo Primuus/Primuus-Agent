@@ -1,0 +1,212 @@
+[
+  {
+    "request": 1,
+    "message_chars": 1243,
+    "input_bytes": 3858,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 0,
+    "input_tokens": 1129,
+    "output_tokens": 72,
+    "reasoning_chars": 30,
+    "tool_names": [
+      "list_files",
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 2,
+    "message_chars": 6257,
+    "input_bytes": 8872,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 30,
+    "input_tokens": 2782,
+    "output_tokens": 126,
+    "reasoning_chars": 0,
+    "tool_names": [
+      "read_file_range",
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 3,
+    "message_chars": 7577,
+    "input_bytes": 10192,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 30,
+    "input_tokens": 3142,
+    "output_tokens": 179,
+    "reasoning_chars": 157,
+    "tool_names": [
+      "read_file_range",
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 4,
+    "message_chars": 15865,
+    "input_bytes": 18480,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 187,
+    "input_tokens": 5777,
+    "output_tokens": 100,
+    "reasoning_chars": 81,
+    "tool_names": [
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 5,
+    "message_chars": 17908,
+    "input_bytes": 20523,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 268,
+    "input_tokens": 6411,
+    "output_tokens": 1413,
+    "reasoning_chars": 4643,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 6,
+    "message_chars": 24808,
+    "input_bytes": 27429,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 4881,
+    "input_tokens": 9826,
+    "output_tokens": 178,
+    "reasoning_chars": 653,
+    "tool_names": [
+      "git_status",
+      "git_diff"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 7,
+    "message_chars": 26312,
+    "input_bytes": 28933,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 5534,
+    "input_tokens": 10143,
+    "output_tokens": 1541,
+    "reasoning_chars": 4644,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 8,
+    "message_chars": 25389,
+    "input_bytes": 26297,
+    "tools_count": 3,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 9940,
+    "input_tokens": 9380,
+    "output_tokens": 752,
+    "reasoning_chars": 2035,
+    "tool_names": [
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 9,
+    "message_chars": 19416,
+    "input_bytes": 20012,
+    "tools_count": 2,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 7332,
+    "input_tokens": 6104,
+    "output_tokens": 188,
+    "reasoning_chars": 82,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 10,
+    "message_chars": 20348,
+    "input_bytes": 20944,
+    "tools_count": 2,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 7414,
+    "input_tokens": 6403,
+    "output_tokens": 1796,
+    "reasoning_chars": 5461,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 11,
+    "message_chars": 26746,
+    "input_bytes": 27356,
+    "tools_count": 2,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 12875,
+    "input_tokens": 8360,
+    "output_tokens": 340,
+    "reasoning_chars": 805,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 12,
+    "message_chars": 7049,
+    "input_bytes": 7633,
+    "tools_count": 2,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 805,
+    "input_tokens": 2534,
+    "output_tokens": 172,
+    "reasoning_chars": 282,
+    "tool_names": [
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 13,
+    "message_chars": 10386,
+    "input_bytes": 10972,
+    "tools_count": 2,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 1087,
+    "input_tokens": 3512,
+    "output_tokens": 2117,
+    "reasoning_chars": 6009,
+    "tool_names": [
+      "edit_file"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 14,
+    "message_chars": 6662,
+    "input_bytes": 6689,
+    "tools_count": 0,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 0,
+    "error": "Model response reached the configured output limit",
+    "input_tokens": 2006,
+    "output_tokens": 8192
+  }
+]

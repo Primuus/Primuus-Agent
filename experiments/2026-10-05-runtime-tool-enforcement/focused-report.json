@@ -1,0 +1,53 @@
+{
+  "source_trace": "experiments/2026-10-05-runtime-reasoning-budget/records/intword_rounding_carry/372532dca3ab/trace.jsonl",
+  "out_of_phase_tools_executed": 0,
+  "denied_tool_results": [
+    {
+      "call_id": "denied-shell",
+      "name": "run_shell",
+      "status": "error",
+      "output": "",
+      "error": "Tool unavailable in edit phase; available tools: edit_file, write_file",
+      "exit_code": null,
+      "duration_ms": 0
+    },
+    {
+      "call_id": "denied-refresh",
+      "name": "read_file_range",
+      "status": "error",
+      "output": "",
+      "error": "Tool unavailable in edit phase; available tools: edit_file, write_file",
+      "exit_code": null,
+      "duration_ms": 0
+    }
+  ],
+  "stop_reason": "final_unverified",
+  "cli_payloads": [
+    {
+      "case": "default",
+      "efforts": [
+        "low",
+        "none"
+      ],
+      "passed": true
+    },
+    {
+      "case": "explicit",
+      "efforts": [
+        "high",
+        "none"
+      ],
+      "passed": true
+    },
+    {
+      "case": "other_service",
+      "efforts": [
+        null,
+        null
+      ],
+      "passed": true
+    }
+  ],
+  "network_calls": 0,
+  "temporary_test_files_created": false
+}

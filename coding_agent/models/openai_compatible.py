@@ -20,6 +20,7 @@ class OpenAICompatibleBackend:
         timeout_seconds: int = 120,
         max_output_tokens: int = 8192,
         reasoning_effort: str | None = None,
+        final_reasoning_effort: str | None = None,
     ) -> None:
         self.model_id = model_id
         self.base_url = base_url.rstrip("/")
@@ -27,6 +28,7 @@ class OpenAICompatibleBackend:
         self.timeout_seconds = timeout_seconds
         self.max_output_tokens = max_output_tokens
         self.reasoning_effort = reasoning_effort
+        self.final_reasoning_effort = final_reasoning_effort
 
     def generate(
         self, messages: list[dict[str, Any]], tools: list[dict],
@@ -43,8 +45,9 @@ class OpenAICompatibleBackend:
                 for tool in tools
             ]
             payload["parallel_tool_calls"] = False
-        if self.reasoning_effort is not None:
-            payload["reasoning_effort"] = self.reasoning_effort
+        effort = self.final_reasoning_effort if not tools and self.final_reasoning_effort is not None else self.reasoning_effort
+        if effort is not None:
+            payload["reasoning_effort"] = effort
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
