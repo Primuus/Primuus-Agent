@@ -1,0 +1,24 @@
+{
+  "cli_to_model_payload": [
+    {
+      "case": "default",
+      "request_reasoning_effort": "low",
+      "output_limit": 8192,
+      "passed": true
+    },
+    {
+      "case": "explicit",
+      "request_reasoning_effort": "high",
+      "output_limit": 8192,
+      "passed": true
+    },
+    {
+      "case": "other_service",
+      "request_reasoning_effort": null,
+      "output_limit": 8192,
+      "passed": true
+    }
+  ],
+  "network_calls": 0,
+  "temporary_test_files_created": false
+}

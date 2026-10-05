@@ -1,0 +1,16 @@
+{
+  "runs": [
+    {
+      "task_id": "intword_rounding_carry",
+      "baseline_verifier_failed": true,
+      "final_verifier_passed": false,
+      "reload_checks_consistent": true,
+      "patch_matches_project_check": false,
+      "model_service_failures": 1,
+      "temporary_source_removed": true,
+      "temporary_workspace_removed": true,
+      "temporary_session_removed": true
+    }
+  ],
+  "temporary_script_removed": false
+}

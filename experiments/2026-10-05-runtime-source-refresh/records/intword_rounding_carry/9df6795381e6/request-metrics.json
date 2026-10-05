@@ -1,0 +1,138 @@
+[
+  {
+    "request": 1,
+    "message_chars": 1243,
+    "input_bytes": 3858,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 0,
+    "input_tokens": 1129,
+    "output_tokens": 57,
+    "reasoning_chars": 30,
+    "tool_names": [
+      "list_files",
+      "search_text"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 2,
+    "message_chars": 7069,
+    "input_bytes": 9684,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 30,
+    "input_tokens": 3030,
+    "output_tokens": 145,
+    "reasoning_chars": 0,
+    "tool_names": [
+      "read_file_range",
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 3,
+    "message_chars": 16696,
+    "input_bytes": 19313,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 30,
+    "input_tokens": 6133,
+    "output_tokens": 1092,
+    "reasoning_chars": 3364,
+    "tool_names": [
+      "read_file_range",
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 4,
+    "message_chars": 23216,
+    "input_bytes": 25837,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 3394,
+    "input_tokens": 7981,
+    "output_tokens": 414,
+    "reasoning_chars": 931,
+    "tool_names": [
+      "run_shell",
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 5,
+    "message_chars": 17786,
+    "input_bytes": 20405,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 4295,
+    "input_tokens": 7583,
+    "output_tokens": 640,
+    "reasoning_chars": 1949,
+    "tool_names": [
+      "read_file_range",
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 6,
+    "message_chars": 23207,
+    "input_bytes": 25826,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 6244,
+    "input_tokens": 9189,
+    "output_tokens": 221,
+    "reasoning_chars": 340,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 7,
+    "message_chars": 24988,
+    "input_bytes": 27607,
+    "tools_count": 10,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 6584,
+    "input_tokens": 9725,
+    "output_tokens": 1150,
+    "reasoning_chars": 3773,
+    "tool_names": [
+      "run_shell"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 8,
+    "message_chars": 18170,
+    "input_bytes": 19066,
+    "tools_count": 3,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 6062,
+    "input_tokens": 5868,
+    "output_tokens": 228,
+    "reasoning_chars": 517,
+    "tool_names": [
+      "read_file_range"
+    ],
+    "final_reply": false
+  },
+  {
+    "request": 9,
+    "message_chars": 20284,
+    "input_bytes": 20864,
+    "tools_count": 2,
+    "max_output_tokens": 8192,
+    "history_reasoning_chars": 6579,
+    "error": "Model API response was truncated",
+    "input_tokens": null,
+    "output_tokens": null
+  }
+]

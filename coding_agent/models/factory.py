@@ -24,5 +24,6 @@ def create_model(config: dict) -> ModelBackend:
         return OpenAICompatibleBackend(
             model["name"], model["base_url"], key,
             max_output_tokens=model.get("max_output_tokens", 8192),
+            reasoning_effort=model.get("reasoning_effort"),
         )
     raise ValueError(f"Unknown model backend: {backend}")

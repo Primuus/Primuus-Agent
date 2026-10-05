@@ -143,3 +143,15 @@ OpenAI 兼容和 Anthropic 两个适配层均接收实际的单次输出限制�
 从上述失败 Trace 的第 8 轮重放验证：下一轮提供两个编辑工具和分段读取；读取后、拒绝编辑后与重载续跑都只提供编辑工具，读取额度没有重置，直接答复仍为 `final_unverified`，没有调用基线检查。结果见 [focused-refresh-report.json](../experiments/2026-10-05-runtime-edit-budget/focused-refresh-report.json)。验证为内联脚本，不新增测试文件。
 
 接下来只复测仍失败的第二题一次，沿用 8,192 单次输出上限及 120,000 总预算，验证这一具体修复；不扩大样本，也不通过增加 Token 预算掩盖问题。
+
+#### 读取恢复规则的真实验证
+
+提交 `262ae51` 在第 8 轮进入编辑阶段，成功读取 `number.py` 第 271—296 行的完整函数实现；第 9 次请求只提供两个编辑工具，证明有限读取恢复生效。但服务响应在传输中截断，Runtime 以 `model_error` 停止，未执行不完整工具参数。前 8 轮已知用量为 54,585，失败请求没有返回用量，最终 `tokens` 为 `null`；重载仍保留未知状态。没有补丁，隐藏验证未通过，不能据此宣称任务或预算收敛已完成。数据见 [report.json](../experiments/2026-10-05-runtime-source-refresh/report.json)。
+
+### S4.6：明确推理强度配置
+
+此前请求未显式指定 `reasoning_effort`。当前模型接口列出的默认档位为 `high`，支持 `low`、`high`、`max`；[DeepSeek 官方协议](https://api-docs.deepseek.com/guides/thinking_mode/)支持在 Chat Completions 请求中传入该字段。为减少默认输出消耗，默认 DeepSeek 配置设为 `low`，保留 8,192 单次输出上限和 120,000 总预算。此项是运行策略调整，不是对传输截断原因的确认，也不能保证消除服务故障。
+
+配置项通过模型工厂和 OpenAI 兼容适配器实际传入请求。命令行新增 `--reasoning-effort none|low|high|max`，可明确覆盖；更换模型或服务地址时不自动继承原模型的推理强度，Anthropic 不使用此参数。CLI 到请求载荷的默认值、显式覆盖与服务切换三条路径已验证，见 [focused-report.json](../experiments/2026-10-05-runtime-reasoning-budget/focused-report.json)，未发出真实接口调用，没有新增测试文件。
+
+下一轮仍仅使用原来的两个任务，按当前配置各执行一次，确认配置变化后的功能与正常收尾。推理强度变化会影响模型行为，因此结果不能单独归因于上下文或探索额度规则。

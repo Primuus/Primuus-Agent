@@ -47,6 +47,8 @@ def main() -> None:
     parser.add_argument("--base-url")
     parser.add_argument("--api-key-env", help="Name of the environment variable containing the model key")
     parser.add_argument("--max-output-tokens", type=int)
+    parser.add_argument("--reasoning-effort", choices=["none", "low", "high", "max"],
+                        help="Thinking effort for OpenAI-compatible services")
     parser.add_argument("--instruction-file", action="append", help="Relative project instruction file")
     parser.add_argument("--skill", action="append", help="Repository skill name under .primuus/skills")
     parser.add_argument("--hooks-file", type=Path, help="JSON file defining before_tool and after_tool commands")
@@ -169,6 +171,14 @@ def main() -> None:
         "max_output_tokens": arguments.max_output_tokens or configured_model.get(
             "max_output_tokens", 4096 if backend == "anthropic" else 8192),
     }
+    if arguments.reasoning_effort is not None and backend != "openai_compatible":
+        parser.error("--reasoning-effort requires the openai_compatible backend")
+    effort = arguments.reasoning_effort
+    if (effort is None and backend == configured_model["backend"]
+        and model_id == configured_model["name"] and endpoint == configured_model["base_url"].rstrip("/")):
+        effort = configured_model.get("reasoning_effort")
+    if backend == "openai_compatible" and effort is not None:
+        config["model"]["reasoning_effort"] = effort
 
     def make_model():
         return create_model(config)

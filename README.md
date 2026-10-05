@@ -125,6 +125,7 @@ python3 -m coding_agent restore <session_id> --snapshot <commit>
 | 轮数预算 | 普通仓库会话 80，评测任务 20 |
 | Token 预算 | 120,000 |
 | 单次输出上限 | 8,192 Token，可用 `--max-output-tokens` 调整 |
+| 默认 DeepSeek 推理强度 | `low`，可用 `--reasoning-effort` 调整 |
 | 单次任务 / 工具超时 | 600 秒 / 30 秒 |
 | 上下文压缩阈值 | 24,000 字符，优先保留近期 8 条消息 |
 | 工具输出上下文上限 | 每个输出字段 4,000 字符；Trace 保留工具返回的完整结果 |
@@ -136,6 +137,8 @@ python3 -m coding_agent restore <session_id> --snapshot <commit>
 `--max-steps` 可覆盖轮数预算。请求前按消息大小及最近实际用量估算输入成本，仓库会话预留最终答复额度，并向模型服务传入单次输出上限。预算或轮数接近上限、当前补丁检查通过且计划无待办项时，下一次请求仅用于最终答复；检查仍在答复后确认。输入估算不能视为精确计费上限，单次请求仍可能出现偏差。
 
 带项目检查且允许写入的仓库任务，为首次编辑分配总 Token 预算三分之一的探索额度。额度用完仍未产生检查过的补丁时，关闭广泛搜索和 Shell 工具，允许一轮分段读取以补回压缩掉的源码，此后只提供文件编辑工具。编辑后自动返回项目检查结果；模型若直接答复而未编辑，记录为 `final_unverified`。已有补丁进入通常的修复、检查与收尾流程。
+
+OpenAI 兼容后端支持 `model.reasoning_effort` 配置和 `--reasoning-effort none|low|high|max`。默认 DeepSeek 使用 `low` 配合输出预算；更换模型或服务地址时，需显式配置所选服务支持的推理强度。
 
 其他模型服务可按以下方式使用：
 
