@@ -94,7 +94,9 @@ class DockerSandbox:
 
     def relative_path(self, path: str) -> str:
         supplied = Path(path)
-        if supplied.is_absolute() or ".." in supplied.parts:
+        if supplied.is_absolute():
+            supplied = supplied.relative_to("/workspace")
+        if ".." in supplied.parts:
             raise ValueError("Path must stay inside /workspace")
         resolved = (self.workspace / supplied).resolve()
         if not resolved.is_relative_to(self.workspace.resolve()):

@@ -1,0 +1,21 @@
+{
+  "scenarios": [
+    {
+      "scenario": "fresh_range_and_paths",
+      "passed": true,
+      "fresh_output_chars": [
+        11402,
+        10897
+      ],
+      "older_outputs_trimmed": true,
+      "outside_paths_rejected": true
+    },
+    {
+      "scenario": "continued_focused_reads_in_edit_phase",
+      "passed": true,
+      "two_read_turns_and_edit_executed": true,
+      "broad_shell_not_executed": true
+    }
+  ],
+  "all_passed": true
+}

@@ -229,12 +229,18 @@ class SessionState:
     def compact(self, max_chars: int, keep_messages: int, tool_output_chars: int = 4000) -> None:
         messages = []
         trimmed = 0
+        newest_turn = max((index for index, message in enumerate(self.messages)
+                           if message["role"] == "assistant"), default=-1)
+        fresh_ranges = {call["id"] for message in self.messages[newest_turn:]
+                        for call in message.get("tool_calls", [])
+                        if call["function"]["name"] == "read_file_range"}
         for message in self.messages:
             if message["role"] == "tool":
                 result = json.loads(message["content"])
                 for field in ("output", "error"):
                     text = result.get(field)
-                    if text and len(text) > tool_output_chars:
+                    if (text and len(text) > tool_output_chars
+                        and not (field == "output" and message["tool_call_id"] in fresh_ranges)):
                         head = (tool_output_chars - 1) * 3 // 4
                         tail = tool_output_chars - 1 - head
                         result[field] = text[:head] + "…" + text[len(text) - tail:]
@@ -247,8 +253,6 @@ class SessionState:
             start = max(0, len(messages) - keep_messages)
         while start > 0 and messages[start]["role"] == "tool":
             start -= 1
-        newest_turn = max((index for index, message in enumerate(messages)
-                           if message["role"] == "assistant"), default=len(messages) - 1)
         while len(json.dumps(messages[start:], ensure_ascii=False)) > max_chars:
             following = start + 1
             while following < len(messages) and messages[following]["role"] == "tool":
@@ -285,18 +289,18 @@ class SessionState:
                 args = call.arguments
                 passed = result.status == "completed" and result.exit_code in (None, 0)
                 if passed and call.name in ("write_file", "edit_file"):
-                    edited_at[args["path"]] = step
+                    edited_at[args["path"].removeprefix("/workspace/")] = step
                 if result.call_id in retained_ids or step <= restored_step:
                     continue
                 if not passed:
                     failures[result.call_id] = f"{call.name}: {result.status}, exit={result.exit_code}; {(result.error or result.output)[:250]}"
                 elif call.name in ("read_file", "read_file_range"):
-                    path = args["path"]
+                    path = args["path"].removeprefix("/workspace/")
                     location = f"{path}:{args['start_line']}-{args['end_line']}" if call.name == "read_file_range" else path
                     excerpt = result.output if len(result.output) <= 700 else result.output[:500] + "\n[excerpt omitted]\n" + result.output[-180:]
                     sources[location] = (path, step, f"Observed {location}:\n{excerpt}")
                 elif call.name in ("write_file", "edit_file"):
-                    path = args["path"]
+                    path = args["path"].removeprefix("/workspace/")
                     replacement = args["new_text"] if call.name == "edit_file" else args["content"]
                     changes.pop(path, None)
                     changes[path] = f"Applied {call.name} to {path}; replacement excerpt:\n{replacement[:350]}"

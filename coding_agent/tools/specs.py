@@ -54,7 +54,7 @@ REPOSITORY_TOOL_SPECS = TOOL_SPECS + [
     },
     {
         "name": "read_file_range",
-        "description": "Read inclusive line range from a UTF-8 file",
+        "description": "Read inclusive line range from a UTF-8 file; prefer focused ranges of 40-60 lines",
         "parameters": {
             "type": "object",
             "properties": {

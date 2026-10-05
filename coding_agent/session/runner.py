@@ -86,22 +86,15 @@ class SessionRunner:
             and task_tokens >= self.initial_edit_budget_tokens
             and state.project_check_commands and state.project_check_patch_sha256 is None):
             phase = "edit"
-            edit_steps = {event["step"] for event in state.events
-                          if event["event_type"] == "model_request" and event["data"]["phase"] == "edit"}
-            refreshed = any(
-                step in edit_steps and any(call.name == "read_file_range" for call in turn.response.tool_calls)
-                for step, turn in enumerate(state.turns[task_start_step:], task_start_step + 1)
-            )
-            edit_tools = {"write_file", "edit_file"}
-            if not refreshed:
-                edit_tools.add("read_file_range")
+            edit_tools = {"write_file", "edit_file", "read_file_range"}
             tools = [tool for tool in tools if tool["name"] in edit_tools]
             if self._request_phase(state) != "edit":
                 state.add_workflow_guidance(
                     "The initial investigation allowance is used. Broad discovery tools are closed. "
-                    "One turn of focused read_file_range calls is available to recover source omitted "
-                    "by compaction, followed by file editing tools. Prefer edit_file for the smallest "
+                    "Focused read_file_range remains available for exact source needed by edits, "
+                    "including other requested files. Prefer edit_file for the smallest "
                     "exact replacements. Configured checks run automatically and return failures. "
+                    "Make changes that implement the request; creating unrelated files does not fix it. "
                     "If the evidence is insufficient, explain what is missing instead of claiming completion."
                 )
         messages = build_context(state)
@@ -122,8 +115,9 @@ class SessionRunner:
                 tools = []
                 state.add_workflow_guidance(
                     "The current patch passed the project checks and the remaining budget is reserved "
-                    "for your final answer. Review the original requirements and report the changes, "
-                    "verification and any remaining limitations. Do not call more tools."
+                    "for your final answer. Compare every original requirement with the edits actually "
+                    "applied. Report only supported changes and check results; explicitly list unfinished "
+                    "work. Passing existing checks does not prove the requested fixes. Do not call more tools."
                 )
             messages = build_context(state)
             if phase == "final":
@@ -330,7 +324,9 @@ class SessionRunner:
                     if progress.passed:
                         state.add_workflow_guidance(
                             "The configured project checks passed for the current patch. "
-                            "Review the user's requirements; if they are satisfied, give a final reply now."
+                            "Passing existing checks alone does not prove every requested fix. "
+                            "Review each requirement against your actual edits; continue relevant work "
+                            "if needed, otherwise give a final reply."
                         )
                     else:
                         detail = (progress.output + " " + (progress.error or ""))[:4000]
