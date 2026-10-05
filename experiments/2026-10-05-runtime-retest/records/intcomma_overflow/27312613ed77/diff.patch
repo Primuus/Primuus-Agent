@@ -1,0 +1,51 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index 727435f..321d367 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -154,12 +154,26 @@ def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+     try:
+         if isinstance(value, str):
+             value = value.replace(thousands_sep, "").replace(decimal_sep, ".")
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+             if "." in value:
++                if not math.isfinite(float(value)):
++                    return _format_not_finite(float(value))
+                 value = float(value)
+             else:
+-                value = int(value)
++                # No decimal point: parse as an exact int so that arbitrarily
++                # large integer strings are not rejected by ``float()``.
++                try:
++                    value = int(value)
++                except ValueError:
++                    # Not an integer string; fall through to the float handling
++                    # for values such as "inf" and "nan".
++                    converted = float(value)
++                    if not math.isfinite(converted):
++                        return _format_not_finite(converted)
++                    raise
++        elif isinstance(value, int):
++            # ``int`` values are exact and always finite, and ``float()`` may
++            # overflow for values larger than the float range, so skip it.
++            pass
+         else:
+             if not math.isfinite(float(value)):
+                 return _format_not_finite(float(value))
+@@ -168,7 +182,15 @@ def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+         return str(value)
+ 
+     if ndigits is not None:
+-        result = f"{value:,.{ndigits}f}"
++        if isinstance(value, int):
++            # Formatting an int with a fixed-point specifier goes through
++            # ``float()`` and would overflow for very large values, so build
++            # the fixed-point representation directly.
++            result = f"{value:,}"
++            if ndigits:
++                result += "." + "0" * ndigits
++        else:
++            result = f"{value:,.{ndigits}f}"
+     else:
+         result = f"{value:,}"
+     if thousands_sep != "," or decimal_sep != ".":

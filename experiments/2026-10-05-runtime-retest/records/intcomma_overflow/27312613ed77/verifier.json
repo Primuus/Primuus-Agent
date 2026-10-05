@@ -1,0 +1,12 @@
+{
+  "baseline": {
+    "passed": false,
+    "exit_code": 1,
+    "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 3, in <module>\n  File \"/workspace/src/humanize/number.py\", line 164, in intcomma\n    if not math.isfinite(float(value)):\nOverflowError: int too large to convert to float\n"
+  },
+  "final": {
+    "passed": true,
+    "exit_code": 0,
+    "output": ""
+  }
+}

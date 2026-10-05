@@ -1,0 +1,31 @@
+{
+  "temporary_script_removed": true,
+  "runs": [
+    {
+      "task_id": "intcomma_overflow",
+      "baseline_verifier_failed": true,
+      "final_verifier_passed": true,
+      "patch_matches_project_check": true,
+      "reload_checks_consistent": true,
+      "relevant_base_source_matches_previous_trace": true,
+      "relevant_source_sha256": "fd740651f8963aec2d7fa94de8fb5b631cbb90d9706e253696bf6ed072214411",
+      "temporary_source_removed": true,
+      "temporary_workspace_removed": true,
+      "temporary_session_removed": true,
+      "model_service_failures": 0
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "baseline_verifier_failed": true,
+      "final_verifier_passed": true,
+      "patch_matches_project_check": true,
+      "reload_checks_consistent": true,
+      "relevant_base_source_matches_previous_trace": true,
+      "relevant_source_sha256": "5bc88d5715b02e45ae41d4d2d91f01d3db62e9c544d01f2f8dc7910dc4b8faac",
+      "temporary_source_removed": true,
+      "temporary_workspace_removed": true,
+      "temporary_session_removed": true,
+      "model_service_failures": 0
+    }
+  ]
+}

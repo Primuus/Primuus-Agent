@@ -1,0 +1,12 @@
+{
+  "baseline": {
+    "passed": false,
+    "exit_code": 1,
+    "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 3, in <module>\nAssertionError\n"
+  },
+  "final": {
+    "passed": true,
+    "exit_code": 0,
+    "output": ""
+  }
+}

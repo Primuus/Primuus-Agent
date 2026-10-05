@@ -1,0 +1,149 @@
+{
+  "conclusion": "The normal-completion bottleneck remains in both selected tasks.",
+  "runtime_unchanged": true,
+  "scope": "Two previous budget failures, once each; not a full-suite result or a causal improvement experiment.",
+  "context_threshold_chars": 60000,
+  "token_budget": 120000,
+  "runs": [
+    {
+      "task_id": "intcomma_overflow",
+      "previous_tokens": 123138,
+      "current_tokens": 123482,
+      "previous_stop_reason": "token_budget",
+      "current_stop_reason": "token_budget",
+      "input_tokens": 117496,
+      "output_tokens": 5986,
+      "input_share_pct": 95.15,
+      "first_effective_direct_edit_step": 11,
+      "tokens_before_first_edit": 88244,
+      "budget_spent_before_first_edit_pct": 73.54,
+      "last_request_input_tokens": 17511,
+      "max_request_message_chars": 41544,
+      "context_compactions": 0,
+      "largest_tool_outputs": [
+        {
+          "step": 3,
+          "tool": "read_file",
+          "output_chars": 16031,
+          "status": "completed",
+          "exit_code": null,
+          "arguments": {
+            "path": "src/humanize/number.py"
+          }
+        },
+        {
+          "step": 5,
+          "tool": "read_file_range",
+          "output_chars": 4232,
+          "status": "completed",
+          "exit_code": null,
+          "arguments": {
+            "path": "tests/test_number.py",
+            "start_line": 1,
+            "end_line": 120
+          }
+        },
+        {
+          "step": 1,
+          "tool": "list_files",
+          "output_chars": 2993,
+          "status": "completed",
+          "exit_code": null,
+          "arguments": {}
+        },
+        {
+          "step": 2,
+          "tool": "search_text",
+          "output_chars": 2397,
+          "status": "completed",
+          "exit_code": null,
+          "arguments": {
+            "query": "intcomma"
+          }
+        }
+      ],
+      "workflow_guidance": [
+        {
+          "step": 10,
+          "content": "The token budget is over 60% used. Focus on the requested change and finish as soon as the requirements and project checks are satisfied."
+        },
+        {
+          "step": 11,
+          "content": "The configured project checks passed for the current patch. Review the user's requirements; if they are satisfied, give a final reply now."
+        }
+      ],
+      "request_metrics": "experiments/2026-10-05-runtime-retest/records/intcomma_overflow/27312613ed77/request-metrics.json"
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "previous_tokens": 120948,
+      "current_tokens": 127705,
+      "previous_stop_reason": "token_budget",
+      "current_stop_reason": "token_budget",
+      "input_tokens": 114410,
+      "output_tokens": 13295,
+      "input_share_pct": 89.59,
+      "first_effective_direct_edit_step": 9,
+      "tokens_before_first_edit": 99215,
+      "budget_spent_before_first_edit_pct": 82.68,
+      "last_request_input_tokens": 28138,
+      "max_request_message_chars": 44382,
+      "context_compactions": 0,
+      "largest_tool_outputs": [
+        {
+          "step": 6,
+          "tool": "run_shell",
+          "output_chars": 14644,
+          "status": "completed",
+          "exit_code": 0,
+          "arguments": {
+            "command": "cd /workspace && grep -rn \"googol\\|decillion\\|1000.0\" README.md docs src tests"
+          }
+        },
+        {
+          "step": 2,
+          "tool": "read_file_range",
+          "output_chars": 3582,
+          "status": "completed",
+          "exit_code": null,
+          "arguments": {
+            "path": "src/humanize/number.py",
+            "start_line": 180,
+            "end_line": 280
+          }
+        },
+        {
+          "step": 2,
+          "tool": "read_file_range",
+          "output_chars": 3274,
+          "status": "completed",
+          "exit_code": null,
+          "arguments": {
+            "path": "tests/test_number.py",
+            "start_line": 80,
+            "end_line": 160
+          }
+        },
+        {
+          "step": 1,
+          "tool": "list_files",
+          "output_chars": 2993,
+          "status": "completed",
+          "exit_code": null,
+          "arguments": {}
+        }
+      ],
+      "workflow_guidance": [
+        {
+          "step": 8,
+          "content": "The token budget is over 60% used. Focus on the requested change and finish as soon as the requirements and project checks are satisfied."
+        },
+        {
+          "step": 9,
+          "content": "The configured project checks passed for the current patch. Review the user's requirements; if they are satisfied, give a final reply now."
+        }
+      ],
+      "request_metrics": "experiments/2026-10-05-runtime-retest/records/intword_rounding_carry/425e82e22f6d/request-metrics.json"
+    }
+  ]
+}
