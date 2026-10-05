@@ -1,0 +1,184 @@
+{
+  "requests": [
+    {
+      "request": 1,
+      "tools": 10,
+      "message_chars": 1385,
+      "history_reasoning_chars": 0,
+      "max_output_tokens": 8192,
+      "input_tokens": 1152,
+      "output_tokens": 89,
+      "tool_names": [
+        "run_shell",
+        "search_text"
+      ],
+      "final": false,
+      "response_reasoning_chars": 24,
+      "seconds": 1.265
+    },
+    {
+      "request": 2,
+      "tools": 10,
+      "message_chars": 2369,
+      "history_reasoning_chars": 24,
+      "max_output_tokens": 8192,
+      "input_tokens": 1369,
+      "output_tokens": 44,
+      "tool_names": [
+        "read_file"
+      ],
+      "final": false,
+      "response_reasoning_chars": 0,
+      "seconds": 0.781
+    },
+    {
+      "request": 3,
+      "tools": 10,
+      "message_chars": 5914,
+      "history_reasoning_chars": 24,
+      "max_output_tokens": 8192,
+      "input_tokens": 2498,
+      "output_tokens": 92,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 55,
+      "seconds": 1.6
+    },
+    {
+      "request": 4,
+      "tools": 10,
+      "message_chars": 9172,
+      "history_reasoning_chars": 79,
+      "max_output_tokens": 8192,
+      "input_tokens": 3467,
+      "output_tokens": 101,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 98,
+      "seconds": 1.358
+    },
+    {
+      "request": 5,
+      "tools": 10,
+      "message_chars": 11089,
+      "history_reasoning_chars": 177,
+      "max_output_tokens": 8192,
+      "input_tokens": 3996,
+      "output_tokens": 281,
+      "tool_names": [
+        "read_file_range",
+        "read_file"
+      ],
+      "final": false,
+      "response_reasoning_chars": 672,
+      "seconds": 1.769
+    },
+    {
+      "request": 6,
+      "tools": 10,
+      "message_chars": 17074,
+      "history_reasoning_chars": 849,
+      "max_output_tokens": 8192,
+      "input_tokens": 5876,
+      "output_tokens": 52,
+      "tool_names": [
+        "search_text"
+      ],
+      "final": false,
+      "response_reasoning_chars": 57,
+      "seconds": 1.11
+    },
+    {
+      "request": 7,
+      "tools": 10,
+      "message_chars": 13330,
+      "history_reasoning_chars": 827,
+      "max_output_tokens": 8192,
+      "input_tokens": 4740,
+      "output_tokens": 76,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 0,
+      "seconds": 1.053
+    },
+    {
+      "request": 8,
+      "tools": 10,
+      "message_chars": 16766,
+      "history_reasoning_chars": 827,
+      "max_output_tokens": 8192,
+      "input_tokens": 5879,
+      "output_tokens": 698,
+      "tool_names": [
+        "run_shell"
+      ],
+      "final": false,
+      "response_reasoning_chars": 1928,
+      "seconds": 3.701
+    },
+    {
+      "request": 9,
+      "tools": 10,
+      "message_chars": 17264,
+      "history_reasoning_chars": 1985,
+      "max_output_tokens": 8192,
+      "input_tokens": 7383,
+      "output_tokens": 135,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 257,
+      "seconds": 1.089
+    },
+    {
+      "request": 10,
+      "tools": 10,
+      "message_chars": 18470,
+      "history_reasoning_chars": 2185,
+      "max_output_tokens": 8192,
+      "input_tokens": 7701,
+      "output_tokens": 79,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "response_reasoning_chars": 0,
+      "seconds": 0.91
+    },
+    {
+      "request": 11,
+      "tools": 3,
+      "message_chars": 20153,
+      "history_reasoning_chars": 2185,
+      "max_output_tokens": 8192,
+      "input_tokens": 7655,
+      "output_tokens": 1939,
+      "tool_names": [
+        "edit_file"
+      ],
+      "final": false,
+      "response_reasoning_chars": 5732,
+      "seconds": 9.366
+    },
+    {
+      "request": 12,
+      "tools": 10,
+      "message_chars": 12723,
+      "history_reasoning_chars": 5732,
+      "max_output_tokens": 8192,
+      "input_tokens": 4315,
+      "output_tokens": 337,
+      "tool_names": [],
+      "final": true,
+      "response_reasoning_chars": 469,
+      "seconds": 2.368
+    }
+  ]
+}

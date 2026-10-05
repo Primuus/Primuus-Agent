@@ -1,0 +1,31 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index 727435f..665f755 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -154,16 +154,18 @@ def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+     try:
+         if isinstance(value, str):
+             value = value.replace(thousands_sep, "").replace(decimal_sep, ".")
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+-            if "." in value:
+-                value = float(value)
+-            else:
++            try:
+                 value = int(value)
++            except ValueError:
++                if not math.isfinite(float(value)):
++                    return _format_not_finite(float(value))
++                value = float(value)
++        elif isinstance(value, int):
++            pass
+         else:
+-            if not math.isfinite(float(value)):
+-                return _format_not_finite(float(value))
+-            float(value)
++            value = float(value)
++            if not math.isfinite(value):
++                return _format_not_finite(value)
+     except (TypeError, ValueError):
+         return str(value)
+ 
