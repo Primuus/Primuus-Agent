@@ -15,9 +15,10 @@ SYSTEM_PROMPT = (
     "Use the configured project checks to confirm "
     "the result. Once the requirements are met and checks pass, give a final reply "
     "without continuing unrelated exploration. Tool result fields listed in "
-    "context_truncated_fields contain only a prefix and suffix; use line ranges or "
-    "focused queries for the omitted content. Earlier summaries contain observed excerpts, "
-    "not complete files or inferred conclusions; refresh a relevant range if exact source is missing."
+    "context_truncated_fields contain only a prefix and suffix. Use read_tool_output with "
+    "output_ref to inspect omitted result lines. Saved source results are snapshots; refresh "
+    "live source before editing if it has changed. Earlier summaries retain observed actions "
+    "and source references; agent hypotheses and intent are unverified."
 )
 
 
@@ -86,7 +87,7 @@ def build_final_context(state: SessionState) -> list[dict[str, Any]]:
         )},
         {"role": "user", "content": task},
         {"role": "system", "content": (
-            "Observed task history:\n" + state._history_summary([])
+            "Observed task history:\n" + state.task_summary(include_source=False)
             + "\nCurrent plan: " + str(state.plan)
             + "\nCurrent patch checks:\n" + checks
         )},

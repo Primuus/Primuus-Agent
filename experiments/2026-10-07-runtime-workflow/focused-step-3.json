@@ -1,0 +1,9 @@
+{
+  "cases": 1,
+  "raw_output_over_20000_chars_preserved": true,
+  "bounded_preview_with_output_reference": true,
+  "middle_lines_retrievable_after_compaction": true,
+  "fresh_source_available_to_edit": true,
+  "workspace_patch_and_saved_output_replay": true,
+  "temporary_files_deleted": true
+}

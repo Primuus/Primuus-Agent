@@ -223,6 +223,7 @@ class RepositorySession:
             )
 
             last_observed_patch = self.repository.diff()
+            self.state.record_workspace_patch(self.repository.changed_files(), hashlib.sha256(last_observed_patch.encode()).hexdigest())
             last_checked_patch: str | None = None
             last_check_result: VerificationResult | None = None
 
@@ -274,11 +275,14 @@ class RepositorySession:
             def verify_changed_workspace() -> VerificationResult | None:
                 nonlocal last_observed_patch, last_check_result
                 patch = self.repository.diff()
+                self.state.record_workspace_patch(self.repository.changed_files(), hashlib.sha256(patch.encode()).hexdigest())
                 if patch == last_observed_patch:
                     if any(call.name == "run_shell" for call in self.state.turns[-1].response.tool_calls):
                         last_check_result = None
                     return None
                 last_observed_patch = patch
+                if not checks:
+                    return None
                 if not patch:
                     self.state.emit("project_check_invalidated", {"reason": "empty_patch"})
                     self.state._clear_project_checks()
@@ -304,7 +308,7 @@ class RepositorySession:
                     verify_after_tools=False,
                     verification_success_reason="completed",
                     expose_verification_output=True,
-                    post_tool_verify=verify_changed_workspace if checks else None,
+                    post_tool_verify=verify_changed_workspace,
                     budget_guidance=True,
                 ).run(SessionSpec(self.session_id, instruction), self.state)
             except KeyboardInterrupt:

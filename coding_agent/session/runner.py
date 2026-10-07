@@ -270,7 +270,8 @@ class SessionRunner:
                     if (self.recovery.enabled and self.checkpoint is not None
                         and call.name in ("write_file", "edit_file", "run_shell")):
                         checkpoint = self.checkpoint(f"before {call.name} at step {state.steps}")
-                    result = self.execute(call)
+                    result = (state.read_tool_output(call) if call.name == "read_tool_output"
+                              else self.execute(call))
                     if (self.recovery.enabled and result.status == "timeout"
                         and call.name in ("read_file", "read_file_range", "list_files", "search_text", "git_status", "git_diff")):
                         for attempt in range(1, self.recovery.tool_retries + 1):

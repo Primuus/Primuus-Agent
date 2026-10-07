@@ -67,7 +67,6 @@ if not edit['old_text'] or content.count(edit['old_text']) != 1:
     raise SystemExit('old_text must match exactly once')
 path.write_text(content.replace(edit['old_text'], edit['new_text'], 1), encoding='utf-8')
 """
-MAX_OUTPUT = 20000
 
 
 class DockerTools:
@@ -154,8 +153,6 @@ class DockerTools:
             )
         duration = int((monotonic() - started) * 1000)
         output = completed.stdout
-        if len(output) > MAX_OUTPUT:
-            output = output[:MAX_OUTPUT] + "\n[output truncated]"
         status = "timeout" if completed.returncode == 124 else "completed"
         if call.name != "run_shell" and completed.returncode != 0:
             status = "error"

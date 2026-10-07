@@ -44,6 +44,7 @@ class SessionState:
     project_check_commands: list[str] = field(default_factory=list)
     project_checks: list[dict[str, Any]] = field(default_factory=list)
     project_check_patch_sha256: str | None = None
+    workspace_patch: dict[str, Any] = field(default_factory=dict)
     event_sink: Callable[[dict[str, Any]], None] | None = field(default=None, repr=False)
 
     @property
@@ -110,6 +111,12 @@ class SessionState:
         self.emit("project_check_completed", {"checks": checks, "patch_sha256": patch_sha256})
         self.project_checks = checks
         self.project_check_patch_sha256 = patch_sha256
+
+    def record_workspace_patch(self, paths: list[str], digest: str) -> None:
+        patch = {"changed_paths": paths, "sha256": digest}
+        if patch != self.workspace_patch:
+            self.emit("workspace_patch", patch)
+            self.workspace_patch = patch
 
     def _accept_turn(self, response: ModelResponse, duration_ms: int, timestamp: str) -> Turn:
         self.steps += 1
@@ -221,10 +228,30 @@ class SessionState:
     def record_restore(self, commit: str) -> None:
         self.emit("workspace_restored", {"commit": commit})
         self._clear_project_checks()
+        self.workspace_patch = {}
         self.messages.append({
             "role": "system",
             "content": f"Workspace restored to snapshot {commit}. Re-inspect files before editing.",
         })
+
+    def read_tool_output(self, call: ToolCall) -> ToolResult:
+        args = call.arguments
+        if (set(args) != {"call_id", "start_line", "end_line"}
+            or type(args["call_id"]) is not str
+            or type(args["start_line"]) is not int or type(args["end_line"]) is not int
+            or args["start_line"] < 1 or args["end_line"] < args["start_line"]):
+            return ToolResult(call.call_id, call.name, "error", "", "Invalid saved output range", None, 0)
+        source = next((result for turn in reversed(self.turns)
+                       for result, _ in reversed(turn.observations)
+                       if result.call_id == args["call_id"]), None)
+        if source is None:
+            return ToolResult(call.call_id, call.name, "error", "", "Unknown saved tool call", None, 0)
+        text = source.output + ("\n[stderr]\n" + source.error if source.error else "")
+        lines = text.splitlines()
+        start, end = args["start_line"], min(args["end_line"], len(lines))
+        output = "\n".join(f"{line}: {lines[line - 1]}" for line in range(start, end + 1))
+        return ToolResult(call.call_id, call.name, "completed",
+                          f"Saved call {source.call_id}, {len(lines)} lines:\n{output}", None, None, 0)
 
     def compact(self, max_chars: int, keep_messages: int, tool_output_chars: int = 4000) -> None:
         messages = []
@@ -233,7 +260,7 @@ class SessionState:
                            if message["role"] == "assistant"), default=-1)
         fresh_ranges = {call["id"] for message in self.messages[newest_turn:]
                         for call in message.get("tool_calls", [])
-                        if call["function"]["name"] == "read_file_range"}
+                        if call["function"]["name"] in ("read_file_range", "read_tool_output")}
         for message in self.messages:
             if message["role"] == "tool":
                 result = json.loads(message["content"])
@@ -245,6 +272,7 @@ class SessionState:
                         tail = tool_output_chars - 1 - head
                         result[field] = text[:head] + "…" + text[len(text) - tail:]
                         result["context_truncated_fields"] = [*result.get("context_truncated_fields", []), field]
+                        result["output_ref"] = message["tool_call_id"]
                         trimmed += 1
                 message = {**message, "content": json.dumps(result, ensure_ascii=False, separators=(",", ":"))}
             messages.append(message)
@@ -263,7 +291,7 @@ class SessionState:
         if start == 0 and trimmed == 0:
             return
         messages = messages[start:]
-        summary = self._history_summary(messages) if start else self.summary
+        summary = self.task_summary(messages) if start else self.summary
         self.emit("context_compacted", {
             "summary": summary, "messages": messages,
             "discarded_messages": start, "trimmed_outputs": trimmed,
@@ -271,8 +299,9 @@ class SessionState:
         self.summary = summary
         self.messages = messages
 
-    def _history_summary(self, retained: list[dict[str, Any]]) -> str:
-        """Keep observed source, edits and command outcomes without summarizing reasoning."""
+    def task_summary(self, retained: list[dict[str, Any]] | None = None, *, include_source: bool = True) -> str:
+        """Retain action evidence and source references; label agent intent as unverified."""
+        retained = retained or []
         retained_ids = {message["tool_call_id"] for message in retained if message["role"] == "tool"}
         task_step = next((event["step"] for event in reversed(self.events)
                           if event["event_type"] == "user_message"), 0)
@@ -281,8 +310,11 @@ class SessionState:
                              or event["event_type"] == "recovery_action"
                              and event["data"]["kind"] == "snapshot_rollback"), default=-1)
         sources, changes, commands, failures = {}, {}, {}, {}
+        intent = ""
         edited_at = {}
         for step, turn in enumerate(self.turns[task_step:], task_step + 1):
+            if step > restored_step and turn.response.assistant_content:
+                intent = turn.response.assistant_content[:400]
             calls = {call.call_id: call for call in turn.response.tool_calls}
             for result, _ in turn.observations:
                 call = calls[result.call_id]
@@ -290,32 +322,47 @@ class SessionState:
                 passed = result.status == "completed" and result.exit_code in (None, 0)
                 if passed and call.name in ("write_file", "edit_file"):
                     edited_at[args["path"].removeprefix("/workspace/")] = step
-                if result.call_id in retained_ids or step <= restored_step:
+                if step <= restored_step:
                     continue
                 if not passed:
-                    failures[result.call_id] = f"{call.name}: {result.status}, exit={result.exit_code}; {(result.error or result.output)[:250]}"
+                    failures[result.call_id] = f"{call.name} {args.get('path', '')} (call {result.call_id}): {result.status}, exit={result.exit_code}; {(result.error or result.output)[:250]}"
                 elif call.name in ("read_file", "read_file_range"):
+                    if result.call_id in retained_ids:
+                        continue
                     path = args["path"].removeprefix("/workspace/")
                     location = f"{path}:{args['start_line']}-{args['end_line']}" if call.name == "read_file_range" else path
-                    excerpt = result.output if len(result.output) <= 700 else result.output[:500] + "\n[excerpt omitted]\n" + result.output[-180:]
-                    sources[location] = (path, step, f"Observed {location}:\n{excerpt}")
+                    sources[location] = (path, step, result.call_id, result.output)
                 elif call.name in ("write_file", "edit_file"):
                     path = args["path"].removeprefix("/workspace/")
                     replacement = args["new_text"] if call.name == "edit_file" else args["content"]
                     changes.pop(path, None)
-                    changes[path] = f"Applied {call.name} to {path}; replacement excerpt:\n{replacement[:350]}"
+                    changes[path] = f"Observed successful {call.name} on {path} (call {result.call_id}); replacement excerpt:\n{replacement[:250]}"
                 elif call.name == "run_shell":
                     command = args["command"]
                     commands.pop(command, None)
-                    commands[command] = f"Ran {command[:200]}: exit={result.exit_code}\n{result.output[-300:]}"
-        source_lines = [line for path, step, line in sorted(sources.values(), key=lambda entry: entry[1])
-                        if step > edited_at.get(path, -1)][-3:]
-        sections = [*list(changes.values())[-3:], *source_lines,
-                    *list(commands.values())[-2:], *list(failures.values())[-2:]]
+                    commands[command] = f"Ran {command[:160]} (call {result.call_id}): exit={result.exit_code}\n{result.output[-300:]}"
+        target_paths = {path.removeprefix('/workspace/') for item in self.plan for path in item.get('files', [])}
+        recent_sources = [(location, source) for location, source in sources.items()
+                          if source[1] > edited_at.get(source[0], -1)]
+        recent_sources.sort(key=lambda item: (item[1][0] in target_paths, item[1][1]))
+        source_lines = []
+        for location, (path, step, call_id, output) in recent_sources[-6:]:
+            reference = f"Observed {location} (saved call {call_id})"
+            if include_source and path in target_paths and len(output) <= 1200:
+                reference += ":\n" + output
+            source_lines.append(reference)
+        sections = ["Current workspace changed paths: " + str(self.workspace_patch.get("changed_paths", "not recorded")),
+                    "Observed changes:\n" + ("\n".join(changes.values()) or "No successful edit recorded since the latest restore."),
+                    "Recent commands:\n" + "\n".join(list(commands.values())[-2:]),
+                    "Recent failures:\n" + "\n".join(list(failures.values())[-2:]),
+                    "Source evidence (saved snapshots; refresh live files after changes):",
+                    *source_lines]
+        if intent:
+            sections.append("Last agent intent (unverified):\n" + intent)
         lines = []
         for section in sections:
             if sum(len(line) + 1 for line in lines) + len(section) > 4000:
-                break
+                continue
             lines.append(section)
         return "\n".join(lines)
 
@@ -389,6 +436,8 @@ class SessionState:
             elif kind == "project_check_invalidated":
                 state._clear_project_checks()
                 pending_checks = []
+            elif kind == "workspace_patch":
+                state.workspace_patch = data
             elif kind == "plan_updated":
                 state.plan = data["items"]
             elif kind == "context_compacted":
@@ -418,6 +467,7 @@ class SessionState:
                     state.repeat_blocks = 0
             elif kind == "workspace_restored":
                 state._clear_project_checks()
+                state.workspace_patch = {}
                 pending_checks = []
                 state.messages.append({
                     "role": "system",

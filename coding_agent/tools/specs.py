@@ -36,6 +36,21 @@ TOOL_SPECS = [
     },
 ]
 
+TOOL_SPECS.append({
+    "name": "read_tool_output",
+    "description": "Read a saved tool result by call_id and inclusive line range. Source output is a historical snapshot, not the live file.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "call_id": {"type": "string"},
+            "start_line": {"type": "integer", "minimum": 1},
+            "end_line": {"type": "integer", "minimum": 1},
+        },
+        "required": ["call_id", "start_line", "end_line"],
+        "additionalProperties": False,
+    },
+})
+
 REPOSITORY_TOOL_SPECS = TOOL_SPECS + [
     {
         "name": "list_files",
