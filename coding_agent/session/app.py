@@ -202,9 +202,14 @@ class RepositorySession:
                 items = call.arguments.get("items")
                 if (set(call.arguments) != {"items"} or type(items) is not list
                     or any(type(item) is not dict
-                           or set(item) != {"description", "status"}
+                           or not {"description", "status"} <= set(item) <= {
+                               "description", "status", "files", "hypothesis", "next_action"
+                           }
                            or type(item["description"]) is not str
                            or item["status"] not in ("pending", "in_progress", "completed")
+                           or any(type(item[key]) is not str for key in ("hypothesis", "next_action") if key in item)
+                           or "files" in item and (type(item["files"]) is not list
+                                                   or any(type(path) is not str for path in item["files"]))
                            for item in items)):
                     return ToolResult(call.call_id, call.name, "error", "", "Invalid plan", None, 0)
                 completed_before = sum(item["status"] == "completed" for item in self.state.plan)

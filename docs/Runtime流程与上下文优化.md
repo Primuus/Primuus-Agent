@@ -24,3 +24,12 @@
 - 只读调用保留已通过检查缓存；Shell 调用可能改变环境，因此仍使该缓存失效。
 
 定向验证包含预算与工具分支、真实 Docker 会话的编辑—读取—结束流程，以及日志重建。结果见 [focused-step-1.json](../experiments/2026-10-07-runtime-workflow/focused-step-1.json)。缓存验证的临时检查使用 python -B，防止导入产生缓存文件改变补丁。生产代码不依赖临时脚本。
+
+## 第二步实施
+
+- search_text 可限定仓库内文件或目录，并按文件名或相对路径 glob 过滤；query 仍为字面搜索，保留原调用形式。
+- 计划可记录 files、hypothesis、next_action；这些是模型计划和假设，不能当作已验证事实。简单任务不要求额外计划调用。
+- OpenAI 兼容与 Anthropic 适配器保存工具调用同时返回的普通说明文字，日志重建也保留它；DeepSeek 已有 reasoning_content 原样保留。旧日志缺少新字段时仍可重建。
+- 三次相同读取返回相同结果时提供进度提醒，建议补充缺失证据、复现或编辑；不禁止正常工具调用。
+
+定向验证覆盖适配器消息保留与重建、Docker 范围搜索和扩展计划持久化、重复读取提醒。结果见 [focused-step-2.json](../experiments/2026-10-07-runtime-workflow/focused-step-2.json)。只使用临时工作区和内联验证，没有新增永久测试脚本。

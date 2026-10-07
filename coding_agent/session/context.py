@@ -9,6 +9,8 @@ SYSTEM_PROMPT = (
     "You are a coding agent working in /workspace. Inspect the files relevant to the "
     "user's request using focused searches and line ranges (usually 40-60 lines), then make a focused change. "
     "For a request spanning several functions or files, identify each target before editing. "
+    "When update_plan is offered, use it for multi-part requests: record each requirement, target files, a working "
+    "hypothesis and the next concrete action. Keep hypotheses separate from observed facts. "
     "Once the failure and relevant code are understood, edit before doing more broad exploration. "
     "Use the configured project checks to confirm "
     "the result. Once the requirements are met and checks pass, give a final reply "
@@ -48,7 +50,7 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
             ),
         })
     if state.plan:
-        messages.append({"role": "system", "content": "Current plan: " + str(state.plan)})
+        messages.append({"role": "system", "content": "Agent plan and hypotheses (verify against observations): " + str(state.plan)})
     if state.project_checks and state.project_check_patch_sha256 is not None:
         messages.append({
             "role": "system",

@@ -44,10 +44,14 @@ REPOSITORY_TOOL_SPECS = TOOL_SPECS + [
     },
     {
         "name": "search_text",
-        "description": "Search repository files for literal text and show matching file and line",
+        "description": "Search literal text within a file or directory, optionally filtering file paths by glob",
         "parameters": {
             "type": "object",
-            "properties": {"query": {"type": "string"}},
+            "properties": {
+                "query": {"type": "string"},
+                "path": {"type": "string", "description": "File or directory; defaults to the workspace"},
+                "include": {"type": "string", "description": "File path glob, for example *.py or src/**/*.py"},
+            },
             "required": ["query"],
             "additionalProperties": False,
         },
@@ -94,7 +98,7 @@ REPOSITORY_TOOL_SPECS = TOOL_SPECS + [
 
 REPOSITORY_TOOL_SPECS.append({
     "name": "update_plan",
-    "description": "Set or update a short milestone plan for a multi-step task",
+    "description": "Track each requirement, target files, working hypothesis and next action for a multi-step task",
     "parameters": {
         "type": "object",
         "properties": {
@@ -105,6 +109,9 @@ REPOSITORY_TOOL_SPECS.append({
                     "properties": {
                         "description": {"type": "string"},
                         "status": {"type": "string", "enum": ["pending", "in_progress", "completed"]},
+                        "files": {"type": "array", "items": {"type": "string"}},
+                        "hypothesis": {"type": "string", "description": "Working interpretation; not a verified fact"},
+                        "next_action": {"type": "string"},
                     },
                     "required": ["description", "status"],
                     "additionalProperties": False,

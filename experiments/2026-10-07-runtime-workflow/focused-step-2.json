@@ -1,0 +1,9 @@
+{
+  "cases": 2,
+  "tool_call_text_and_reasoning_preserved": true,
+  "anthropic_text_replay": true,
+  "scoped_search_with_file_glob": true,
+  "extended_plan_persistence": true,
+  "repeated_read_progress_reminder": true,
+  "temporary_files_deleted": true
+}

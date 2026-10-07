@@ -30,13 +30,20 @@ for path in sorted(files.splitlines())[:300]:
     print(path)
 """
 SEARCH_SCRIPT = """from pathlib import Path
+from fnmatch import fnmatch
 import subprocess
 import sys
 query = sys.argv[1]
+scope = Path(sys.argv[2])
+pattern = sys.argv[3]
 found = 0
 files = subprocess.check_output(['git', 'ls-files', '-co', '--exclude-standard'], text=True)
 for name in sorted(files.splitlines()):
     path = Path(name)
+    if path != scope and scope not in path.parents:
+        continue
+    if pattern and not (fnmatch(name, pattern) or fnmatch(path.name, pattern)):
+        continue
     if not path.is_file():
         continue
     try:
@@ -76,12 +83,15 @@ class DockerTools:
             "run_shell": {"command"},
             "read_file_range": {"path", "start_line", "end_line"},
             "list_files": set(),
-            "search_text": {"query"},
+            "search_text": {"query", "path", "include"},
             "edit_file": {"path", "old_text", "new_text"},
             "git_status": set(),
             "git_diff": set(),
         }
-        if call.name not in expected or set(call.arguments) != expected[call.name]:
+        if call.name not in expected:
+            return self._error(call, "Invalid tool name or arguments", started)
+        required = {"query"} if call.name == "search_text" else expected[call.name]
+        if not required <= set(call.arguments) <= expected[call.name]:
             return self._error(call, "Invalid tool name or arguments", started)
         if call.name == "read_file_range":
             arguments = call.arguments
@@ -111,8 +121,10 @@ class DockerTools:
             elif call.name == "list_files":
                 completed = self.sandbox.exec(["python", "-c", LIST_SCRIPT])
             elif call.name == "search_text":
+                path = self.sandbox.relative_path(call.arguments.get("path", "."))
                 completed = self.sandbox.exec([
-                    "python", "-c", SEARCH_SCRIPT, call.arguments["query"]
+                    "python", "-c", SEARCH_SCRIPT, call.arguments["query"],
+                    path, call.arguments.get("include", ""),
                 ])
             elif call.name == "edit_file":
                 path = self.sandbox.relative_path(call.arguments["path"])

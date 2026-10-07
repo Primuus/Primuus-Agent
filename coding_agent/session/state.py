@@ -33,7 +33,7 @@ class SessionState:
     events: list[dict[str, Any]] = field(default_factory=list)
     stop_reason: StopReason | None = None
     tokens: int | None = 0
-    plan: list[dict[str, str]] = field(default_factory=list)
+    plan: list[dict[str, Any]] = field(default_factory=list)
     context_sources: list[dict[str, str]] = field(default_factory=list)
     memory_context: dict[str, Any] = field(default_factory=dict)
     summary: str = ""
@@ -122,7 +122,7 @@ class SessionState:
         if response.tool_calls:
             self.messages.append({
                 "role": "assistant",
-                "content": None,
+                "content": response.assistant_content,
                 "tool_calls": [{
                     "id": call.call_id,
                     "type": "function",
@@ -209,7 +209,7 @@ class SessionState:
             self.last_failed_action = None
             self.repeat_blocks = 0
 
-    def update_plan(self, items: list[dict[str, str]]) -> None:
+    def update_plan(self, items: list[dict[str, Any]]) -> None:
         self.emit("plan_updated", {"items": items})
         self.plan = items
 
@@ -358,6 +358,7 @@ class SessionState:
                     input_tokens=raw["input_tokens"],
                     output_tokens=raw["output_tokens"],
                     reasoning_content=raw.get("reasoning_content"),
+                    assistant_content=raw.get("assistant_content"),
                 )
                 state._accept_turn(response, data["duration_ms"], timestamp)
             elif kind == "tool_started":

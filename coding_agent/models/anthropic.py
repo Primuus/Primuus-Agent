@@ -31,7 +31,8 @@ class AnthropicBackend:
                 continue
             if role == "assistant":
                 if message.get("tool_calls"):
-                    content = [{
+                    content = ([{"type": "text", "text": message["content"]}]
+                               if message.get("content") else []) + [{
                         "type": "tool_use", "id": call["id"],
                         "name": call["function"]["name"],
                         "input": json.loads(call["function"]["arguments"]),
@@ -104,13 +105,14 @@ class AnthropicBackend:
                 input_tokens=usage.get("input_tokens"), output_tokens=usage.get("output_tokens"),
             )
         calls = [block for block in completion["content"] if block["type"] == "tool_use"]
+        text = "\n".join(block["text"] for block in completion["content"] if block["type"] == "text")
         if calls:
             return ModelResponse(
                 tool_calls=tuple(ToolCall(block["id"], block["name"], block["input"]) for block in calls),
                 input_tokens=usage.get("input_tokens"),
                 output_tokens=usage.get("output_tokens"),
+                assistant_content=text or None,
             )
-        text = "\n".join(block["text"] for block in completion["content"] if block["type"] == "text")
         return ModelResponse(
             final_message=text,
             input_tokens=usage.get("input_tokens"),

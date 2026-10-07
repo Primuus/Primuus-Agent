@@ -72,6 +72,28 @@ class SessionRunner:
         return next((event["data"]["phase"] for event in reversed(state.events)
                      if event["event_type"] == "model_request"), "work")
 
+    def _remind_repeated_reads(self, state: SessionState) -> None:
+        recent = []
+        for turn in state.turns[-4:]:
+            calls = {call.call_id: call for call in turn.response.tool_calls}
+            recent.extend((calls[result.call_id], result) for result, _ in turn.observations)
+        if len(recent) < 3:
+            return
+        call, result = recent[-1]
+        if call.name not in {"read_file", "read_file_range", "search_text", "list_files", "git_status", "git_diff"}:
+            return
+        signature = (action_signature(call), result.status, result.output, result.error)
+        same = [(action_signature(item), value.status, value.output, value.error) == signature
+                for item, value in recent[-4:]]
+        if not all(same[-3:]) or len(same) == 4 and same[0]:
+            return
+        state.emit("investigation_stalled", {"tool": call.name, "arguments": call.arguments})
+        state.add_workflow_guidance(
+            "Three identical read operations returned the same evidence. State what remains unknown "
+            "and choose a new next action: a different targeted query, a minimal reproduction, or "
+            "an edit supported by the observed code. Update the plan for a multi-part task."
+        )
+
     def _prepare_request(self, state: SessionState) -> tuple[list[dict], list[dict], int, str]:
         tools = self.tool_specs
         output_limit = self.max_output_tokens
@@ -154,6 +176,7 @@ class SessionRunner:
                 )
                 budget_warning_sent = True
             if self.context_max_chars is not None:
+                self._remind_repeated_reads(state)
                 state.compact(self.context_max_chars, self.context_keep_messages, self.context_tool_output_chars)
             messages, tools, output_limit, phase = self._prepare_request(state)
             if output_limit <= 0:
