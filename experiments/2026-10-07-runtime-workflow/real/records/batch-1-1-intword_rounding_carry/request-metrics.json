@@ -1,0 +1,350 @@
+[
+  {
+    "request": 1,
+    "input_bytes": 5530,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 1500,
+    "output_tokens": 76,
+    "actions": [
+      "list_files",
+      "search_text"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 2,
+    "input_bytes": 9457,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 2787,
+    "output_tokens": 134,
+    "actions": [
+      "read_file_range",
+      "search_text"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 3,
+    "input_bytes": 13058,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 3865,
+    "output_tokens": 152,
+    "actions": [
+      "read_file_range",
+      "read_file_range"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 4,
+    "input_bytes": 18169,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 5498,
+    "output_tokens": 882,
+    "actions": [
+      "read_file_range",
+      "search_text"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 5,
+    "input_bytes": 23261,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 6938,
+    "output_tokens": 642,
+    "actions": [
+      "run_shell",
+      "run_shell"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 6,
+    "input_bytes": 26239,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 7644,
+    "output_tokens": 1181,
+    "actions": [
+      "run_shell",
+      "run_shell"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 7,
+    "input_bytes": 19900,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 5354,
+    "output_tokens": 173,
+    "actions": [
+      "read_file_range",
+      "read_file_range"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 8,
+    "input_bytes": 26709,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 7499,
+    "output_tokens": 915,
+    "actions": [
+      "search_text",
+      "search_text"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 9,
+    "input_bytes": 27029,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 8719,
+    "output_tokens": 1028,
+    "actions": [
+      "run_shell",
+      "read_file_range"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 10,
+    "input_bytes": 26110,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 8285,
+    "output_tokens": 162,
+    "actions": [
+      "read_file_range",
+      "read_file_range"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 11,
+    "input_bytes": 19951,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 5852,
+    "output_tokens": 842,
+    "actions": [
+      "run_shell",
+      "run_shell"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 12,
+    "input_bytes": 29893,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 10329,
+    "output_tokens": 1591,
+    "actions": [
+      "run_shell"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 13,
+    "input_bytes": 30286,
+    "tool_names": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "status": "completed",
+    "input_tokens": 10718,
+    "output_tokens": 4395,
+    "actions": [
+      "run_shell",
+      "run_shell"
+    ],
+    "assistant_text_chars": 0
+  },
+  {
+    "request": 14,
+    "input_bytes": 2554,
+    "tool_names": [],
+    "max_output_tokens": 1024,
+    "status": "completed",
+    "input_tokens": 806,
+    "output_tokens": 598,
+    "actions": [],
+    "assistant_text_chars": 0
+  }
+]

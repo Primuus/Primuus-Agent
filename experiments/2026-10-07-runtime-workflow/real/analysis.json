@@ -1,0 +1,59 @@
+[
+  {
+    "task": "intword_rounding_carry",
+    "tool_counts": {
+      "list_files": 1,
+      "search_text": 5,
+      "read_file_range": 9,
+      "run_shell": 10
+    },
+    "exact_repeated_reads": 1,
+    "update_plan_calls": 0,
+    "read_tool_output_calls": 0,
+    "final_request": {
+      "phase": "budget_report",
+      "input_bytes": 2554,
+      "estimated_input_tokens": 1533,
+      "max_output_tokens": 1024,
+      "reserved_tokens": 0,
+      "remaining_tokens": 22839
+    },
+    "manual_project_check_invocations": [
+      {
+        "call_id": "call_00_l7PXzr9AmVwy94g2Sn2z0627",
+        "command": "cd /workspace && PYTHONPATH=src python -m pytest -q tests/test_number.py 2>&1 | tail -30",
+        "status": "completed",
+        "exit_code": 0,
+        "output": "2m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m [ 90%]\n\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m                                                 [100%]\u001b[0m\n\u001b[32m\u001b[32m\u001b[1m240 passed\u001b[0m\u001b[32m in 0.14s\u001b[0m\u001b[0m\n",
+        "error": null
+      }
+    ],
+    "automatic_project_check_batches": 0,
+    "final_report_test_omission": true,
+    "service_errors": 0
+  },
+  {
+    "task": "real_010",
+    "tool_counts": {
+      "list_files": 1,
+      "read_file": 6,
+      "read_file_range": 8,
+      "run_shell": 1
+    },
+    "exact_repeated_reads": 3,
+    "update_plan_calls": 0,
+    "read_tool_output_calls": 0,
+    "final_request": {
+      "phase": "budget_report",
+      "input_bytes": 2191,
+      "estimated_input_tokens": 1316,
+      "max_output_tokens": 1024,
+      "reserved_tokens": 0,
+      "remaining_tokens": 27731
+    },
+    "manual_project_check_invocations": [],
+    "automatic_project_check_batches": 0,
+    "final_report_test_omission": false,
+    "service_errors": 0
+  }
+]

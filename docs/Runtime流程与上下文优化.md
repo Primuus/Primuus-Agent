@@ -52,3 +52,29 @@
 - README 同步现有能力与运行方式，移除已经取消的预算工具关闭说明。
 
 未完成计划的定向验证见 [focused-step-4.json](../experiments/2026-10-07-runtime-workflow/focused-step-4.json)。真实任务验证尚未执行，S 阶段仍未整体验收。
+
+## 第一批真实验证
+
+真实运行版本为 `b17b0fb`，沿用第三轮的模型、固定源码树、镜像、上下文和预算。两题均为无宿主中断样本，没有接口故障。结果为 **0/2 通过**，达到两题失败的停止规则，不执行第二批三次回归；未执行任务不计为失败。
+
+| 任务 | 停止原因 | 输入 Token | 总 Token | 有效源码修改 | 独立验证 / 重建 |
+| --- | --- | ---: | ---: | --- | --- |
+| intword | token_budget | 85,794 | 98,565 | 无 | 失败 / 一致 |
+| boltons 跨文件 | token_budget | 90,708 | 93,465 | 无 | 失败 / 一致 |
+
+两题均在第 14 轮生成精简最终说明，明确没有修改。intword 有一次导入命令失败，模型未使用已经提供的 PYTHONPATH 环境；曾手动执行现有 240 项测试并通过，但未产生补丁，所以没有触发当前补丁的自动检查。独立任务验证仍失败。跨文件执行 16 次工具调用，没有工具错误。
+
+两题均未调用 update_plan 或 read_tool_output。intword 出现长时间的数值边界调查；跨文件存在整文件和大范围分段读取交替重复。连续相同读取提醒没有触发，因为重复读取之间穿插了其他调用或改变了范围。能力已提供，但这轮没有证明模型会有效使用它们。
+
+预算说明与日志重建得到真实验证；探索到编辑、跨文件能力与整体输入成本仍未验收。没有成功样本可用于宣称成本收益，也没有进入下一阶段。
+
+原始证据见 [report.json](../experiments/2026-10-07-runtime-workflow/real/report.json) 和 [analysis.json](../experiments/2026-10-07-runtime-workflow/real/analysis.json)。会话配置、完整 Trace、补丁、独立验证和逐请求指标保存在 real/records/。隐藏验证代码仅在独立容器通过 stdin 执行，没有进入 Agent 上下文或工作区。
+
+## 真实验证后的两处修正
+
+1. intword 最终上下文只保存最近两条命令，遗漏较早执行的 240 项测试。现在单独保留匹配配置检查的历史 Shell 调用及输出，与当前补丁的自动检查分别记录。用已有 Trace 重建验证，未调用模型；原始最终回复保留作为失败证据。见 [final-evidence-correction.json](../experiments/2026-10-07-runtime-workflow/final-evidence-correction.json)。
+2. 工作请求不能容纳最大 8,192 输出 Token 时，原收尾判断提前切换最终说明。现在先按剩余预算分配工作输出，在不足一轮最低输出额度时才收尾。重建两题停止前状态，仍可分别分配 2,196 和 7,478 工作输出 Token，同时保留最终说明预算。见 [budget-allocation-correction.json](../experiments/2026-10-07-runtime-workflow/budget-allocation-correction.json)。
+
+这两处修正只做既有日志重放，没有重新执行真实任务；不能据此推断 intword 或跨文件已经通过。本轮仍判失败。
+
+临时驱动、源码副本、会话工作区和容器已删除，没有永久新增验证脚本或工程依赖。凭据未写入文件，检查结果见 [cleanup-report.json](../experiments/2026-10-07-runtime-workflow/cleanup-report.json)。
