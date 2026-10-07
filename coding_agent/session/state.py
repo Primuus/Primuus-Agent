@@ -313,7 +313,7 @@ class SessionState:
                              if event["event_type"] == "workspace_restored"
                              or event["event_type"] == "recovery_action"
                              and event["data"]["kind"] == "snapshot_rollback"), default=-1)
-        sources, changes, commands, failures = {}, {}, {}, {}
+        sources, changes, commands, failures, check_commands = {}, {}, {}, {}, {}
         intent = ""
         edited_at = {}
         for step, turn in enumerate(self.turns[task_step:], task_step + 1):
@@ -324,6 +324,12 @@ class SessionState:
                 call = calls[result.call_id]
                 args = call.arguments
                 passed = result.status == "completed" and result.exit_code in (None, 0)
+                if call.name == "run_shell" and any(check in args["command"] for check in self.project_check_commands):
+                    check_commands[args["command"]] = (
+                        f"Ran {args['command'][:160]} (call {result.call_id}): "
+                        f"{result.status}, exit={result.exit_code}\n"
+                        + (result.output + (result.error or ""))[-300:]
+                    )
                 if passed and call.name in ("write_file", "edit_file"):
                     edited_at[args["path"].removeprefix("/workspace/")] = step
                 if step <= restored_step:
@@ -357,6 +363,8 @@ class SessionState:
             source_lines.append(reference)
         sections = ["Current workspace changed paths: " + str(self.workspace_patch.get("changed_paths", "not recorded")),
                     "Observed changes:\n" + ("\n".join(changes.values()) or "No successful edit recorded since the latest restore."),
+                    "Observed configured-check command invocations (separate from current patch checks):\n"
+                    + ("\n".join(check_commands.values()) or "None recorded."),
                     "Recent commands:\n" + "\n".join(list(commands.values())[-2:]),
                     "Recent failures:\n" + "\n".join(list(failures.values())[-2:]),
                     "Source evidence (saved snapshots; refresh live files after changes):",

@@ -1,0 +1,7 @@
+{
+  "source_trace": "experiments/2026-10-07-runtime-workflow/real/records/batch-1-1-intword_rounding_carry/trace.jsonl",
+  "earlier_manual_project_test_preserved": true,
+  "observed_test_output": "240 passed",
+  "automatic_patch_checks_absent": true,
+  "model_api_calls": 0
+}

@@ -108,9 +108,11 @@ class SessionRunner:
         final_limit = min(self.max_output_tokens, 1024)
         final_estimate = self._estimate_input(state, final_messages, [])[0] if self.budget_guidance else 0
         reserve = final_estimate + final_limit if self.budget_guidance else 0
+        if remaining is not None:
+            output_limit = min(output_limit, remaining - estimate - reserve)
         closing = self.budget_guidance and (
             self.max_steps - state.steps == 1
-            or remaining is not None and remaining <= estimate + output_limit + reserve
+            or remaining is not None and output_limit < final_limit
         )
         if closing:
             phase = "final" if ready else (

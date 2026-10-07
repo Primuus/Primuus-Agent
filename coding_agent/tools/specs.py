@@ -1,4 +1,4 @@
-"""The three first-stage tool definitions."""
+"""Shared tool definitions for task and repository sessions."""
 
 TOOL_SPECS = [
     {

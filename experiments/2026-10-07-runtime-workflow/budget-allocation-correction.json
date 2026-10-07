@@ -1,0 +1,21 @@
+{
+  "replayed_existing_traces": [
+    {
+      "task": "batch-1-1-intword_rounding_carry",
+      "remaining_tokens": 22839,
+      "work_input_estimate": 17664,
+      "available_work_output": 2196,
+      "final_reserve": 2979,
+      "phase": "work"
+    },
+    {
+      "task": "batch-1-2-real_010",
+      "remaining_tokens": 27731,
+      "work_input_estimate": 17894,
+      "available_work_output": 7478,
+      "final_reserve": 2359,
+      "phase": "work"
+    }
+  ],
+  "model_api_calls": 0
+}
