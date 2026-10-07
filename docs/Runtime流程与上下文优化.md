@@ -43,3 +43,12 @@
 - 工作区补丁元数据写入日志并可重建；回滚后重新观察当前补丁。最终说明使用事实摘要，不携带源码正文。
 
 一次 Docker 综合验证覆盖超过 20,000 字符的完整输出、压缩后中间内容读取、新鲜源码编辑以及持久化重建。结果见 [focused-step-3.json](../experiments/2026-10-07-runtime-workflow/focused-step-3.json)。没有引入额外模型摘要调用；实际成本收益留待真实验证。
+
+## 第四步实施与验证准备
+
+- 结果增加实际 changed_paths 和 plan_complete，便于对照任务、补丁与检查。
+- 最终回复及续跑不会将未完成计划标为 completed；预算说明仍与成功完成分别记录。
+- 工作提示要求按原需求进行最小行为复现或验证，检查通过不能替代需求实现证据。独立隐藏 Verifier 继续留在 Agent 工作区之外。
+- README 同步现有能力与运行方式，移除已经取消的预算工具关闭说明。
+
+未完成计划的定向验证见 [focused-step-4.json](../experiments/2026-10-07-runtime-workflow/focused-step-4.json)。真实任务验证尚未执行，S 阶段仍未整体验收。

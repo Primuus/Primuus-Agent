@@ -147,6 +147,7 @@ class RepositorySession:
         if (instruction is None and self.state.stop_reason in (None, "paused")
             and self.state.turns and not self.state.turns[-1].response.tool_calls
             and last_model >= last_user and not checks
+            and self.state.plan_complete
             and (self.state.turns[-1].verification is None
                  or self.state.turns[-1].verification.passed)):
             self.state.finish("completed")
@@ -377,6 +378,7 @@ class RepositorySession:
         directory = self.repository.session_dir
         diff = self.repository.diff()
         status = self.repository.status()
+        changed_paths = self.repository.changed_files()
         (directory / "diff.patch").write_text(diff, encoding="utf-8")
         (directory / "status.txt").write_text(status, encoding="utf-8")
         result = {
@@ -407,6 +409,8 @@ class RepositorySession:
                 if event["event_type"] == "run_duration"
             ), 3),
             "final_message": self.state.turns[-1].response.final_message if self.state.turns else None,
+            "changed_paths": changed_paths,
+            "plan_complete": self.state.plan_complete,
             "plan": self.state.plan,
             "snapshots": self.state.snapshots,
             "checks": self.state.project_checks,

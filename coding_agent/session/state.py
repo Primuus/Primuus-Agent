@@ -52,6 +52,10 @@ class SessionState:
         return self.stop_reason in ("verified", "completed")
 
     @property
+    def plan_complete(self) -> bool:
+        return all(item["status"] == "completed" for item in self.plan)
+
+    @property
     def known_tokens(self) -> int:
         return sum(
             (turn.response.input_tokens or 0) + (turn.response.output_tokens or 0)

@@ -102,7 +102,7 @@ class SessionRunner:
         estimate, size = self._estimate_input(state, messages, tools)
         ready = (bool(state.project_checks) and state.project_check_patch_sha256 is not None
                  and all(check["status"] == "completed" and check["exit_code"] == 0 for check in state.project_checks)
-                 and all(item["status"] == "completed" for item in state.plan))
+                 and state.plan_complete)
         remaining = self.max_tokens - state.known_tokens if self.max_tokens is not None else None
         final_messages = build_final_context(state) if self.budget_guidance else []
         final_limit = min(self.max_output_tokens, 1024)
@@ -143,6 +143,9 @@ class SessionRunner:
         if (spec.instructions is None and self.verify is not None and state.turns
             and not state.turns[-1].response.tool_calls
             and self._request_phase(state) not in ("edit", "budget_report", "step_report")):
+            if not state.plan_complete:
+                state.finish("final_unverified")
+                return state
             try:
                 state.add_verification(state.turns[-1], self.verify())
             except VerifierError:
@@ -218,6 +221,10 @@ class SessionRunner:
             if not response.tool_calls:
                 if phase in ("budget_report", "step_report"):
                     state.finish("token_budget" if phase == "budget_report" else "max_steps")
+                    return state
+                if not state.plan_complete:
+                    state.record_failure("verification", {"reason": "unfinished_plan"})
+                    state.finish("final_unverified")
                     return state
                 if self.verify is None:
                     state.finish("completed")
