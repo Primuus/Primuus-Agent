@@ -1,0 +1,11 @@
+{
+  "temporary_driver_removed": true,
+  "temporary_sources_removed": true,
+  "temporary_workspaces_removed": true,
+  "live_validation_containers": [],
+  "persistent_test_scripts": [],
+  "credential_matches": 0,
+  "artifacts_preserved": true,
+  "all_cleanup_passed": true,
+  "runtime_depends_on_temporary_tests": false
+}

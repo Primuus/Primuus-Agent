@@ -1,0 +1,121 @@
+{
+  "runtime_commit": "a2c0fdbad27d741e166d8b0b257d216b18407e03",
+  "round": 3,
+  "status": "stopped_after_two_failures",
+  "executed_runs": 3,
+  "passed_runs": 1,
+  "failed_runs": 2,
+  "runs": [
+    {
+      "task_id": "intcomma_overflow",
+      "passed": true,
+      "known_input_tokens": 77361,
+      "known_output_tokens": 6787,
+      "complete_usage": true,
+      "recorded_api_attempts": 15,
+      "unknown_usage_requests": 0,
+      "external_interruptions": 0,
+      "observed_model_service_errors": 0,
+      "tool_counts": {
+        "list_files": 1,
+        "run_shell": 7,
+        "search_text": 1,
+        "read_file_range": 6,
+        "edit_file": 2
+      },
+      "tool_errors": [],
+      "last_prepared_request": {
+        "phase": "final",
+        "input_bytes": 5918,
+        "estimated_input_tokens": 3551,
+        "max_output_tokens": 8192,
+        "reserved_tokens": 0,
+        "remaining_tokens": 38023
+      },
+      "last_request_sent": true,
+      "project_check_batches": 3,
+      "changed_paths": [
+        "src/humanize/number.py"
+      ],
+      "first_effective_direct_source_edit_step": 10,
+      "historical_input_tokens": 57593,
+      "historical_input_change_percent": 34.32
+    },
+    {
+      "task_id": "intword_rounding_carry",
+      "passed": false,
+      "known_input_tokens": 90530,
+      "known_output_tokens": 9386,
+      "complete_usage": false,
+      "recorded_api_attempts": 18,
+      "unknown_usage_requests": 1,
+      "external_interruptions": 1,
+      "observed_model_service_errors": 0,
+      "tool_counts": {
+        "list_files": 1,
+        "search_text": 1,
+        "read_file_range": 17,
+        "run_shell": 4,
+        "edit_file": 1
+      },
+      "tool_errors": [
+        {
+          "step": 10,
+          "tool": "run_shell",
+          "error": "Tool unavailable in edit phase; available tools: edit_file, read_file_range, write_file"
+        },
+        {
+          "step": 12,
+          "tool": "edit_file",
+          "error": "old_text must match exactly once\n"
+        }
+      ],
+      "last_prepared_request": {
+        "phase": "edit",
+        "input_bytes": 13428,
+        "estimated_input_tokens": 8057,
+        "max_output_tokens": -4222,
+        "reserved_tokens": 16249,
+        "remaining_tokens": 20084
+      },
+      "last_request_sent": false,
+      "project_check_batches": 0,
+      "changed_paths": [],
+      "first_effective_direct_source_edit_step": null
+    },
+    {
+      "task_id": "real_010",
+      "passed": false,
+      "known_input_tokens": 91291,
+      "known_output_tokens": 6388,
+      "complete_usage": true,
+      "recorded_api_attempts": 15,
+      "unknown_usage_requests": 0,
+      "external_interruptions": 0,
+      "observed_model_service_errors": 0,
+      "tool_counts": {
+        "read_file": 3,
+        "run_shell": 4,
+        "read_file_range": 14
+      },
+      "tool_errors": [],
+      "last_prepared_request": {
+        "phase": "edit",
+        "input_bytes": 23040,
+        "estimated_input_tokens": 13824,
+        "max_output_tokens": -13519,
+        "reserved_tokens": 22016,
+        "remaining_tokens": 22321
+      },
+      "last_request_sent": false,
+      "project_check_batches": 0,
+      "changed_paths": [],
+      "first_effective_direct_source_edit_step": null
+    }
+  ],
+  "clean_uninterrupted_runs": 2,
+  "complete_combined_original_task_cost_available": false,
+  "cost_target_met": false,
+  "reason": "One original task did not complete and has unknown usage from host interruption.",
+  "configuration_comparison_scope": "Current code with restored default context values; not a repeat of the 16000/6/2400 configuration."
+}
