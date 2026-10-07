@@ -1,0 +1,32 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index 727435f..f1dc448 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -160,7 +160,9 @@ def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+                 value = float(value)
+             else:
+                 value = int(value)
+-        else:
++        elif not isinstance(value, int):
++            # Python ints are always finite and may exceed the float range,
++            # so avoid converting them with float().
+             if not math.isfinite(float(value)):
+                 return _format_not_finite(float(value))
+             float(value)
+@@ -168,7 +170,15 @@ def intcomma(value: NumberOrString, ndigits: int | None = None) -> str:
+         return str(value)
+ 
+     if ndigits is not None:
+-        result = f"{value:,.{ndigits}f}"
++        try:
++            result = f"{value:,.{ndigits}f}"
++        except OverflowError:
++            # Integers too large for float formatting can still be rendered
++            # with grouping; appending zeros adds the requested decimals.
++            if ndigits > 0:
++                result = f"{value:,}" + "." + "0" * ndigits
++            else:
++                result = f"{round(value, ndigits):,}"
+     else:
+         result = f"{value:,}"
+     if thousands_sep != "," or decimal_sep != ".":

@@ -1,0 +1,133 @@
+{
+  "requests": [
+    {
+      "request": 1,
+      "step": 1,
+      "source": "reconstructed_from_durable_trace",
+      "input_bytes": 4148,
+      "message_chars": 1495,
+      "history_reasoning_chars": 0,
+      "max_output_tokens": 8192,
+      "input_tokens": 1184,
+      "output_tokens": 55,
+      "tool_names": [
+        "list_files",
+        "search_text"
+      ],
+      "final": false,
+      "seconds": 1.083
+    },
+    {
+      "request": 2,
+      "step": 2,
+      "source": "reconstructed_from_durable_trace",
+      "input_bytes": 9678,
+      "message_chars": 7025,
+      "history_reasoning_chars": 15,
+      "max_output_tokens": 8192,
+      "input_tokens": 2978,
+      "output_tokens": 145,
+      "tool_names": [
+        "read_file_range",
+        "read_file_range"
+      ],
+      "final": false,
+      "seconds": 1.504
+    },
+    {
+      "request": 3,
+      "step": 3,
+      "source": "reconstructed_from_durable_trace",
+      "input_bytes": 17892,
+      "message_chars": 15239,
+      "history_reasoning_chars": 15,
+      "max_output_tokens": 8192,
+      "input_tokens": 5628,
+      "output_tokens": 2972,
+      "tool_names": [
+        "run_shell",
+        "read_file_range"
+      ],
+      "final": false,
+      "seconds": 14.378
+    },
+    {
+      "request": 4,
+      "step": 4,
+      "source": "reconstructed_from_durable_trace",
+      "input_bytes": 22602,
+      "message_chars": 30039,
+      "history_reasoning_chars": 10652,
+      "max_output_tokens": 8192,
+      "input_tokens": 8172,
+      "output_tokens": 158,
+      "tool_names": [
+        "read_file_range",
+        "read_file_range"
+      ],
+      "final": false,
+      "seconds": 1.348
+    },
+    {
+      "request": 5,
+      "step": 5,
+      "source": "reconstructed_from_durable_trace",
+      "input_bytes": 29677,
+      "message_chars": 37114,
+      "history_reasoning_chars": 10699,
+      "max_output_tokens": 8192,
+      "input_tokens": 10459,
+      "output_tokens": 357,
+      "tool_names": [
+        "read_file_range"
+      ],
+      "final": false,
+      "seconds": 2.259
+    },
+    {
+      "request": 6,
+      "step": 6,
+      "source": "reconstructed_from_durable_trace",
+      "input_bytes": 17257,
+      "message_chars": 20651,
+      "history_reasoning_chars": 3372,
+      "max_output_tokens": 8192,
+      "input_tokens": 5362,
+      "output_tokens": 806,
+      "tool_names": [
+        "run_shell"
+      ],
+      "final": false,
+      "seconds": 4.725
+    },
+    {
+      "request": 7,
+      "step": 7,
+      "source": "reconstructed_from_durable_trace",
+      "input_bytes": 21400,
+      "message_chars": 24792,
+      "history_reasoning_chars": 5318,
+      "max_output_tokens": 8192,
+      "input_tokens": 6624,
+      "output_tokens": 264,
+      "tool_names": [
+        "run_shell"
+      ],
+      "final": false,
+      "seconds": 1.637
+    },
+    {
+      "request": 8,
+      "step": 8,
+      "source": "reconstructed_from_durable_trace",
+      "input_bytes": 21591,
+      "message_chars": 30841,
+      "history_reasoning_chars": 7653,
+      "max_output_tokens": 8192,
+      "error": "Host restart interrupted execution; response and usage not recorded",
+      "input_tokens": null,
+      "output_tokens": null,
+      "external_interruption": true
+    }
+  ]
+}

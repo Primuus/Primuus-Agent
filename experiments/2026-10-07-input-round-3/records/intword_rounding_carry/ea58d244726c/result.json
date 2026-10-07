@@ -1,0 +1,58 @@
+{
+  "session_id": "ea58d244726c",
+  "source_repository": "/tmp/primuus-round-3-u0gpx4vw/source",
+  "workspace": "/tmp/primuus-round-3-u0gpx4vw/sessions/ea58d244726c/workspace",
+  "base_commit": "7d98945dd342a042e16603a38211e0ef8ba6b989",
+  "model_id": "deepseek-flash",
+  "approval_mode": "auto",
+  "memory_mode": "off",
+  "memory_ids": [],
+  "stop_reason": "token_budget",
+  "steps": 17,
+  "tool_calls": 24,
+  "failed_tool_calls": 2,
+  "tokens": null,
+  "retries": 0,
+  "recoveries": 3,
+  "manual_interventions": 0,
+  "active_seconds": 30.624,
+  "final_message": null,
+  "plan": [],
+  "snapshots": [
+    {
+      "commit": "7d98945dd342a042e16603a38211e0ef8ba6b989",
+      "label": "initial",
+      "plan": []
+    },
+    {
+      "commit": "1227e3f0f4517ab1c950a06c13e8d24764e4e4d7",
+      "label": "before run_shell at step 3",
+      "plan": []
+    },
+    {
+      "commit": "ad9b2d1dbd63c0c8d2323e2462874779df380db8",
+      "label": "before run_shell at step 6",
+      "plan": []
+    },
+    {
+      "commit": "07ce3bee10491ccf6ec0edae098c136f2ba3348b",
+      "label": "before run_shell at step 7",
+      "plan": []
+    },
+    {
+      "commit": "3e5aa14c359baeb76a6f0947178dedb53c59a758",
+      "label": "before edit_file at step 12",
+      "plan": []
+    },
+    {
+      "commit": "09f636f1c680a52d6a5f0f50a1e806fd69223aa1",
+      "label": "after step 17",
+      "plan": []
+    }
+  ],
+  "checks": [],
+  "checks_patch_sha256": null,
+  "checks_current": false,
+  "diff_path": "/tmp/primuus-round-3-u0gpx4vw/sessions/ea58d244726c/diff.patch",
+  "trace_path": "/tmp/primuus-round-3-u0gpx4vw/sessions/ea58d244726c/trace.jsonl"
+}

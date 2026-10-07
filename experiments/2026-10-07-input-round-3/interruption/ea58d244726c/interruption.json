@@ -1,0 +1,8 @@
+{
+  "reason": "Host daemon restart",
+  "steps_completed": 7,
+  "pending_tools": [],
+  "known_tokens": 45164,
+  "inflight_response_and_usage_unknown": true,
+  "continuation": "Resume same session; no completed task rerun"
+}
