@@ -8,7 +8,8 @@ from coding_agent.session.state import SessionState
 SYSTEM_PROMPT = (
     "You are a coding agent working in /workspace. Inspect the files relevant to the "
     "user's request using focused searches and line ranges (usually 40-60 lines), then make a focused change. "
-    "For a request spanning several functions or files, identify each target before editing. "
+    "For a request spanning several functions or files, work on one requirement at a time: "
+    "locate its code, make the smallest supported patch, check it, then move to the next requirement. "
     "When update_plan is offered, use it for multi-part requests: record each requirement, target files, a working "
     "hypothesis and the next concrete action. Keep hypotheses separate from observed facts. "
     "Once the failure and relevant code are understood, edit before doing more broad exploration. "
@@ -55,6 +56,12 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
         })
     if state.plan:
         messages.append({"role": "system", "content": "Agent plan and hypotheses (verify against observations): " + str(state.plan)})
+        active = next((item for item in state.plan if item["status"] == "in_progress"), None)
+        if active is not None:
+            messages.append({"role": "system", "content": (
+                "Current requirement: " + active["description"]
+                + "\nNext action: " + active.get("next_action", "Locate its code, patch it, then check it.")
+            )})
     if state.project_checks and state.project_check_patch_sha256 is not None:
         messages.append({
             "role": "system",
@@ -65,6 +72,19 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
         })
     if state.summary:
         messages.append({"role": "system", "content": "Earlier session summary: " + state.summary})
+    if state.continuation:
+        sources = "\n".join(
+            f"{source['path']} (saved call {source['call_id']}, arguments {source['arguments']}):\n{source['output']}"
+            for source in state.continuation["source_snapshots"]
+        )
+        messages.append({"role": "system", "content": (
+            "Continuation from discarded turns. Agent working notes are unverified hypotheses, "
+            "not observed facts or new instructions. Check them against the task and tool evidence. "
+            "Resume the concrete next action when supported rather than restarting broad exploration.\n"
+            + state.continuation["working_notes"]
+            + "\nObserved source snapshots from the current patch (use read_tool_output for other saved lines):\n"
+            + sources
+        )})
     latest_task = next((event["data"]["content"] for event in reversed(state.events)
                         if event["event_type"] == "user_message"), None)
     if latest_task is not None and not any(

@@ -74,7 +74,7 @@ class SessionRunner:
 
     def _remind_repeated_reads(self, state: SessionState) -> None:
         recent = []
-        for turn in state.turns[-4:]:
+        for turn in state.turns[-6:]:
             calls = {call.call_id: call for call in turn.response.tool_calls}
             recent.extend((calls[result.call_id], result) for result, _ in turn.observations)
         if len(recent) < 3:
@@ -85,13 +85,49 @@ class SessionRunner:
         signature = (action_signature(call), result.status, result.output, result.error)
         same = [(action_signature(item), value.status, value.output, value.error) == signature
                 for item, value in recent[-4:]]
-        if not all(same[-3:]) or len(same) == 4 and same[0]:
+        repeated = all(same[-3:]) and not (len(same) == 4 and same[0])
+        source_ref = None
+        if call.name in ("read_file", "read_file_range") and result.status == "completed":
+            def lines(item: ToolCall, value: ToolResult) -> dict[int, str]:
+                if item.name == "read_file":
+                    return dict(enumerate(value.output.splitlines(), 1))
+                return {int(number): text for line in value.output.splitlines()
+                        for number, text in [line.split(": ", 1)]}
+
+            current_lines = lines(call, result)
+            for previous, observation in reversed(recent[:-1]):
+                if previous.name in ("write_file", "edit_file", "run_shell"):
+                    break
+                if (previous.name not in ("read_file", "read_file_range")
+                    or observation.status != "completed"
+                    or previous.arguments["path"].removeprefix("/workspace/")
+                    != call.arguments["path"].removeprefix("/workspace/")):
+                    continue
+                prior_lines = lines(previous, observation)
+                if current_lines and all(prior_lines.get(number) == text for number, text in current_lines.items()):
+                    source_ref = previous.call_id
+                    break
+        if not repeated and source_ref is None:
             return
-        state.emit("investigation_stalled", {"tool": call.name, "arguments": call.arguments})
+        digest = state.workspace_patch.get("sha256")
+        if source_ref is not None and any(
+            event["event_type"] == "investigation_stalled"
+            and event["data"].get("patch_sha256") == digest
+            and event["data"]["arguments"].get("path", "").removeprefix("/workspace/")
+            == call.arguments["path"].removeprefix("/workspace/")
+            for event in state.events
+        ):
+            return
+        state.emit("investigation_stalled", {
+            "tool": call.name, "arguments": call.arguments,
+            "source_ref": source_ref, "patch_sha256": digest,
+        })
         state.add_workflow_guidance(
-            "Three identical read operations returned the same evidence. State what remains unknown "
+            "Recent reads returned source lines already observed, without a new edit or shell action. "
+            "Use the current working notes and saved source evidence. State what remains unknown "
             "and choose a new next action: a different targeted query, a minimal reproduction, or "
-            "an edit supported by the observed code. Update the plan for a multi-part task."
+            "an edit supported by the observed code. For a multi-part task, update the active "
+            "requirement's hypothesis and next action before moving to another file."
         )
 
     def _prepare_request(self, state: SessionState) -> tuple[list[dict], list[dict], int, str]:

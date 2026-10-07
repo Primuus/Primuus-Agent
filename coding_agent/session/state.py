@@ -37,6 +37,7 @@ class SessionState:
     context_sources: list[dict[str, str]] = field(default_factory=list)
     memory_context: dict[str, Any] = field(default_factory=dict)
     summary: str = ""
+    continuation: dict[str, Any] = field(default_factory=dict)
     snapshots: list[dict[str, Any]] = field(default_factory=list)
     pending_tools: dict[str, ToolCall] = field(default_factory=dict)
     last_failed_action: str | None = None
@@ -96,6 +97,7 @@ class SessionState:
         self.emit("user_message", {"content": content})
         self.messages.append({"role": "user", "content": content})
         self.stop_reason = None
+        self.continuation = {}
         self._clear_project_checks()
 
     def _clear_project_checks(self) -> None:
@@ -121,6 +123,7 @@ class SessionState:
         if patch != self.workspace_patch:
             self.emit("workspace_patch", patch)
             self.workspace_patch = patch
+            self.continuation = {}
 
     def _accept_turn(self, response: ModelResponse, duration_ms: int, timestamp: str) -> Turn:
         self.steps += 1
@@ -233,6 +236,7 @@ class SessionState:
         self.emit("workspace_restored", {"commit": commit})
         self._clear_project_checks()
         self.workspace_patch = {}
+        self.continuation = {}
         self.messages.append({
             "role": "system",
             "content": f"Workspace restored to snapshot {commit}. Re-inspect files before editing.",
@@ -294,14 +298,63 @@ class SessionState:
             start = following
         if start == 0 and trimmed == 0:
             return
+        discarded = messages[:start]
         messages = messages[start:]
         summary = self.task_summary(messages) if start else self.summary
+        continuation = self._build_continuation(discarded, messages) if start else self.continuation
         self.emit("context_compacted", {
             "summary": summary, "messages": messages,
+            "continuation": continuation,
             "discarded_messages": start, "trimmed_outputs": trimmed,
         })
         self.summary = summary
+        self.continuation = continuation
         self.messages = messages
+
+    def _build_continuation(self, discarded: list[dict], retained: list[dict]) -> dict[str, Any]:
+        """Carry discarded working notes and bounded, unchanged source snapshots."""
+        boundary = max((event["step"] for event in self.events if event["event_type"] in {
+            "user_message", "workspace_patch", "workspace_restored",
+        }), default=0)
+        discarded_ids = {call["id"] for message in discarded for call in message.get("tool_calls", [])}
+        retained_ids = {message["tool_call_id"] for message in retained if message["role"] == "tool"}
+        notes = self.continuation.get("working_notes", "")
+        notes_step = self.continuation.get("step", boundary)
+        sources, read_counts = {}, {}
+        for step, turn in enumerate(self.turns[boundary:], boundary + 1):
+            response = turn.response
+            if any(call.call_id in discarded_ids for call in response.tool_calls):
+                text = response.assistant_content or response.reasoning_content
+                if text:
+                    notes, notes_step = text[-2000:], step
+            calls = {call.call_id: call for call in response.tool_calls}
+            for result, _ in turn.observations:
+                call = calls[result.call_id]
+                if (call.name not in ("read_file", "read_file_range") or result.status != "completed"
+                    or result.call_id in retained_ids):
+                    continue
+                path = call.arguments["path"].removeprefix("/workspace/")
+                read_counts[path] = read_counts.get(path, 0) + 1
+                if len(result.output) > 4800:
+                    continue
+                sources.pop(path, None)
+                sources[path] = {"path": path, "call_id": call.call_id,
+                                 "arguments": call.arguments, "output": result.output}
+        active_files = {path.removeprefix("/workspace/") for item in self.plan
+                        if item["status"] == "in_progress" for path in item.get("files", [])}
+        candidates = sorted(sources.values(), key=lambda source: (
+            source["path"] in active_files, read_counts[source["path"]],
+        ))
+        snapshots, available = [], 4800
+        for source in reversed(candidates):
+            if len(source["output"]) <= available:
+                snapshots.append(source)
+                available -= len(source["output"])
+            if len(snapshots) == 2:
+                break
+        if not notes and not snapshots:
+            return {}
+        return {"step": notes_step, "working_notes": notes, "source_snapshots": snapshots}
 
     def task_summary(self, retained: list[dict[str, Any]] | None = None, *, include_source: bool = True) -> str:
         """Retain action evidence and source references; label agent intent as unverified."""
@@ -407,6 +460,7 @@ class SessionState:
             if kind == "user_message":
                 state.messages.append({"role": "user", "content": data["content"]})
                 state.stop_reason = None
+                state.continuation = {}
                 state._clear_project_checks()
                 pending_checks = []
             elif kind == "model_action":
@@ -450,11 +504,13 @@ class SessionState:
                 pending_checks = []
             elif kind == "workspace_patch":
                 state.workspace_patch = data
+                state.continuation = {}
             elif kind == "plan_updated":
                 state.plan = data["items"]
             elif kind == "context_compacted":
                 state.summary = data["summary"]
                 state.messages = data["messages"]
+                state.continuation = data.get("continuation", {})
             elif kind == "snapshot_created":
                 state.snapshots.append(data)
             elif kind in ("recovery_guidance", "workflow_guidance"):
@@ -480,6 +536,7 @@ class SessionState:
             elif kind == "workspace_restored":
                 state._clear_project_checks()
                 state.workspace_patch = {}
+                state.continuation = {}
                 pending_checks = []
                 state.messages.append({
                     "role": "system",

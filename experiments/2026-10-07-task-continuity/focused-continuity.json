@@ -1,0 +1,46 @@
+{
+  "batch-1-1-intword_rounding_carry": {
+    "notes_step": 11,
+    "notes_chars": 2000,
+    "snapshots": [
+      {
+        "path": "src/humanize/number.py",
+        "call_id": "call_00_jxqR8Od5Z4LHmVp03pDm1170",
+        "arguments": {
+          "path": "/workspace/src/humanize/number.py",
+          "start_line": 223,
+          "end_line": 295
+        }
+      }
+    ],
+    "source_chars": 2600,
+    "replay_consistent": true,
+    "legacy_replay": true,
+    "retained_reasoning_unchanged": true
+  },
+  "batch-1-2-real_010": {
+    "notes_step": 9,
+    "notes_chars": 57,
+    "snapshots": [
+      {
+        "path": "boltons/listutils.py",
+        "call_id": "call_00_QvzLtrKW0vEFQ9NTbCxb6586",
+        "arguments": {
+          "path": "/workspace/boltons/listutils.py",
+          "start_line": 260,
+          "end_line": 320
+        }
+      }
+    ],
+    "source_chars": 2273,
+    "replay_consistent": true,
+    "legacy_replay": true,
+    "retained_reasoning_unchanged": true
+  },
+  "overlapping_reads": {
+    "detected": true,
+    "source_ref": "call_00_mgFgXyi5emoxVx7Mudl24997",
+    "duplicate_reminder_suppressed": true
+  },
+  "changed_patch_new_task_restore_clear_notes": true
+}
