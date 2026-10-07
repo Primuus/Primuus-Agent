@@ -270,7 +270,8 @@ class RepositorySession:
                 nonlocal last_observed_patch, last_check_result
                 patch = self.repository.diff()
                 if patch == last_observed_patch:
-                    last_check_result = None
+                    if any(call.name == "run_shell" for call in self.state.turns[-1].response.tool_calls):
+                        last_check_result = None
                     return None
                 last_observed_patch = patch
                 if not patch:
@@ -292,11 +293,6 @@ class RepositorySession:
                     context_keep_messages=self.config.get("context_keep_messages", 12),
                     context_tool_output_chars=self.config.get("context_tool_output_chars", 4000),
                     max_output_tokens=self.config["model"].get("max_output_tokens", 8192),
-                    initial_edit_budget_tokens=(
-                        self.config["max_tokens"] // 3
-                        if checks and self.approval_mode != "read-only"
-                        and self.config.get("max_tokens") is not None else None
-                    ),
                     recovery=RecoveryPolicy.from_config(self.config),
                     checkpoint=self._snapshot,
                     rollback=self.repository.restore,

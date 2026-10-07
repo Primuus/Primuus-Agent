@@ -66,3 +66,26 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
     ):
         messages.append({"role": "user", "content": latest_task})
     return [*messages, *state.messages]
+
+
+def build_final_context(state: SessionState) -> list[dict[str, Any]]:
+    task = next(event["data"]["content"] for event in reversed(state.events)
+                if event["event_type"] == "user_message")
+    checks = "\n".join(
+        f"{check['command']}: {check['status']}, exit={check['exit_code']}"
+        for check in state.project_checks
+    ) or "No current patch checks recorded."
+    return [
+        {"role": "system", "content": (
+            "Give a brief final report using the observed actions below. Compare each user requirement "
+            "with the actual changes. List changes, check results, and unfinished or unverified work. "
+            "Existing checks passing does not establish that the requested behavior was fixed. "
+            "Do not call tools or claim edits without evidence."
+        )},
+        {"role": "user", "content": task},
+        {"role": "system", "content": (
+            "Observed task history:\n" + state._history_summary([])
+            + "\nCurrent plan: " + str(state.plan)
+            + "\nCurrent patch checks:\n" + checks
+        )},
+    ]

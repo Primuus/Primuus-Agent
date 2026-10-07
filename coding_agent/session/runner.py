@@ -7,7 +7,7 @@ from time import monotonic, sleep
 
 from coding_agent.contracts import ToolCall, ToolResult, VerificationResult
 from coding_agent.models.base import ModelBackend, ModelServiceError
-from coding_agent.session.context import build_context
+from coding_agent.session.context import build_context, build_final_context
 from coding_agent.session.recovery import (
     RecoveryPolicy, action_signature, alternative_guidance, failure_category,
 )
@@ -38,7 +38,6 @@ class SessionRunner:
         budget_guidance: bool = False,
         context_tool_output_chars: int = 4000,
         max_output_tokens: int = 8192,
-        initial_edit_budget_tokens: int | None = None,
     ) -> None:
         self.model = model
         self.execute = execute
@@ -59,7 +58,6 @@ class SessionRunner:
         self.budget_guidance = budget_guidance
         self.context_tool_output_chars = context_tool_output_chars
         self.max_output_tokens = max_output_tokens
-        self.initial_edit_budget_tokens = initial_edit_budget_tokens
 
     def _estimate_input(self, state: SessionState, messages: list[dict], tools: list[dict]) -> tuple[int, int]:
         size = len(json.dumps({"messages": messages, "tools": tools}, ensure_ascii=False).encode("utf-8"))
@@ -78,53 +76,29 @@ class SessionRunner:
         tools = self.tool_specs
         output_limit = self.max_output_tokens
         phase = "work"
-        task_start_step = next((event["step"] for event in reversed(state.events)
-                                if event["event_type"] == "user_message"), 0)
-        task_tokens = sum((turn.response.input_tokens or 0) + (turn.response.output_tokens or 0)
-                          for turn in state.turns[task_start_step:])
-        if (self.initial_edit_budget_tokens is not None
-            and task_tokens >= self.initial_edit_budget_tokens
-            and state.project_check_commands and state.project_check_patch_sha256 is None):
-            phase = "edit"
-            edit_tools = {"write_file", "edit_file", "read_file_range"}
-            tools = [tool for tool in tools if tool["name"] in edit_tools]
-            if self._request_phase(state) != "edit":
-                state.add_workflow_guidance(
-                    "The initial investigation allowance is used. Broad discovery tools are closed. "
-                    "Focused read_file_range remains available for exact source needed by edits, "
-                    "including other requested files. Prefer edit_file for the smallest "
-                    "exact replacements. Configured checks run automatically and return failures. "
-                    "Make changes that implement the request; creating unrelated files does not fix it. "
-                    "If the evidence is insufficient, explain what is missing instead of claiming completion."
-                )
         messages = build_context(state)
         estimate, size = self._estimate_input(state, messages, tools)
         ready = (bool(state.project_checks) and state.project_check_patch_sha256 is not None
                  and all(check["status"] == "completed" and check["exit_code"] == 0 for check in state.project_checks)
                  and all(item["status"] == "completed" for item in state.plan))
         remaining = self.max_tokens - state.known_tokens if self.max_tokens is not None else None
-        reserve = estimate + self.max_output_tokens if self.budget_guidance else 0
+        final_messages = build_final_context(state) if self.budget_guidance else []
+        final_limit = min(self.max_output_tokens, 1024)
+        final_estimate = self._estimate_input(state, final_messages, [])[0] if self.budget_guidance else 0
+        reserve = final_estimate + final_limit if self.budget_guidance else 0
         closing = self.budget_guidance and (
             self.max_steps - state.steps == 1
             or remaining is not None and remaining <= estimate + output_limit + reserve
         )
         if closing:
-            state.compact(min(self.context_max_chars or 8000, 8000), 2, self.context_tool_output_chars)
-            if ready:
-                phase = "final"
-                tools = []
-                state.add_workflow_guidance(
-                    "The current patch passed the project checks and the remaining budget is reserved "
-                    "for your final answer. Compare every original requirement with the edits actually "
-                    "applied. Report only supported changes and check results; explicitly list unfinished "
-                    "work. Passing existing checks does not prove the requested fixes. Do not call more tools."
-                )
-            messages = build_context(state)
-            if phase == "final":
-                messages = [{key: value for key, value in message.items() if key != "reasoning_content"}
-                            for message in messages]
+            phase = "final" if ready else (
+                "step_report" if self.max_steps - state.steps == 1 else "budget_report"
+            )
+            messages, tools = final_messages, []
+            messages[0]["content"] += " The work allowance is ending; report any remaining work explicitly."
+            output_limit = final_limit
             estimate, size = self._estimate_input(state, messages, tools)
-            reserve = estimate + self.max_output_tokens if phase != "final" else 0
+            reserve = 0
         if remaining is not None:
             output_limit = min(output_limit, remaining - estimate - reserve)
         state.emit("model_request", {
@@ -145,7 +119,8 @@ class SessionRunner:
         validation_retries = 0
         budget_warning_sent = False
         if (spec.instructions is None and self.verify is not None and state.turns
-            and not state.turns[-1].response.tool_calls and self._request_phase(state) != "edit"):
+            and not state.turns[-1].response.tool_calls
+            and self._request_phase(state) not in ("edit", "budget_report", "step_report")):
             try:
                 state.add_verification(state.turns[-1], self.verify())
             except VerifierError:
@@ -218,9 +193,8 @@ class SessionRunner:
                               max(0, self.timeout_seconds - (monotonic() - started))))
             turn = state.add_turn(response, int((monotonic() - model_started) * 1000))
             if not response.tool_calls:
-                if phase == "edit":
-                    state.record_failure("verification", {"reason": "initial_edit_missing"})
-                    state.finish("final_unverified")
+                if phase in ("budget_report", "step_report"):
+                    state.finish("token_budget" if phase == "budget_report" else "max_steps")
                     return state
                 if self.verify is None:
                     state.finish("completed")

@@ -1,0 +1,9 @@
+{
+  "cases": 2,
+  "work_tools_preserved_after_investigation_budget": true,
+  "unfinished_budget_report_with_positive_output": true,
+  "budget_report_replay": true,
+  "read_only_calls_reuse_project_check": true,
+  "repository_journal_reload": true,
+  "temporary_files_deleted": true
+}
