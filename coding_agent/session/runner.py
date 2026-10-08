@@ -95,13 +95,19 @@ class SessionRunner:
                         for number, text in [line.split(": ", 1)]}
 
             current_lines = lines(call, result)
+            current_ids = {item.call_id for item in state.turns[-1].response.tool_calls}
+            saved_ids = {source["call_id"] for source in state.continuation.get("source_snapshots", [])}
             for previous, observation in reversed(recent[:-1]):
                 if previous.name in ("write_file", "edit_file", "run_shell"):
                     break
                 if (previous.name not in ("read_file", "read_file_range")
+                    or previous.call_id in current_ids
                     or observation.status != "completed"
                     or previous.arguments["path"].removeprefix("/workspace/")
                     != call.arguments["path"].removeprefix("/workspace/")):
+                    continue
+                if (previous.name == "read_file" and len(observation.output) > self.context_tool_output_chars
+                    and previous.call_id not in saved_ids):
                     continue
                 prior_lines = lines(previous, observation)
                 if current_lines and all(prior_lines.get(number) == text for number, text in current_lines.items()):
