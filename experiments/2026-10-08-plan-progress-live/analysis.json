@@ -1,0 +1,17 @@
+{
+  "passed": false,
+  "runtime_commit": "1b42b0e",
+  "observed_failure_reproduction_step": 6,
+  "supported_patch_proposed_in_reasoning_step": 8,
+  "source_edit_steps": [],
+  "plan_updates": 1,
+  "progress_review_requests": 0,
+  "compactions": 7,
+  "compactions_without_source_snapshot": 7,
+  "manual_existing_checks_step": 14,
+  "manual_existing_checks_passed": 13,
+  "check_review_effect": "Not exercised; no patch or automatic check batch.",
+  "next_change": "Persist a bounded action review before editing when one third of the budget is spent without a patch.",
+  "additional_live_runs": 0,
+  "stage_S": "unaccepted"
+}

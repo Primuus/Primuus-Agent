@@ -1,0 +1,73 @@
+{
+  "runtime_commit": "1b42b0e9e93f26b754d7a5a1de44f23bf35d24ea",
+  "config": {
+    "max_steps": 80,
+    "repository_max_steps": 80,
+    "max_tokens": 120000,
+    "context_max_chars": 24000,
+    "context_keep_messages": 8,
+    "context_tool_output_chars": 4000,
+    "project_instruction_files": [
+      "AGENTS.md"
+    ],
+    "skills": [],
+    "hooks": {
+      "before_tool": [],
+      "after_tool": []
+    },
+    "mcp_servers": [],
+    "memory": {
+      "mode": "off",
+      "max_entries": 3,
+      "max_chars": 2500
+    },
+    "recovery": {
+      "enabled": true,
+      "model_retries": 2,
+      "tool_retries": 1,
+      "validation_retries": 1,
+      "repeat_blocks": 2
+    },
+    "task_timeout_seconds": 1800,
+    "tool_timeout_seconds": 60,
+    "verifier_timeout_seconds": 30,
+    "model": {
+      "backend": "openai_compatible",
+      "name": "deepseek-flash",
+      "base_url": "https://api.deepseek.com",
+      "max_output_tokens": 8192,
+      "reasoning_effort": "low",
+      "final_reasoning_effort": "none"
+    },
+    "sandbox": {
+      "image": "sha256:4217cbc4df372b696f659c9f25d32dccbc52b4c33ddb8e8c2008c0aa8ae1f163",
+      "workspace": "/workspace",
+      "cpus": 1.0,
+      "memory_mb": 512,
+      "network_enabled": false
+    },
+    "results_dir": "runs"
+  },
+  "tasks": [
+    {
+      "id": "real_010",
+      "fixture": "real_010",
+      "base_commit": "efff866a3b66fdafc817894390742e1d8bc025e5",
+      "instruction": "`boltons.listutils.BarrelList` should match built-in list indexing and insertion at either boundary, including after its data has split across internal sublists. Empty tail sublists must not break `pop()`. `boltons.setutils.IndexedSet` should preserve ordering and indexes after bulk difference and intersection updates; large removals should not trigger repeated full compactions.",
+      "check": "python -m pytest -q tests/test_listutils.py tests/test_setutils.py",
+      "verifier_code": "import sys\nfrom pathlib import Path\n\nsys.path.insert(0, str(Path.cwd()))\nfrom boltons.listutils import BarrelList\nfrom boltons.setutils import IndexedSet\n\nitems = BarrelList(range(30000))\nitems.pop(0)\nitems.insert(0, 0)\nassert len(items.lists) > 1\ntry:\n    items[len(items)]\nexcept IndexError:\n    pass\nelse:\n    raise AssertionError(\"out-of-bounds index returned a value\")\nitems.insert(len(items), \"end\")\nassert items[-1] == \"end\"\nitems.insert(len(items) + 20, \"past end\")\nassert items[-1] == \"past end\"\nitems.insert(-len(items) - 20, \"start\")\nassert items[0] == \"start\"\nfor _ in range(len(items.lists[-1])):\n    items.pop(len(items) - 1)\nexpected = items[-1]\nassert items.pop() == expected\n\nindexed = IndexedSet(range(1000))\nindexed.difference_update(set(range(0, 1000, 2)))\nassert list(indexed) == list(range(1, 1000, 2))\nassert indexed.index(501) == 250\nindexed.add(0)\nassert indexed[-1] == 0\nindexed = IndexedSet(range(1000))\nindexed.intersection_update(set(range(500, 2000)))\nassert list(indexed) == list(range(500, 1000))\n\ncompactions = []\noriginal = IndexedSet._compact\ndef count_compaction(self):\n    compactions.append(1)\n    return original(self)\nIndexedSet._compact = count_compaction\ntry:\n    indexed = IndexedSet(range(5000))\n    indexed.difference_update(set(range(0, 5000, 2)))\n    assert list(indexed) == list(range(1, 5000, 2))\n    assert len(compactions) <= 1\nfinally:\n    IndexedSet._compact = original\n",
+      "repository": "https://github.com/mahmoud/boltons",
+      "source_archive_sha256": "591fc1ea7b3d625e3a3f79b0f6b341c8a19ed6fa1fe2f5d86d0379a481e22b6a",
+      "generated_files": {},
+      "target_source_files": [
+        "boltons/listutils.py",
+        "boltons/setutils.py"
+      ],
+      "expected_tree": "d90cb092a448ae03c271ca7062350345c98f98c2"
+    }
+  ],
+  "maximum_runs": 1,
+  "failure_stop_threshold": 1,
+  "pass_gate": "completed + plan complete + target patch + current checks + independent verifier + replay",
+  "scope": "One fresh cross-file task to validate post-check plan progress; no task expansion."
+}

@@ -1,0 +1,73 @@
+{
+  "task": "real_010",
+  "runtime_commit": "1b42b0e9e93f26b754d7a5a1de44f23bf35d24ea",
+  "session_id": "edcc8cc1599b",
+  "fixture_tree": "d90cb092a448ae03c271ca7062350345c98f98c2",
+  "passed": false,
+  "stop_reason": "token_budget",
+  "steps": 16,
+  "tool_calls": 16,
+  "failed_tool_calls": 1,
+  "tokens": 106591,
+  "input_tokens": 98735,
+  "known_input_tokens": 98735,
+  "known_output_tokens": 7856,
+  "first_target_edit_step": null,
+  "input_to_first_edit": null,
+  "changed_paths": [],
+  "plan_complete": false,
+  "current_checks_passed": false,
+  "independent_verifier_passed": false,
+  "replay_consistent": true,
+  "service_errors": 0,
+  "plan_updates": 1,
+  "plan_history": [
+    {
+      "step": 1,
+      "items": [
+        {
+          "description": "Fix BarrelList indexing and insertion at boundaries to match built-in list behavior, including after data has split across internal sublists.",
+          "status": "in_progress",
+          "files": [
+            "boltons/listutils.py"
+          ],
+          "hypothesis": "BarrelList's __getitem__ and insert methods mishandle boundary indexes (0, -1, len) when the internal structure has multiple sublists or empty sublists.",
+          "next_action": "Inspect BarrelList's __getitem__ and insert methods in boltons/listutils.py to locate the boundary indexing bug."
+        },
+        {
+          "description": "Ensure BarrelList.pop() works correctly when there are empty tail sublists.",
+          "status": "pending",
+          "files": [
+            "boltons/listutils.py"
+          ],
+          "hypothesis": "BarrelList.pop() fails to skip empty sublists at the end, causing IndexError or incorrect behavior.",
+          "next_action": "Inspect BarrelList.pop() implementation for handling of empty tail sublists."
+        },
+        {
+          "description": "Fix IndexedSet to preserve ordering and indexes after bulk difference and intersection updates.",
+          "status": "pending",
+          "files": [
+            "boltons/setutils.py"
+          ],
+          "hypothesis": "IndexedSet's difference_update and intersection_update methods corrupt the index mapping when removing multiple elements.",
+          "next_action": "Inspect IndexedSet's difference_update and intersection_update methods in boltons/setutils.py."
+        },
+        {
+          "description": "Prevent IndexedSet large removals from triggering repeated full compactions.",
+          "status": "pending",
+          "files": [
+            "boltons/setutils.py"
+          ],
+          "hypothesis": "IndexedSet's removal logic triggers a full index rebuild on every removed element instead of batching the compaction.",
+          "next_action": "Inspect the removal/compaction logic in IndexedSet for repeated full index rebuilds."
+        }
+      ]
+    }
+  ],
+  "progress_review_requests": 0,
+  "actual_check_batches": 0,
+  "check_cache_reuses": 0,
+  "run_checks_calls": 0,
+  "manual_check_invocations": 1,
+  "record": "experiments/2026-10-08-plan-progress-live/records/real_010"
+}

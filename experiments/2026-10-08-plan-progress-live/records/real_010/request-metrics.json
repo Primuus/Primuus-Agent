@@ -1,0 +1,178 @@
+[
+  {
+    "step": 1,
+    "phase": "plan",
+    "input_bytes": 1563,
+    "estimated_input_tokens": 939,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 1770,
+    "remaining_tokens": 120000,
+    "input_tokens": 289,
+    "output_tokens": 434
+  },
+  {
+    "step": 2,
+    "phase": "work",
+    "input_bytes": 9132,
+    "estimated_input_tokens": 5480,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 2794,
+    "remaining_tokens": 119277,
+    "input_tokens": 2232,
+    "output_tokens": 130
+  },
+  {
+    "step": 3,
+    "phase": "work",
+    "input_bytes": 10181,
+    "estimated_input_tokens": 6110,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3014,
+    "remaining_tokens": 116915,
+    "input_tokens": 2455,
+    "output_tokens": 77
+  },
+  {
+    "step": 4,
+    "phase": "work",
+    "input_bytes": 25073,
+    "estimated_input_tokens": 15045,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3066,
+    "remaining_tokens": 114383,
+    "input_tokens": 6642,
+    "output_tokens": 1065
+  },
+  {
+    "step": 5,
+    "phase": "work",
+    "input_bytes": 23952,
+    "estimated_input_tokens": 14372,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3192,
+    "remaining_tokens": 106676,
+    "input_tokens": 6535,
+    "output_tokens": 94
+  },
+  {
+    "step": 6,
+    "phase": "work",
+    "input_bytes": 30652,
+    "estimated_input_tokens": 18392,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3242,
+    "remaining_tokens": 100047,
+    "input_tokens": 8426,
+    "output_tokens": 1900
+  },
+  {
+    "step": 7,
+    "phase": "work",
+    "input_bytes": 31731,
+    "estimated_input_tokens": 19040,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3292,
+    "remaining_tokens": 89721,
+    "input_tokens": 8676,
+    "output_tokens": 218
+  },
+  {
+    "step": 8,
+    "phase": "work",
+    "input_bytes": 30260,
+    "estimated_input_tokens": 18156,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3343,
+    "remaining_tokens": 80827,
+    "input_tokens": 8030,
+    "output_tokens": 915
+  },
+  {
+    "step": 9,
+    "phase": "work",
+    "input_bytes": 32887,
+    "estimated_input_tokens": 19733,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3552,
+    "remaining_tokens": 71882,
+    "input_tokens": 8703,
+    "output_tokens": 94
+  },
+  {
+    "step": 10,
+    "phase": "work",
+    "input_bytes": 30640,
+    "estimated_input_tokens": 18384,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3603,
+    "remaining_tokens": 63085,
+    "input_tokens": 8248,
+    "output_tokens": 177
+  },
+  {
+    "step": 11,
+    "phase": "work",
+    "input_bytes": 31502,
+    "estimated_input_tokens": 18902,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3672,
+    "remaining_tokens": 54660,
+    "input_tokens": 8467,
+    "output_tokens": 101
+  },
+  {
+    "step": 12,
+    "phase": "work",
+    "input_bytes": 34304,
+    "estimated_input_tokens": 20583,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3723,
+    "remaining_tokens": 46092,
+    "input_tokens": 9223,
+    "output_tokens": 93
+  },
+  {
+    "step": 13,
+    "phase": "work",
+    "input_bytes": 20591,
+    "estimated_input_tokens": 12356,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3788,
+    "remaining_tokens": 36776,
+    "input_tokens": 5451,
+    "output_tokens": 77
+  },
+  {
+    "step": 14,
+    "phase": "work",
+    "input_bytes": 23915,
+    "estimated_input_tokens": 14350,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3793,
+    "remaining_tokens": 31248,
+    "input_tokens": 6365,
+    "output_tokens": 1436
+  },
+  {
+    "step": 15,
+    "phase": "work",
+    "input_bytes": 29866,
+    "estimated_input_tokens": 17920,
+    "max_output_tokens": 1716,
+    "reserved_tokens": 3811,
+    "remaining_tokens": 23447,
+    "input_tokens": 7842,
+    "output_tokens": 444
+  },
+  {
+    "step": 16,
+    "phase": "budget_report",
+    "input_bytes": 4599,
+    "estimated_input_tokens": 2760,
+    "max_output_tokens": 1024,
+    "reserved_tokens": 0,
+    "remaining_tokens": 15161,
+    "input_tokens": 1151,
+    "output_tokens": 601
+  }
+]
