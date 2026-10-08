@@ -1,0 +1,31 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index ebccfb9..6dceb4b 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -282,8 +282,12 @@ def intword(value: NumberOrString, format: str = "%.1f") -> str:
+     chopped = value / power
+     rounded_value = float(format % chopped)
+ 
+-    if not largest_ordinal and rounded_value * power == powers[ordinal + 1]:
+-        # After rounding, we end up just at the next power
++    if not largest_ordinal and rounded_value >= powers[ordinal + 1] / power:
++        # After rounding, we end up just at the next power. Compare against the
++        # ratio between powers instead of multiplying by `power`, which would
++        # lose precision for the larger powers (e.g. 999...999 rounds up to
++        # "1000.0 nonillion" but should carry to "1.0 decillion"). The ratio
++        # also preserves the documented gap between decillion and googol.
+         ordinal += 1
+         rounded_value = 1.0
+ 
+diff --git a/tests/test_number.py b/tests/test_number.py
+index 755e29e..9468f8c 100644
+--- a/tests/test_number.py
++++ b/tests/test_number.py
+@@ -123,6 +123,7 @@ def test_intword_powers() -> None:
+         (["3500000000000000000000"], "3.5 sextillion"),
+         (["8100000000000000000000000000000000"], "8.1 decillion"),
+         (["-8100000000000000000000000000000000"], "-8.1 decillion"),
++        ([10**33 - 1], "1.0 decillion"),
+         ([1_000_000_000_000_000_000_000_000_000_000_000_000], "1000.0 decillion"),
+         ([1_100_000_000_000_000_000_000_000_000_000_000_000], "1100.0 decillion"),
+         ([2_100_000_000_000_000_000_000_000_000_000_000_000], "2100.0 decillion"),

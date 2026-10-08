@@ -1,0 +1,26 @@
+{
+  "intword_rounding_carry": {
+    "write_attempts": 2,
+    "notes_with_no_source_snapshot": 1,
+    "compaction_continuations": 4,
+    "plan_updates": 0,
+    "manual_baseline_check_not_task_fix": false,
+    "automatic_check_batches": 3,
+    "manual_check_invocations": 1
+  },
+  "real_010": {
+    "write_attempts": 0,
+    "notes_with_no_source_snapshot": 6,
+    "compaction_continuations": 9,
+    "plan_updates": 0,
+    "manual_baseline_check_not_task_fix": true,
+    "automatic_check_batches": 0,
+    "manual_check_invocations": 1
+  },
+  "conclusion": {
+    "intword": "Target patch, 241 project checks, independent behavior verification and replay passed in one run.",
+    "cross_file": "No edit attempt. Baseline 13 checks passed but independent task behavior failed. Broad investigation and switching between requirements continued.",
+    "cost": "No input cost improvement established; the successful intword sample used 89977 input tokens, the failed cross-file sample used 98866.",
+    "post_run_correction": "Do not classify omitted full-file preview lines or same-turn reads as previously observed evidence. Existing trace replay only; no new live model run."
+  }
+}

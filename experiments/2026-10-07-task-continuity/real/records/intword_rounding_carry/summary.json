@@ -1,0 +1,29 @@
+{
+  "task": "intword_rounding_carry",
+  "runtime_commit": "9442b90c56208946841241d7d500551c63002004",
+  "session_id": "a6f9c0225c59",
+  "fixture_tree": "bb9697854d90744efbed79432285fe1ed67f09a8",
+  "passed": true,
+  "stop_reason": "completed",
+  "steps": 13,
+  "tool_calls": 16,
+  "failed_tool_calls": 1,
+  "tokens": 104213,
+  "input_tokens": 89977,
+  "known_input_tokens": 89977,
+  "known_output_tokens": 14236,
+  "first_target_edit_step": 8,
+  "input_to_first_edit": 57142,
+  "changed_paths": [
+    "src/humanize/number.py",
+    "tests/test_number.py"
+  ],
+  "current_checks_passed": true,
+  "independent_verifier_passed": true,
+  "replay_consistent": true,
+  "service_errors": 0,
+  "continuation_requests": 4,
+  "repeated_read_reminders": 0,
+  "plan_updates": 0,
+  "record": "experiments/2026-10-07-task-continuity/real/records/intword_rounding_carry"
+}
