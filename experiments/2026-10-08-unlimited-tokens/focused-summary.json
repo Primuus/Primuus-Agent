@@ -1,0 +1,15 @@
+{
+  "mode": "One focused check using the actual unlimited-run trace; no model API calls.",
+  "successful_edit_steps": [
+    16,
+    27,
+    29,
+    32
+  ],
+  "all_four_edit_actions_in_final_context": true,
+  "same_source_patch_history_separate_from_current_checks": true,
+  "invalidated_current_checks_remain_empty": true,
+  "summary_characters": 3799,
+  "restored_edits_excluded": true,
+  "latest_summary_live_retested": false
+}

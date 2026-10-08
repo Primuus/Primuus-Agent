@@ -377,9 +377,12 @@ class SessionState:
             if event["event_type"] == "project_check_completed" and event["step"] > task_step:
                 for check in event["data"]["checks"]:
                     command = check["command"]
+                    relation = ("same source patch as current workspace" if event["data"]["patch_sha256"]
+                                == self.workspace_patch.get("sha256") else "earlier source patch")
                     check_commands["automatic: " + command] = (
                         f"Configured check {command[:160]} at step {event['step']}: "
-                        f"{check['status']}, exit={check['exit_code']}\n"
+                        f"{check['status']}, exit={check['exit_code']} ({relation}; historical result, "
+                        "current validity tracked separately)\n"
                         + (check["output"] + (check["error"] or ""))[-300:]
                     )
         intent = ""
@@ -413,8 +416,10 @@ class SessionState:
                 elif call.name in ("write_file", "edit_file"):
                     path = args["path"].removeprefix("/workspace/")
                     replacement = args["new_text"] if call.name == "edit_file" else args["content"]
-                    changes.pop(path, None)
-                    changes[path] = f"Observed successful {call.name} on {path} (call {result.call_id}); replacement excerpt:\n{replacement[:250]}"
+                    changes.setdefault(path, []).append(
+                        f"Observed successful {call.name} on {path} at step {step} (call {result.call_id}); "
+                        f"replacement excerpt:\n{replacement[:250]}"
+                    )
                 elif call.name == "run_shell":
                     command = args["command"]
                     commands.pop(command, None)
@@ -430,7 +435,11 @@ class SessionState:
                 reference += ":\n" + output
             source_lines.append(reference)
         sections = ["Current workspace changed paths: " + str(self.workspace_patch.get("changed_paths", "not recorded")),
-                    "Observed changes:\n" + ("\n".join(changes.values()) or "No successful edit recorded since the latest restore."),
+                    "Observed edit actions since the latest restore (historical excerpts, not a complete current diff):",
+                    *[f"{path}: {len(records)} successful edit actions.\n" + "\n".join(
+                        records if len(records) <= 4 else [records[0], *records[-3:]]
+                    ) for path, records in changes.items()],
+                    *([] if changes else ["No successful edit recorded since the latest restore."]),
                     "Observed configured-check command invocations (separate from current patch checks):\n"
                     + ("\n".join(check_commands.values()) or "None recorded."),
                     "Recent commands:\n" + "\n".join(list(commands.values())[-2:]),

@@ -1,0 +1,85 @@
+diff --git a/boltons/listutils.py b/boltons/listutils.py
+index d05d09d..ea54659 100644
+--- a/boltons/listutils.py
++++ b/boltons/listutils.py
+@@ -108,13 +108,17 @@ class BarrelList(list):
+     def _translate_index(self, index):
+         if index < 0:
+             index += len(self)
++            if index < 0:
++                return None, None
+         rel_idx, lists = index, self.lists
+         for list_idx in range(len(lists)):
+             len_list = len(lists[list_idx])
+             if rel_idx < len_list:
+                 break
+             rel_idx -= len_list
+-        if rel_idx < 0:
++        else:
++            # index ran past the end (e.g. index == len(self)); there is
++            # no element at this position, so signal out-of-range.
+             return None, None
+         return list_idx, rel_idx
+ 
+@@ -137,9 +141,17 @@ class BarrelList(list):
+             self.lists[0].insert(index, item)
+             self._balance_list(0)
+         else:
++            if index < 0:
++                index += len(self)
++            if index < 0:
++                # built-in list.insert() clamps to the front
++                index = 0
++            if index >= len(self):
++                # built-in list.insert() appends at the end
++                self.lists[-1].append(item)
++                self._balance_list(len(self.lists) - 1)
++                return
+             list_idx, rel_idx = self._translate_index(index)
+-            if list_idx is None:
+-                list_idx, rel_idx = 0, 0
+             self.lists[list_idx].insert(rel_idx, item)
+             self._balance_list(list_idx)
+         return
+@@ -156,6 +168,10 @@ class BarrelList(list):
+             return self.lists[0].pop()
+         index = a and a[0]
+         if index == () or index is None or index == -1:
++            # Skip empty trailing sublists so pop() still finds the last
++            # element, matching built-in list behavior.
++            while len(lists) > 1 and not lists[-1]:
++                lists.pop()
+             ret = lists[-1].pop()
+             if len(lists) > 1 and not lists[-1]:
+                 lists.pop()
+@@ -197,12 +213,25 @@ class BarrelList(list):
+             start = 0
+         if stop is None:
+             stop = len(self)
++        if start < 0:
++            start += len(self)
++        if stop < 0:
++            stop += len(self)
++        # built-in list slicing clamps out-of-range bounds instead of
++        # raising, and an empty range (start >= stop) is a no-op.
++        start = min(start, len(self))
++        stop = min(stop, len(self))
++        if start < 0:
++            start = 0
++        if stop < 0:
++            stop = 0
++        if start >= stop:
++            return
+         start_list_idx, start_rel_idx = self._translate_index(start)
+-        stop_list_idx, stop_rel_idx = self._translate_index(stop)
+-        if start_list_idx is None:
+-            raise IndexError()
+-        if stop_list_idx is None:
+-            raise IndexError()
++        if stop == len(self):
++            stop_list_idx, stop_rel_idx = len(self.lists) - 1, len(self.lists[-1])
++        else:
++            stop_list_idx, stop_rel_idx = self._translate_index(stop)
+ 
+         if start_list_idx == stop_list_idx:
+             del self.lists[start_list_idx][start_rel_idx:stop_rel_idx]
