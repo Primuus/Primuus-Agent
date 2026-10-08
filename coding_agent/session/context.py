@@ -165,7 +165,7 @@ def build_progress_context(state: SessionState, *, before_edit: bool = False) ->
     sources = []
     if before_edit:
         instruction = (
-            "One third of the task token budget is spent without a patch. Review only the current "
+            f"Investigation has used {state.known_tokens} known tokens without a patch. Review only the current "
             "requirement and choose the next concrete action. Return only JSON with status "
             "(must be in_progress), hypothesis (unverified interpretation), and next_action. "
             "If observed behavior and source support a fix, name the specific edit to make now. "

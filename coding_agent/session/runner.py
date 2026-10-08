@@ -39,6 +39,7 @@ class SessionRunner:
         budget_guidance: bool = False,
         context_tool_output_chars: int = 4000,
         max_output_tokens: int = 8192,
+        action_review_after_tokens: int = 40000,
     ) -> None:
         self.model = model
         self.execute = execute
@@ -59,6 +60,7 @@ class SessionRunner:
         self.budget_guidance = budget_guidance
         self.context_tool_output_chars = context_tool_output_chars
         self.max_output_tokens = max_output_tokens
+        self.action_review_after_tokens = action_review_after_tokens
 
     def _estimate_input(self, state: SessionState, messages: list[dict], tools: list[dict]) -> tuple[int, int]:
         size = len(json.dumps({"messages": messages, "tools": tools}, ensure_ascii=False).encode("utf-8"))
@@ -198,7 +200,7 @@ class SessionRunner:
         return checked is not None and checked["step"] > updated
 
     def _action_due(self, state: SessionState) -> bool:
-        if (self.max_tokens is None or state.known_tokens < self.max_tokens / 3
+        if (state.known_tokens < self.action_review_after_tokens
             or state.workspace_patch.get("changed_paths")
             or not any(item["status"] == "in_progress" for item in state.plan)):
             return False

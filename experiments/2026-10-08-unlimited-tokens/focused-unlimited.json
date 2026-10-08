@@ -1,0 +1,11 @@
+{
+  "mode": "One focused scripted runner check; no model API calls.",
+  "tokens_at_end": 125539,
+  "continued_past_previous_120000_limit": true,
+  "action_review_remains_available": true,
+  "all_remaining_token_allowances_null": true,
+  "work_output_limit_preserved": 8192,
+  "no_token_budget_stop": true,
+  "unfinished_task_not_claimed_complete": true,
+  "replay_consistent": true
+}

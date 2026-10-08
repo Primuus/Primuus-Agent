@@ -1,7 +1,8 @@
 {
   "max_steps": 80,
   "repository_max_steps": 80,
-  "max_tokens": 120000,
+  "max_tokens": null,
+  "action_review_after_tokens": 40000,
   "context_max_chars": 60000,
   "context_keep_messages": 12,
   "project_instruction_files": [

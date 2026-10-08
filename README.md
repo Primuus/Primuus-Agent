@@ -125,7 +125,8 @@ python3 -m coding_agent restore <session_id> --snapshot <commit>
 | 模型后端 / 模型名 | `openai_compatible` / `deepseek-flash` |
 | 服务地址 | `https://api.deepseek.com` |
 | 轮数预算 | 普通仓库会话 80，评测任务 20 |
-| Token 预算 | 120,000 |
+| 累计 Token 上限 | 默认不限制（`max_tokens: null`） |
+| 编辑前行动回顾 | 无补丁且已有目标源码证据时，在已用 40,000 Token 后触发一次，更新下一动作 |
 | 单次输出上限 | 8,192 Token，可用 `--max-output-tokens` 调整 |
 | 默认 DeepSeek 推理强度 | 工具调用 `low`；计划初始化、行动和进度回顾、最终答复 `none` |
 | 单次任务 / 工具超时 | 600 秒 / 30 秒 |
