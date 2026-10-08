@@ -37,6 +37,8 @@ def failure_category(call: ToolCall, result: ToolResult) -> str | None:
         return "permission"
     if result.status == "error" and result.exit_code is None:
         return "tool"
+    if call.name == "run_checks":
+        return "test"
     if call.name != "run_shell":
         return "tool"
     command = call.arguments.get("command")

@@ -6,7 +6,7 @@ import json
 from coding_agent.contracts import ToolCall, ToolResult
 
 
-WRITE_TOOLS = {"write_file", "edit_file", "run_shell"}
+WRITE_TOOLS = {"write_file", "edit_file", "run_shell", "run_checks"}
 
 
 class PermissionExecutor:

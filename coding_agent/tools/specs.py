@@ -112,6 +112,17 @@ REPOSITORY_TOOL_SPECS = TOOL_SPECS + [
 ]
 
 REPOSITORY_TOOL_SPECS.append({
+    "name": "run_checks",
+    "description": "Run the configured project check suite. Reuse passing results for the same patch and execution environment; set force=true to execute it again. Use this instead of appending configured checks to reproduction shell commands.",
+    "parameters": {
+        "type": "object",
+        "properties": {"force": {"type": "boolean", "description": "Execute checks even when current passing results are cached"}},
+        "required": [],
+        "additionalProperties": False,
+    },
+})
+
+REPOSITORY_TOOL_SPECS.append({
     "name": "update_plan",
     "description": "Track each requirement, target files, working hypothesis and next action for a multi-step task",
     "parameters": {

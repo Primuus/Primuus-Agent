@@ -1,0 +1,19 @@
+{
+  "cache_force_and_shell": {
+    "passed": true,
+    "actual_check_batches": 3,
+    "cache_reuses": 2,
+    "shell_invalidations": 1,
+    "replay_consistent": true
+  },
+  "hooks_invalidate": {
+    "passed": true,
+    "actual_check_batches": 2,
+    "cache_reuses": 1,
+    "shell_invalidations": 1,
+    "replay_consistent": true
+  },
+  "read_only_check_permission": {
+    "passed": true
+  }
+}

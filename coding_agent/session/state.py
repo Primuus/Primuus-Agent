@@ -368,6 +368,15 @@ class SessionState:
                              or event["event_type"] == "recovery_action"
                              and event["data"]["kind"] == "snapshot_rollback"), default=-1)
         sources, changes, commands, failures, check_commands = {}, {}, {}, {}, {}
+        for event in self.events:
+            if event["event_type"] == "project_check_completed" and event["step"] > task_step:
+                for check in event["data"]["checks"]:
+                    command = check["command"]
+                    check_commands["automatic: " + command] = (
+                        f"Configured check {command[:160]} at step {event['step']}: "
+                        f"{check['status']}, exit={check['exit_code']}\n"
+                        + (check["output"] + (check["error"] or ""))[-300:]
+                    )
         intent = ""
         edited_at = {}
         for step, turn in enumerate(self.turns[task_step:], task_step + 1):

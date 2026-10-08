@@ -36,7 +36,10 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
                 + "\n".join(state.project_check_commands)
                 + "\nUse their environment and paths for reproductions too. The container is prepared; "
                 "avoid installing dependencies unless the task requires it. Checks run automatically "
-                "after patch changes, so inspect their result before repeating them."
+                "after patch changes, so inspect their result before repeating them. When run_checks "
+                "is offered, use it for configured checks; it can reuse current passing results. "
+                "Keep behavioral reproduction shell commands separate from the configured check suite. "
+                "Use force=true only when a fresh check execution is needed."
             ),
         })
     for source in state.context_sources:

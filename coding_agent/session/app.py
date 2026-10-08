@@ -185,12 +185,34 @@ class RepositorySession:
                                 self.config["tool_timeout_seconds"],
                                 self.repository.workspace) as mcp:
             tools = DockerTools(sandbox, self.repository.base_commit)
+            last_checked_patch: str | None = None
+            last_check_result: VerificationResult | None = None
             if mcp.tool_specs:
                 self.state.emit("mcp_tools_registered", {
                     "tools": [tool["name"] for tool in mcp.tool_specs],
                 })
 
             def dispatch(call: ToolCall) -> ToolResult:
+                nonlocal last_check_result
+                if call.name == "run_shell":
+                    last_check_result = None
+                    if self.state.project_checks:
+                        self.state.emit("project_check_invalidated", {"reason": "shell_command", "call_id": call.call_id})
+                        self.state._clear_project_checks()
+                if call.name == "run_checks":
+                    force = call.arguments.get("force", False)
+                    if set(call.arguments) - {"force"} or type(force) is not bool:
+                        return ToolResult(call.call_id, call.name, "error", "", "run_checks accepts only a boolean force", None, 0)
+                    if not checks:
+                        return ToolResult(call.call_id, call.name, "error", "", "No configured project checks", None, 0)
+                    event_index = len(self.state.events)
+                    result = verify_checks(force=force)
+                    reused = any(event["event_type"] == "project_check_reused"
+                                 for event in self.state.events[event_index:])
+                    label = "Reused passing configured checks" if reused else "Executed configured checks"
+                    return ToolResult(call.call_id, call.name, "completed" if result.passed else "error",
+                                      label + " for the current patch:\n" + result.output,
+                                      result.error, result.exit_code, result.duration_ms if not reused else 0)
                 return mcp.execute(call) if mcp.handles(call.name) else tools.execute(call)
 
             permitted = PermissionExecutor(
@@ -223,13 +245,12 @@ class RepositorySession:
 
             last_observed_patch = self.repository.diff()
             self.state.record_workspace_patch(self.repository.changed_files(), hashlib.sha256(last_observed_patch.encode()).hexdigest())
-            last_checked_patch: str | None = None
-            last_check_result: VerificationResult | None = None
 
-            def verify_checks() -> VerificationResult:
+            def verify_checks(force: bool = False) -> VerificationResult:
                 nonlocal last_checked_patch, last_check_result
                 patch = self.repository.diff()
-                if patch == last_checked_patch and last_check_result is not None and last_check_result.passed:
+                if not force and patch == last_checked_patch and last_check_result is not None and last_check_result.passed:
+                    self.state.emit("project_check_reused", {"patch_sha256": self.state.project_check_patch_sha256})
                     return last_check_result
                 patch_sha256 = hashlib.sha256(patch.encode()).hexdigest()
                 self.state.start_project_checks(patch_sha256)
@@ -276,8 +297,6 @@ class RepositorySession:
                 patch = self.repository.diff()
                 self.state.record_workspace_patch(self.repository.changed_files(), hashlib.sha256(patch.encode()).hexdigest())
                 if patch == last_observed_patch:
-                    if any(call.name == "run_shell" for call in self.state.turns[-1].response.tool_calls):
-                        last_check_result = None
                     return None
                 last_observed_patch = patch
                 if not checks:

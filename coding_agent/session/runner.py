@@ -344,7 +344,7 @@ class SessionRunner:
                     category = "tool"
                 else:
                     if (self.recovery.enabled and self.checkpoint is not None
-                        and call.name in ("write_file", "edit_file", "run_shell")):
+                        and call.name in ("write_file", "edit_file", "run_shell", "run_checks")):
                         checkpoint = self.checkpoint(f"before {call.name} at step {state.steps}")
                     result = (state.read_tool_output(call) if call.name == "read_tool_output"
                               else self.execute(call))
