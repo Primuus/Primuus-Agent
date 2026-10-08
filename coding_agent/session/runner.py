@@ -189,7 +189,6 @@ class SessionRunner:
             state.finish("invalid_model_action")
             return False
         state.update_plan(items)
-        state.add_workflow_guidance("Plan initialized. Work on the in_progress requirement and keep remaining items pending.")
         return True
 
     def run(self, spec: SessionSpec, state: SessionState | None = None) -> SessionState:
@@ -282,7 +281,8 @@ class SessionRunner:
                     state.emit("recovery_action", {"kind": "model_retry", "attempt": model_attempt})
                     sleep(min(0.5 * 2 ** (model_attempt - 1),
                               max(0, self.timeout_seconds - (monotonic() - started))))
-            turn = state.add_turn(response, int((monotonic() - model_started) * 1000))
+            turn = state.add_turn(response, int((monotonic() - model_started) * 1000),
+                                  include_in_conversation=phase != "plan")
             if phase == "plan":
                 if not self._accept_plan(state):
                     return state

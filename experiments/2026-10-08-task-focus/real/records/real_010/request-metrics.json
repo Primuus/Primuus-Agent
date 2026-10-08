@@ -1,0 +1,40 @@
+[
+  {
+    "index": 1,
+    "phase": "plan",
+    "status": "completed",
+    "message_chars": 1536,
+    "tools": [],
+    "max_output_tokens": 1536,
+    "input_tokens": 289,
+    "output_tokens": 321,
+    "tool_calls": [],
+    "reasoning_chars": 0,
+    "seconds": 1.807
+  },
+  {
+    "index": 2,
+    "phase": "work",
+    "status": "service_error",
+    "message_chars": 6358,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "error": "Model API returned HTTP 400",
+    "input_tokens": null,
+    "output_tokens": null,
+    "seconds": 0.297
+  }
+]

@@ -61,8 +61,11 @@ class OpenAICompatibleBackend:
             with urlopen(request, timeout=self.timeout_seconds) as response:
                 completion = json.load(response)
         except HTTPError as error:
+            detail = error.read(2048).decode("utf-8", errors="replace").strip()
+            if self.api_key:
+                detail = detail.replace(self.api_key, "[redacted]")
             raise ModelServiceError(
-                f"Model API returned HTTP {error.code}",
+                f"Model API returned HTTP {error.code}: {detail}",
                 retryable=error.code in (408, 429, 500, 502, 503, 504),
             ) from error
         except URLError as error:
@@ -73,6 +76,9 @@ class OpenAICompatibleBackend:
             raise ModelServiceError("Model API response was truncated", retryable=True) from error
 
         message = completion["choices"][0]["message"]
+        reasoning = message.get("reasoning_content")
+        if effort == "none" and reasoning is None:
+            reasoning = ""
         usage = completion.get("usage") or {}
         if completion["choices"][0]["finish_reason"] == "length":
             raise ModelServiceError(
@@ -92,12 +98,12 @@ class OpenAICompatibleBackend:
                 ),
                 input_tokens=usage.get("prompt_tokens"),
                 output_tokens=usage.get("completion_tokens"),
-                reasoning_content=message.get("reasoning_content"),
+                reasoning_content=reasoning,
                 assistant_content=message.get("content"),
             )
         return ModelResponse(
             final_message=message.get("content"),
             input_tokens=usage.get("prompt_tokens"),
             output_tokens=usage.get("completion_tokens"),
-            reasoning_content=message.get("reasoning_content"),
+            reasoning_content=reasoning,
         )

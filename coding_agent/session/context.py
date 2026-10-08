@@ -88,7 +88,6 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
         message["role"] == "user" and message["content"] == latest_task for message in state.messages
     ):
         messages.append({"role": "user", "content": latest_task})
-    messages.extend(state.messages)
     if state.plan:
         active = next((item for item in state.plan if item["status"] == "in_progress"), None)
         if active is not None:
@@ -101,13 +100,13 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
                 "make the minimal patch before investigating a different independent requirement. "
                 "After its behavior is checked, update_plan to complete it and select the next requirement."
             )})
-    return messages
+    return [*messages, *state.messages]
 
 
 def build_planning_context(state: SessionState) -> list[dict[str, Any]]:
     task = next(event["data"]["content"] for event in reversed(state.events)
                 if event["event_type"] == "user_message")
-    return [
+    messages = [
         {"role": "system", "content": (
             "Initialize a coding task plan. Return only a JSON object with an items array, without markdown. "
             "Each item must have description, status, files (an array of paths, empty if unknown), "
@@ -118,9 +117,12 @@ def build_planning_context(state: SessionState) -> list[dict[str, Any]]:
             "Do not make broad investigation of all files the first item. Use names from the user request; "
             "inferred file paths are hypotheses to verify. Do not invent extra requirements."
         )},
-        {"role": "user", "content": task},
-        {"role": "system", "content": "Observed task history:\n" + state.task_summary(include_source=False)},
     ]
+    for source in state.context_sources:
+        messages.append({"role": "system", "content": f"{source['kind']} instructions from {source['path']}:\n{source['content']}"})
+    return [*messages,
+            {"role": "system", "content": "Observed task history:\n" + state.task_summary(include_source=False)},
+            {"role": "user", "content": task}]
 
 
 def build_final_context(state: SessionState) -> list[dict[str, Any]]:

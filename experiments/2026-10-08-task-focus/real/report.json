@@ -1,0 +1,39 @@
+{
+  "status": "stopped_after_gate_failure",
+  "runs": [
+    {
+      "task": "real_010",
+      "runtime_commit": "387cf1e9f399ee69ed3d82eca0be42bc3d0cc513",
+      "session_id": "b8f5b0fc1e9c",
+      "fixture_tree": "d90cb092a448ae03c271ca7062350345c98f98c2",
+      "passed": false,
+      "stop_reason": "model_error",
+      "steps": 1,
+      "tool_calls": 0,
+      "failed_tool_calls": 0,
+      "tokens": null,
+      "input_tokens": null,
+      "known_input_tokens": 289,
+      "known_output_tokens": 321,
+      "first_target_edit_step": null,
+      "input_to_first_edit": null,
+      "changed_paths": [],
+      "plan_complete": false,
+      "current_checks_passed": false,
+      "independent_verifier_passed": false,
+      "replay_consistent": true,
+      "service_errors": 1,
+      "plan_updates": 1,
+      "actual_check_batches": 0,
+      "check_cache_reuses": 0,
+      "run_checks_calls": 0,
+      "manual_check_invocations": 0,
+      "record": "experiments/2026-10-08-task-focus/real/records/real_010"
+    }
+  ],
+  "actual_runs": 1,
+  "maximum_runs": 1,
+  "passes": 0,
+  "failures": 1,
+  "temporary_workspaces_deleted": true
+}

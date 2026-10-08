@@ -1,0 +1,10 @@
+{
+  "administrative_response_not_replayed_as_work_assistant": true,
+  "disabled_reasoning_represented_as_empty": true,
+  "retained_work_reasoning_complete": true,
+  "full_work_tools_preserved": true,
+  "project_instructions_in_planning": true,
+  "usage_and_replay_consistent": true,
+  "interrupted_handoff_reuses_saved_plan": true,
+  "http_diagnostics_redact_key": true
+}

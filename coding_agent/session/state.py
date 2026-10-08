@@ -126,7 +126,8 @@ class SessionState:
             self.workspace_patch = patch
             self.continuation = {}
 
-    def _accept_turn(self, response: ModelResponse, duration_ms: int, timestamp: str) -> Turn:
+    def _accept_turn(self, response: ModelResponse, duration_ms: int, timestamp: str,
+                     include_in_conversation: bool = True) -> Turn:
         self.steps += 1
         turn = Turn(response, timestamp, duration_ms)
         self.turns.append(turn)
@@ -134,6 +135,8 @@ class SessionState:
             self.tokens = None
         elif self.tokens is not None:
             self.tokens += response.input_tokens + response.output_tokens
+        if not include_in_conversation:
+            return turn
         if response.tool_calls:
             self.messages.append({
                 "role": "assistant",
@@ -150,13 +153,15 @@ class SessionState:
             self.messages[-1]["reasoning_content"] = response.reasoning_content
         return turn
 
-    def add_turn(self, response: ModelResponse, model_duration_ms: int) -> Turn:
+    def add_turn(self, response: ModelResponse, model_duration_ms: int,
+                 *, include_in_conversation: bool = True) -> Turn:
         timestamp = self.emit(
             "model_action",
-            {"response": asdict(response), "duration_ms": model_duration_ms},
+            {"response": asdict(response), "duration_ms": model_duration_ms,
+             "include_in_conversation": include_in_conversation},
             self.steps + 1,
         )
-        return self._accept_turn(response, model_duration_ms, timestamp)
+        return self._accept_turn(response, model_duration_ms, timestamp, include_in_conversation)
 
     def start_tool(self, call: ToolCall) -> None:
         self.emit("tool_started", asdict(call))
@@ -484,7 +489,7 @@ class SessionState:
                     reasoning_content=raw.get("reasoning_content"),
                     assistant_content=raw.get("assistant_content"),
                 )
-                state._accept_turn(response, data["duration_ms"], timestamp)
+                state._accept_turn(response, data["duration_ms"], timestamp, data.get("include_in_conversation", True))
             elif kind == "tool_started":
                 call = ToolCall(**data)
                 state.pending_tools[call.call_id] = call
