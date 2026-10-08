@@ -1,0 +1,31 @@
+{
+  "task": "real_010",
+  "runtime_commit": "fb1fb688c87fd54056c5cc5def213820c14de08b",
+  "session_id": "db9d3812bbfc",
+  "fixture_tree": "d90cb092a448ae03c271ca7062350345c98f98c2",
+  "passed": false,
+  "stop_reason": "token_budget",
+  "steps": 16,
+  "tool_calls": 21,
+  "failed_tool_calls": 2,
+  "tokens": 106152,
+  "input_tokens": 96249,
+  "known_input_tokens": 96249,
+  "known_output_tokens": 9903,
+  "first_target_edit_step": 9,
+  "input_to_first_edit": 50358,
+  "changed_paths": [
+    "boltons/listutils.py"
+  ],
+  "plan_complete": false,
+  "current_checks_passed": false,
+  "independent_verifier_passed": false,
+  "replay_consistent": true,
+  "service_errors": 0,
+  "plan_updates": 1,
+  "actual_check_batches": 2,
+  "check_cache_reuses": 0,
+  "run_checks_calls": 0,
+  "manual_check_invocations": 0,
+  "record": "experiments/2026-10-08-task-focus/real/handoff-corrected/records/real_010"
+}

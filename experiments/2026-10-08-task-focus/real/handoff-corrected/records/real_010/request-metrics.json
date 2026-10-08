@@ -1,0 +1,490 @@
+[
+  {
+    "index": 1,
+    "phase": "plan",
+    "status": "completed",
+    "message_chars": 1536,
+    "tools": [],
+    "max_output_tokens": 1536,
+    "input_tokens": 289,
+    "output_tokens": 410,
+    "tool_calls": [],
+    "reasoning_chars": 0,
+    "seconds": 2.264
+  },
+  {
+    "index": 2,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 4991,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 2202,
+    "output_tokens": 129,
+    "tool_calls": [
+      {
+        "name": "run_shell",
+        "path": null
+      },
+      {
+        "name": "run_shell",
+        "path": null
+      }
+    ],
+    "reasoning_chars": 0,
+    "seconds": 1.371
+  },
+  {
+    "index": 3,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 10428,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 3720,
+    "output_tokens": 80,
+    "tool_calls": [
+      {
+        "name": "read_file",
+        "path": "/workspace/boltons/listutils.py"
+      }
+    ],
+    "reasoning_chars": 0,
+    "seconds": 1.062
+  },
+  {
+    "index": 4,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 10991,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 3843,
+    "output_tokens": 88,
+    "tool_calls": [
+      {
+        "name": "read_file_range",
+        "path": "/workspace/boltons/listutils.py"
+      }
+    ],
+    "reasoning_chars": 28,
+    "seconds": 0.964
+  },
+  {
+    "index": 5,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 20819,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 6557,
+    "output_tokens": 1864,
+    "tool_calls": [
+      {
+        "name": "run_shell",
+        "path": null
+      },
+      {
+        "name": "run_shell",
+        "path": null
+      }
+    ],
+    "reasoning_chars": 5627,
+    "seconds": 8.693
+  },
+  {
+    "index": 6,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 24132,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 7572,
+    "output_tokens": 808,
+    "tool_calls": [
+      {
+        "name": "read_file_range",
+        "path": "/workspace/boltons/listutils.py"
+      },
+      {
+        "name": "read_file_range",
+        "path": "/workspace/tests/test_listutils.py"
+      }
+    ],
+    "reasoning_chars": 2311,
+    "seconds": 4.02
+  },
+  {
+    "index": 7,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 26472,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 8547,
+    "output_tokens": 95,
+    "tool_calls": [
+      {
+        "name": "read_file_range",
+        "path": "/workspace/boltons/listutils.py"
+      }
+    ],
+    "reasoning_chars": 53,
+    "seconds": 1.226
+  },
+  {
+    "index": 8,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 28403,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 9110,
+    "output_tokens": 676,
+    "tool_calls": [
+      {
+        "name": "read_file_range",
+        "path": "/workspace/boltons/listutils.py"
+      }
+    ],
+    "reasoning_chars": 2244,
+    "seconds": 3.568
+  },
+  {
+    "index": 9,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 27300,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 8518,
+    "output_tokens": 2327,
+    "tool_calls": [
+      {
+        "name": "edit_file",
+        "path": "/workspace/boltons/listutils.py"
+      },
+      {
+        "name": "edit_file",
+        "path": "/workspace/boltons/listutils.py"
+      }
+    ],
+    "reasoning_chars": 6649,
+    "seconds": 9.597
+  },
+  {
+    "index": 10,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 22573,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 6675,
+    "output_tokens": 174,
+    "tool_calls": [
+      {
+        "name": "read_file_range",
+        "path": "/workspace/boltons/listutils.py"
+      },
+      {
+        "name": "read_file_range",
+        "path": "/workspace/boltons/listutils.py"
+      }
+    ],
+    "reasoning_chars": 78,
+    "seconds": 1.165
+  },
+  {
+    "index": 11,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 27048,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 7891,
+    "output_tokens": 454,
+    "tool_calls": [
+      {
+        "name": "read_file_range",
+        "path": "/workspace/boltons/listutils.py"
+      }
+    ],
+    "reasoning_chars": 1468,
+    "seconds": 2.251
+  },
+  {
+    "index": 12,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 31360,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 9044,
+    "output_tokens": 685,
+    "tool_calls": [
+      {
+        "name": "edit_file",
+        "path": "/workspace/boltons/listutils.py"
+      },
+      {
+        "name": "edit_file",
+        "path": "/workspace/boltons/listutils.py"
+      }
+    ],
+    "reasoning_chars": 34,
+    "seconds": 2.516
+  },
+  {
+    "index": 13,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 19577,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 6105,
+    "output_tokens": 213,
+    "tool_calls": [
+      {
+        "name": "search_text",
+        "path": "/workspace/boltons/listutils.py"
+      },
+      {
+        "name": "read_file_range",
+        "path": "/workspace/boltons/listutils.py"
+      }
+    ],
+    "reasoning_chars": 352,
+    "seconds": 1.657
+  },
+  {
+    "index": 14,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 23919,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 8192,
+    "input_tokens": 7220,
+    "output_tokens": 205,
+    "tool_calls": [
+      {
+        "name": "git_diff",
+        "path": null
+      }
+    ],
+    "reasoning_chars": 718,
+    "seconds": 1.558
+  },
+  {
+    "index": 15,
+    "phase": "work",
+    "status": "completed",
+    "message_chars": 28262,
+    "tools": [
+      "read_file",
+      "write_file",
+      "run_shell",
+      "read_tool_output",
+      "list_files",
+      "search_text",
+      "read_file_range",
+      "edit_file",
+      "git_status",
+      "git_diff",
+      "run_checks",
+      "update_plan"
+    ],
+    "max_output_tokens": 1215,
+    "input_tokens": 8311,
+    "output_tokens": 1202,
+    "tool_calls": [
+      {
+        "name": "run_shell",
+        "path": null
+      }
+    ],
+    "reasoning_chars": 1381,
+    "seconds": 5.168
+  },
+  {
+    "index": 16,
+    "phase": "budget_report",
+    "status": "completed",
+    "message_chars": 3123,
+    "tools": [],
+    "max_output_tokens": 1024,
+    "input_tokens": 645,
+    "output_tokens": 493,
+    "tool_calls": [],
+    "reasoning_chars": 0,
+    "seconds": 2.632
+  }
+]

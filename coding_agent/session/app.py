@@ -150,7 +150,7 @@ class RepositorySession:
         if (instruction is None and self.state.stop_reason in (None, "paused")
             and self.state.turns and not self.state.turns[-1].response.tool_calls
             and last_model >= last_user and not checks
-            and last_phase != "plan"
+            and last_phase not in ("plan", "plan_progress")
             and self.state.plan_complete
             and (self.state.turns[-1].verification is None
                  or self.state.turns[-1].verification.passed)):
@@ -425,7 +425,9 @@ class RepositorySession:
                 event["data"]["seconds"] for event in self.state.events
                 if event["event_type"] == "run_duration"
             ), 3),
-            "final_message": self.state.turns[-1].response.final_message if self.state.turns else None,
+            "final_message": next((event["data"]["response"]["final_message"] for event in reversed(self.state.events)
+                                   if event["event_type"] == "model_action"
+                                   and event["data"].get("include_in_conversation", True)), None),
             "changed_paths": changed_paths,
             "plan_complete": self.state.plan_complete,
             "plan": self.state.plan,

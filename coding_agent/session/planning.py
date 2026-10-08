@@ -34,3 +34,20 @@ def parse_initial_plan(content: str) -> list[dict[str, Any]]:
         or any(set(item) != {"description", "status", "files", "hypothesis", "next_action"} for item in items)):
         raise ValueError("Initialize the first requirement as in_progress and all others as pending, with all five fields")
     return items
+
+
+def apply_progress(plan: list[dict[str, Any]], content: str) -> list[dict[str, Any]]:
+    data = json.loads(content)
+    if (type(data) is not dict or set(data) != {"status", "hypothesis", "next_action"}
+        or data["status"] not in ("in_progress", "completed")
+        or any(type(data[key]) is not str for key in ("hypothesis", "next_action"))):
+        raise ValueError("Progress requires status, hypothesis and next_action for the current requirement")
+    items = [dict(item) for item in plan]
+    active = next(index for index, item in enumerate(items) if item["status"] == "in_progress")
+    items[active].update(data)
+    if data["status"] == "completed":
+        following = next((item for item in items if item["status"] == "pending"), None)
+        if following is not None:
+            following["status"] = "in_progress"
+    validate_plan(items)
+    return items

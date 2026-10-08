@@ -146,3 +146,29 @@ def build_final_context(state: SessionState) -> list[dict[str, Any]]:
             + "\nCurrent patch checks:\n" + checks
         )},
     ]
+
+
+def build_progress_context(state: SessionState) -> list[dict[str, Any]]:
+    task = next(event["data"]["content"] for event in reversed(state.events)
+                if event["event_type"] == "user_message")
+    active = next(item for item in state.plan if item["status"] == "in_progress")
+    notes = state.turns[-1].response.reasoning_content or ""
+    return [
+        {"role": "system", "content": (
+            "Review only the current requirement after project checks. Return only JSON with status "
+            "(in_progress or completed), hypothesis (unverified interpretation), and next_action "
+            "(one concrete next step). Existing project checks passing alone do not prove the requested "
+            "behavior. Mark completed only when actual edits and focused behavioral evidence address "
+            "this requirement. Otherwise select a focused reproduction or supported edit, not another "
+            "broad inspection. Keep other requirements unchanged. Avoid extending to unrelated edge "
+            "cases unless the observed patch caused a regression. This is a plan update, not a final answer."
+        )},
+        *[{"role": "system", "content": f"{source['kind']} instructions from {source['path']}:\n{source['content']}"}
+          for source in state.context_sources],
+        {"role": "system", "content": "Current requirement: " + str(active)
+         + "\nObserved actions:\n" + state.task_summary(include_source=False)
+         + "\nCurrent patch checks: " + str([{key: check[key] for key in ("command", "status", "exit_code")}
+                                               for check in state.project_checks])
+         + "\nLatest working notes (unverified):\n" + notes[-1200:]},
+        {"role": "user", "content": task},
+    ]

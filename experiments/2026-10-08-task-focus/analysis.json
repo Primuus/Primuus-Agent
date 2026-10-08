@@ -1,0 +1,29 @@
+{
+  "startup_failure": {
+    "runtime_commit": "387cf1e9f399ee69ed3d82eca0be42bc3d0cc513",
+    "reason": "model_error",
+    "known_tokens": 610,
+    "total_tokens": null
+  },
+  "corrected_work_run": {
+    "runtime_commit": "fb1fb688c87fd54056c5cc5def213820c14de08b",
+    "reason": "token_budget",
+    "known_tokens": 106152,
+    "first_source_edit_step": 9,
+    "changed_paths": [
+      "boltons/listutils.py"
+    ],
+    "plan_updates": 1,
+    "actual_check_batches": 2,
+    "run_checks_calls": 0,
+    "cache_reuses": 0
+  },
+  "attempts": 2,
+  "functional_work_runs": 1,
+  "passes": 0,
+  "combined_total_tokens": null,
+  "combined_known_tokens": 106762,
+  "remaining_bottleneck": "The current requirement was never advanced after passing patch checks. IndexedSet was not edited.",
+  "latest_progress_checkpoint": "Added after the live run; validated with this trace and simulated responses only.",
+  "acceptance": "failed; stage S remains unaccepted"
+}

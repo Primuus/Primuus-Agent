@@ -1,0 +1,14 @@
+{
+  "trace_checkpoint_step": 10,
+  "checkpoint_after_passing_patch_checks": true,
+  "review_tokens_reserved_and_counted": true,
+  "no_repeat_without_new_check": true,
+  "pending_requirements_preserved": true,
+  "next_requirement_selected": true,
+  "administrative_reply_not_in_work_conversation": true,
+  "interrupted_review_recovered": true,
+  "replay_consistent": true,
+  "mode": "existing trace with simulated progress responses, no model calls",
+  "requires_current_passing_patch_checks": true,
+  "invalidated_or_restored_checks_do_not_trigger_review": true
+}

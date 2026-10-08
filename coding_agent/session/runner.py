@@ -7,8 +7,8 @@ from time import monotonic, sleep
 
 from coding_agent.contracts import ToolCall, ToolResult, VerificationResult
 from coding_agent.models.base import ModelBackend, ModelServiceError
-from coding_agent.session.context import build_context, build_final_context, build_planning_context
-from coding_agent.session.planning import parse_initial_plan
+from coding_agent.session.context import build_context, build_final_context, build_planning_context, build_progress_context
+from coding_agent.session.planning import apply_progress, parse_initial_plan
 from coding_agent.session.recovery import (
     RecoveryPolicy, action_signature, alternative_guidance, failure_category,
 )
@@ -145,6 +145,9 @@ class SessionRunner:
         if self.budget_guidance and not state.plan and any(tool["name"] == "update_plan" for tool in tools):
             messages, tools, phase = build_planning_context(state), [], "plan"
             output_limit = min(output_limit, 1536)
+        elif self.budget_guidance and self._progress_due(state):
+            messages, tools, phase = build_progress_context(state), [], "plan_progress"
+            output_limit = min(output_limit, 1536)
         estimate, size = self._estimate_input(state, messages, tools)
         ready = (bool(state.project_checks) and state.project_check_patch_sha256 is not None
                  and all(check["status"] == "completed" and check["exit_code"] == 0 for check in state.project_checks)
@@ -178,17 +181,33 @@ class SessionRunner:
         }, state.steps + 1)
         return messages, tools, output_limit, phase
 
-    def _accept_plan(self, state: SessionState) -> bool:
+    def _progress_due(self, state: SessionState) -> bool:
+        if (not any(item["status"] == "in_progress" for item in state.plan)
+            or not state.project_checks or state.project_check_patch_sha256 is None
+            or state.project_check_patch_sha256 != state.workspace_patch.get("sha256")
+            or any(check["status"] != "completed" or check["exit_code"] != 0
+                   for check in state.project_checks)):
+            return False
+        checked = next((event for event in reversed(state.events)
+                        if event["event_type"] == "project_check_completed"), None)
+        updated = max((event["step"] for event in state.events
+                       if event["event_type"] == "plan_updated"), default=-1)
+        return checked is not None and checked["step"] > updated
+
+    def _accept_plan(self, state: SessionState, phase: str = "plan") -> bool:
         try:
             content = state.turns[-1].response.final_message
             if content is None:
                 raise ValueError("Planning requires a JSON response without tool calls")
-            items = parse_initial_plan(content)
+            items = apply_progress(state.plan, content) if phase == "plan_progress" else parse_initial_plan(content)
         except ValueError as error:
             state.record_failure("planning", {"message": str(error)})
             state.finish("invalid_model_action")
             return False
+        completed_before = sum(item["status"] == "completed" for item in state.plan)
         state.update_plan(items)
+        if self.checkpoint is not None and sum(item["status"] == "completed" for item in items) > completed_before:
+            self.checkpoint("plan progress")
         return True
 
     def run(self, spec: SessionSpec, state: SessionState | None = None) -> SessionState:
@@ -204,9 +223,14 @@ class SessionRunner:
         if (spec.instructions is None and state.turns and self._request_phase(state) == "plan"
             and not state.plan and not self._accept_plan(state)):
             return state
+        if (spec.instructions is None and state.turns and self._request_phase(state) == "plan_progress"
+            and not any(event["event_type"] == "plan_updated" and event["step"] == state.steps
+                        for event in state.events)
+            and not self._accept_plan(state, "plan_progress")):
+            return state
         if (spec.instructions is None and self.verify is not None and state.turns
             and not state.turns[-1].response.tool_calls
-            and self._request_phase(state) not in ("edit", "plan", "budget_report", "step_report")):
+            and self._request_phase(state) not in ("edit", "plan", "plan_progress", "budget_report", "step_report")):
             if not state.plan_complete:
                 state.finish("final_unverified")
                 return state
@@ -282,9 +306,9 @@ class SessionRunner:
                     sleep(min(0.5 * 2 ** (model_attempt - 1),
                               max(0, self.timeout_seconds - (monotonic() - started))))
             turn = state.add_turn(response, int((monotonic() - model_started) * 1000),
-                                  include_in_conversation=phase != "plan")
-            if phase == "plan":
-                if not self._accept_plan(state):
+                                  include_in_conversation=phase not in ("plan", "plan_progress"))
+            if phase in ("plan", "plan_progress"):
+                if not self._accept_plan(state, phase):
                     return state
                 continue
             if not response.tool_calls:

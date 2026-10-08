@@ -1,0 +1,11 @@
+{
+  "temporary_driver_deleted": true,
+  "temporary_workspaces_remaining": [],
+  "test_containers_remaining": [],
+  "credential_pattern_scan": {
+    "files_checked": 26,
+    "matches": 0
+  },
+  "permanent_test_scripts_added": false,
+  "production_depends_on_validation_driver": false
+}
