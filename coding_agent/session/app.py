@@ -16,6 +16,7 @@ from coding_agent.session.hooks import HookExecutor
 from coding_agent.session.mcp import MCPBridge
 from coding_agent.session.memory import MemoryStore
 from coding_agent.session.permissions import PermissionExecutor, WRITE_TOOLS
+from coding_agent.session.planning import validate_plan
 from coding_agent.session.recovery import RecoveryPolicy, failure_category
 from coding_agent.session.repository import RepositoryWorkspace
 from coding_agent.session.runner import SessionRunner
@@ -144,9 +145,12 @@ class RepositorySession:
             (index for index, event in enumerate(self.state.events)
              if event["event_type"] == "model_action"), default=-1,
         )
+        last_phase = next((event["data"]["phase"] for event in reversed(self.state.events)
+                           if event["event_type"] == "model_request"), None)
         if (instruction is None and self.state.stop_reason in (None, "paused")
             and self.state.turns and not self.state.turns[-1].response.tool_calls
             and last_model >= last_user and not checks
+            and last_phase != "plan"
             and self.state.plan_complete
             and (self.state.turns[-1].verification is None
                  or self.state.turns[-1].verification.passed)):
@@ -201,18 +205,12 @@ class RepositorySession:
                 if call.name != "update_plan":
                     return permitted.execute(call)
                 items = call.arguments.get("items")
-                if (set(call.arguments) != {"items"} or type(items) is not list
-                    or any(type(item) is not dict
-                           or not {"description", "status"} <= set(item) <= {
-                               "description", "status", "files", "hypothesis", "next_action"
-                           }
-                           or type(item["description"]) is not str
-                           or item["status"] not in ("pending", "in_progress", "completed")
-                           or any(type(item[key]) is not str for key in ("hypothesis", "next_action") if key in item)
-                           or "files" in item and (type(item["files"]) is not list
-                                                   or any(type(path) is not str for path in item["files"]))
-                           for item in items)):
-                    return ToolResult(call.call_id, call.name, "error", "", "Invalid plan", None, 0)
+                try:
+                    if set(call.arguments) != {"items"}:
+                        raise ValueError("update_plan requires only items")
+                    validate_plan(items)
+                except ValueError as error:
+                    return ToolResult(call.call_id, call.name, "error", "", str(error), None, 0)
                 completed_before = sum(item["status"] == "completed" for item in self.state.plan)
                 self.state.update_plan(items)
                 if sum(item["status"] == "completed" for item in items) > completed_before:

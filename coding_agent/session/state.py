@@ -97,6 +97,7 @@ class SessionState:
         self.emit("user_message", {"content": content})
         self.messages.append({"role": "user", "content": content})
         self.stop_reason = None
+        self.plan = []
         self.continuation = {}
         self._clear_project_checks()
 
@@ -460,6 +461,7 @@ class SessionState:
             if kind == "user_message":
                 state.messages.append({"role": "user", "content": data["content"]})
                 state.stop_reason = None
+                state.plan = []
                 state.continuation = {}
                 state._clear_project_checks()
                 pending_checks = []

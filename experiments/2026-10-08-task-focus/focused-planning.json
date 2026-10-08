@@ -1,0 +1,9 @@
+{
+  "planning_then_full_work_tools": true,
+  "planning_tokens_counted": true,
+  "unfinished_plan_not_completed": true,
+  "replay_consistent": true,
+  "interrupted_plan_response_reused_without_model_call": true,
+  "multiple_active_requirements_rejected": true,
+  "new_task_clears_plan": true
+}

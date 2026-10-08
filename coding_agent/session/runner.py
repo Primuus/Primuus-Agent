@@ -7,7 +7,8 @@ from time import monotonic, sleep
 
 from coding_agent.contracts import ToolCall, ToolResult, VerificationResult
 from coding_agent.models.base import ModelBackend, ModelServiceError
-from coding_agent.session.context import build_context, build_final_context
+from coding_agent.session.context import build_context, build_final_context, build_planning_context
+from coding_agent.session.planning import parse_initial_plan
 from coding_agent.session.recovery import (
     RecoveryPolicy, action_signature, alternative_guidance, failure_category,
 )
@@ -141,6 +142,9 @@ class SessionRunner:
         output_limit = self.max_output_tokens
         phase = "work"
         messages = build_context(state)
+        if self.budget_guidance and not state.plan and any(tool["name"] == "update_plan" for tool in tools):
+            messages, tools, phase = build_planning_context(state), [], "plan"
+            output_limit = min(output_limit, 1536)
         estimate, size = self._estimate_input(state, messages, tools)
         ready = (bool(state.project_checks) and state.project_check_patch_sha256 is not None
                  and all(check["status"] == "completed" and check["exit_code"] == 0 for check in state.project_checks)
@@ -174,6 +178,20 @@ class SessionRunner:
         }, state.steps + 1)
         return messages, tools, output_limit, phase
 
+    def _accept_plan(self, state: SessionState) -> bool:
+        try:
+            content = state.turns[-1].response.final_message
+            if content is None:
+                raise ValueError("Planning requires a JSON response without tool calls")
+            items = parse_initial_plan(content)
+        except ValueError as error:
+            state.record_failure("planning", {"message": str(error)})
+            state.finish("invalid_model_action")
+            return False
+        state.update_plan(items)
+        state.add_workflow_guidance("Plan initialized. Work on the in_progress requirement and keep remaining items pending.")
+        return True
+
     def run(self, spec: SessionSpec, state: SessionState | None = None) -> SessionState:
         state = state or SessionState(spec.session_id)
         if spec.instructions is not None:
@@ -184,9 +202,12 @@ class SessionRunner:
         started = monotonic()
         validation_retries = 0
         budget_warning_sent = False
+        if (spec.instructions is None and state.turns and self._request_phase(state) == "plan"
+            and not state.plan and not self._accept_plan(state)):
+            return state
         if (spec.instructions is None and self.verify is not None and state.turns
             and not state.turns[-1].response.tool_calls
-            and self._request_phase(state) not in ("edit", "budget_report", "step_report")):
+            and self._request_phase(state) not in ("edit", "plan", "budget_report", "step_report")):
             if not state.plan_complete:
                 state.finish("final_unverified")
                 return state
@@ -262,6 +283,10 @@ class SessionRunner:
                     sleep(min(0.5 * 2 ** (model_attempt - 1),
                               max(0, self.timeout_seconds - (monotonic() - started))))
             turn = state.add_turn(response, int((monotonic() - model_started) * 1000))
+            if phase == "plan":
+                if not self._accept_plan(state):
+                    return state
+                continue
             if not response.tool_calls:
                 if phase in ("budget_report", "step_report"):
                     state.finish("token_budget" if phase == "budget_report" else "max_steps")

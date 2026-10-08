@@ -56,12 +56,6 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
         })
     if state.plan:
         messages.append({"role": "system", "content": "Agent plan and hypotheses (verify against observations): " + str(state.plan)})
-        active = next((item for item in state.plan if item["status"] == "in_progress"), None)
-        if active is not None:
-            messages.append({"role": "system", "content": (
-                "Current requirement: " + active["description"]
-                + "\nNext action: " + active.get("next_action", "Locate its code, patch it, then check it.")
-            )})
     if state.project_checks and state.project_check_patch_sha256 is not None:
         messages.append({
             "role": "system",
@@ -91,7 +85,39 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
         message["role"] == "user" and message["content"] == latest_task for message in state.messages
     ):
         messages.append({"role": "user", "content": latest_task})
-    return [*messages, *state.messages]
+    messages.extend(state.messages)
+    if state.plan:
+        active = next((item for item in state.plan if item["status"] == "in_progress"), None)
+        if active is not None:
+            messages.append({"role": "system", "content": (
+                "Work on this requirement now: " + active["description"]
+                + "\nTarget files (verify their paths): " + str(active.get("files", []))
+                + "\nWorking hypothesis (unverified): " + active.get("hypothesis", "")
+                + "\nNext action: " + active.get("next_action", "Locate the code, make a supported edit, then check it.")
+                + "\nUse focused source ranges. Once its failure and implementation are understood, "
+                "make the minimal patch before investigating a different independent requirement. "
+                "After its behavior is checked, update_plan to complete it and select the next requirement."
+            )})
+    return messages
+
+
+def build_planning_context(state: SessionState) -> list[dict[str, Any]]:
+    task = next(event["data"]["content"] for event in reversed(state.events)
+                if event["event_type"] == "user_message")
+    return [
+        {"role": "system", "content": (
+            "Initialize a coding task plan. Return only a JSON object with an items array, without markdown. "
+            "Each item must have description, status, files (an array of paths, empty if unknown), "
+            "hypothesis (unverified, empty if unknown), and next_action (one concrete action). "
+            "Split independent requirements into separate items; a simple request needs only one. "
+            "The first item is in_progress, all other items are pending. Do not claim anything completed. "
+            "Work in order: locate one failure, make its minimal patch, check its behavior, then move on. "
+            "Do not make broad investigation of all files the first item. Use names from the user request; "
+            "inferred file paths are hypotheses to verify. Do not invent extra requirements."
+        )},
+        {"role": "user", "content": task},
+        {"role": "system", "content": "Observed task history:\n" + state.task_summary(include_source=False)},
+    ]
 
 
 def build_final_context(state: SessionState) -> list[dict[str, Any]]:
