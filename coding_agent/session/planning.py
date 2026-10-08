@@ -4,6 +4,9 @@ import json
 from typing import Any
 
 
+PLAN_PHASES = ("plan", "plan_progress", "plan_action")
+
+
 def validate_plan(items: Any) -> None:
     if type(items) is not list or not items or any(
         type(item) is not dict

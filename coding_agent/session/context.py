@@ -148,27 +148,64 @@ def build_final_context(state: SessionState) -> list[dict[str, Any]]:
     ]
 
 
-def build_progress_context(state: SessionState) -> list[dict[str, Any]]:
+def build_progress_context(state: SessionState, *, before_edit: bool = False) -> list[dict[str, Any]]:
     task = next(event["data"]["content"] for event in reversed(state.events)
                 if event["event_type"] == "user_message")
     active = next(item for item in state.plan if item["status"] == "in_progress")
     notes = state.turns[-1].response.reasoning_content or ""
+    instruction = (
+        "Review only the current requirement after project checks. Return only JSON with status "
+        "(in_progress or completed), hypothesis (unverified interpretation), and next_action "
+        "(one concrete next step). Existing project checks passing alone do not prove the requested "
+        "behavior. Mark completed only when actual edits and focused behavioral evidence address "
+        "this requirement. Otherwise select a focused reproduction or supported edit, not another "
+        "broad inspection. Keep other requirements unchanged. Avoid extending to unrelated edge "
+        "cases unless the observed patch caused a regression. This is a plan update, not a final answer."
+    )
+    sources = []
+    if before_edit:
+        instruction = (
+            "One third of the task token budget is spent without a patch. Review only the current "
+            "requirement and choose the next concrete action. Return only JSON with status "
+            "(must be in_progress), hypothesis (unverified interpretation), and next_action. "
+            "If observed behavior and source support a fix, name the specific edit to make now. "
+            "Otherwise identify one missing fact and a narrow source range or reproduction to obtain it. "
+            "Do not restart broad investigation or consult guessed upstream history. Passing existing "
+            "tests does not override a reproduced failure of the user's requirements. Keep all other "
+            "requirements unchanged. No edit has been made, so do not claim completion."
+        )
+        boundary = max(event["step"] for event in state.events if event["event_type"] in (
+            "user_message", "workspace_patch", "workspace_restored",
+        ))
+        paths = {path.removeprefix("/workspace/") for path in active.get("files", [])}
+        seen, available = set(), 4000
+        for turn in reversed(state.turns[boundary:]):
+            calls = {call.call_id: call for call in turn.response.tool_calls}
+            for result, _ in reversed(turn.observations):
+                call = calls[result.call_id]
+                if call.name not in ("read_file", "read_file_range") or result.status != "completed":
+                    continue
+                path = call.arguments["path"].removeprefix("/workspace/")
+                location = (path, call.arguments.get("start_line"), call.arguments.get("end_line"))
+                if location in seen or paths and path not in paths or len(sources) == 2:
+                    continue
+                seen.add(location)
+                text = result.output
+                limit = min(2000, available)
+                if len(text) > limit:
+                    text = text[:limit].rsplit("\n", 1)[0]
+                available -= len(text)
+                sources.append(f"{path}, saved call {result.call_id}, arguments {call.arguments} (excerpt only):\n{text}")
     return [
-        {"role": "system", "content": (
-            "Review only the current requirement after project checks. Return only JSON with status "
-            "(in_progress or completed), hypothesis (unverified interpretation), and next_action "
-            "(one concrete next step). Existing project checks passing alone do not prove the requested "
-            "behavior. Mark completed only when actual edits and focused behavioral evidence address "
-            "this requirement. Otherwise select a focused reproduction or supported edit, not another "
-            "broad inspection. Keep other requirements unchanged. Avoid extending to unrelated edge "
-            "cases unless the observed patch caused a regression. This is a plan update, not a final answer."
-        )},
+        {"role": "system", "content": instruction},
         *[{"role": "system", "content": f"{source['kind']} instructions from {source['path']}:\n{source['content']}"}
           for source in state.context_sources],
         {"role": "system", "content": "Current requirement: " + str(active)
          + "\nObserved actions:\n" + state.task_summary(include_source=False)
          + "\nCurrent patch checks: " + str([{key: check[key] for key in ("command", "status", "exit_code")}
                                                for check in state.project_checks])
-         + "\nLatest working notes (unverified):\n" + notes[-1200:]},
+         + "\nLatest working notes (unverified):\n" + notes[-1200:]
+         + ("\nObserved source excerpts (remaining lines available via read_tool_output):\n"
+            + "\n".join(sources) if before_edit else "")},
         {"role": "user", "content": task},
     ]

@@ -1,0 +1,20 @@
+{
+  "mode": "One focused scripted integration using existing live traces; no model or Docker calls.",
+  "first_action_review_step": 9,
+  "review_message_bytes": 9074,
+  "ordinary_message_bytes_at_checkpoint": 28908,
+  "observed_source_excerpt_included": true,
+  "budget_and_steps_counted": true,
+  "only_one_accepted_action_review": true,
+  "full_work_tools_retained": true,
+  "other_requirements_preserved": true,
+  "completion_without_edits_rejected": true,
+  "interrupted_request_reissued_as_review": true,
+  "saved_reply_reused_without_model_call": true,
+  "service_retry_stays_in_review_phase": true,
+  "unknown_service_usage_preserved": true,
+  "post_check_progress_preserved": true,
+  "replay_consistent": true,
+  "latest_runtime_live_retested": false,
+  "restored_source_requires_fresh_observation": true
+}

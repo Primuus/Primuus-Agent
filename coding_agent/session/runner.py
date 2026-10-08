@@ -8,7 +8,7 @@ from time import monotonic, sleep
 from coding_agent.contracts import ToolCall, ToolResult, VerificationResult
 from coding_agent.models.base import ModelBackend, ModelServiceError
 from coding_agent.session.context import build_context, build_final_context, build_planning_context, build_progress_context
-from coding_agent.session.planning import apply_progress, parse_initial_plan
+from coding_agent.session.planning import PLAN_PHASES, apply_progress, parse_initial_plan
 from coding_agent.session.recovery import (
     RecoveryPolicy, action_signature, alternative_guidance, failure_category,
 )
@@ -71,7 +71,7 @@ class SessionRunner:
 
     def _request_phase(self, state: SessionState) -> str:
         return next((event["data"]["phase"] for event in reversed(state.events)
-                     if event["event_type"] == "model_request"), "work")
+                     if event["event_type"] == "model_request" and event["step"] == state.steps), "work")
 
     def _remind_repeated_reads(self, state: SessionState) -> None:
         recent = []
@@ -148,6 +148,9 @@ class SessionRunner:
         elif self.budget_guidance and self._progress_due(state):
             messages, tools, phase = build_progress_context(state), [], "plan_progress"
             output_limit = min(output_limit, 1536)
+        elif self.budget_guidance and self._action_due(state):
+            messages, tools, phase = build_progress_context(state, before_edit=True), [], "plan_action"
+            output_limit = min(output_limit, 1536)
         estimate, size = self._estimate_input(state, messages, tools)
         ready = (bool(state.project_checks) and state.project_check_patch_sha256 is not None
                  and all(check["status"] == "completed" and check["exit_code"] == 0 for check in state.project_checks)
@@ -194,12 +197,41 @@ class SessionRunner:
                        if event["event_type"] == "plan_updated"), default=-1)
         return checked is not None and checked["step"] > updated
 
+    def _action_due(self, state: SessionState) -> bool:
+        if (self.max_tokens is None or state.known_tokens < self.max_tokens / 3
+            or state.workspace_patch.get("changed_paths")
+            or not any(item["status"] == "in_progress" for item in state.plan)):
+            return False
+        task_step = next(event["step"] for event in reversed(state.events)
+                         if event["event_type"] == "user_message")
+        action_steps = {event["step"] for event in state.events
+                        if event["event_type"] == "model_request" and event["data"]["phase"] == "plan_action"}
+        if any(event["event_type"] == "plan_updated" and event["step"] in action_steps
+               and event["step"] > task_step for event in state.events):
+            return False
+        active = next(item for item in state.plan if item["status"] == "in_progress")
+        paths = {path.removeprefix("/workspace/") for path in active.get("files", [])}
+        source_step = max(event["step"] for event in state.events if event["event_type"] in (
+            "user_message", "workspace_patch", "workspace_restored",
+        ))
+        for turn in state.turns[source_step:]:
+            calls = {call.call_id: call for call in turn.response.tool_calls}
+            if any(result.status == "completed"
+                   and calls[result.call_id].name in ("read_file", "read_file_range")
+                   and (not paths or calls[result.call_id].arguments["path"].removeprefix("/workspace/") in paths)
+                   for result, _ in turn.observations):
+                return True
+        return False
+
     def _accept_plan(self, state: SessionState, phase: str = "plan") -> bool:
         try:
             content = state.turns[-1].response.final_message
             if content is None:
                 raise ValueError("Planning requires a JSON response without tool calls")
-            items = apply_progress(state.plan, content) if phase == "plan_progress" else parse_initial_plan(content)
+            items = parse_initial_plan(content) if phase == "plan" else apply_progress(state.plan, content)
+            if phase == "plan_action" and any(item["status"] != previous["status"]
+                                              for item, previous in zip(items, state.plan)):
+                raise ValueError("An action review without edits must keep the current requirement in_progress")
         except ValueError as error:
             state.record_failure("planning", {"message": str(error)})
             state.finish("invalid_model_action")
@@ -223,14 +255,14 @@ class SessionRunner:
         if (spec.instructions is None and state.turns and self._request_phase(state) == "plan"
             and not state.plan and not self._accept_plan(state)):
             return state
-        if (spec.instructions is None and state.turns and self._request_phase(state) == "plan_progress"
+        if (spec.instructions is None and state.turns and self._request_phase(state) in ("plan_progress", "plan_action")
             and not any(event["event_type"] == "plan_updated" and event["step"] == state.steps
                         for event in state.events)
-            and not self._accept_plan(state, "plan_progress")):
+            and not self._accept_plan(state, self._request_phase(state))):
             return state
         if (spec.instructions is None and self.verify is not None and state.turns
             and not state.turns[-1].response.tool_calls
-            and self._request_phase(state) not in ("edit", "plan", "plan_progress", "budget_report", "step_report")):
+            and self._request_phase(state) not in (*PLAN_PHASES, "edit", "budget_report", "step_report")):
             if not state.plan_complete:
                 state.finish("final_unverified")
                 return state
@@ -306,8 +338,8 @@ class SessionRunner:
                     sleep(min(0.5 * 2 ** (model_attempt - 1),
                               max(0, self.timeout_seconds - (monotonic() - started))))
             turn = state.add_turn(response, int((monotonic() - model_started) * 1000),
-                                  include_in_conversation=phase not in ("plan", "plan_progress"))
-            if phase in ("plan", "plan_progress"):
+                                  include_in_conversation=phase not in PLAN_PHASES)
+            if phase in PLAN_PHASES:
                 if not self._accept_plan(state, phase):
                     return state
                 continue

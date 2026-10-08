@@ -2,8 +2,10 @@
   "temporary_driver_deleted": true,
   "temporary_workspaces_remaining": [],
   "credential_pattern_scan": {
-    "files_checked": 11,
+    "files_checked": 13,
     "matches": 0
   },
-  "permanent_test_scripts_added": false
+  "permanent_test_scripts_added": false,
+  "temporary_action_review_driver_deleted": true,
+  "test_containers_remaining": []
 }

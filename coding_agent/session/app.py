@@ -16,7 +16,7 @@ from coding_agent.session.hooks import HookExecutor
 from coding_agent.session.mcp import MCPBridge
 from coding_agent.session.memory import MemoryStore
 from coding_agent.session.permissions import PermissionExecutor, WRITE_TOOLS
-from coding_agent.session.planning import validate_plan
+from coding_agent.session.planning import PLAN_PHASES, validate_plan
 from coding_agent.session.recovery import RecoveryPolicy, failure_category
 from coding_agent.session.repository import RepositoryWorkspace
 from coding_agent.session.runner import SessionRunner
@@ -150,7 +150,7 @@ class RepositorySession:
         if (instruction is None and self.state.stop_reason in (None, "paused")
             and self.state.turns and not self.state.turns[-1].response.tool_calls
             and last_model >= last_user and not checks
-            and last_phase not in ("plan", "plan_progress")
+            and last_phase not in PLAN_PHASES
             and self.state.plan_complete
             and (self.state.turns[-1].verification is None
                  or self.state.turns[-1].verification.passed)):
