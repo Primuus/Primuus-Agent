@@ -1,0 +1,31 @@
+{
+  "task": "real_010",
+  "runtime_commit": "36204ba90538cb03e47c89be07395783b41af6c4",
+  "session_id": "5f265b2d4b28",
+  "fixture_tree": "d90cb092a448ae03c271ca7062350345c98f98c2",
+  "passed": false,
+  "stop_reason": "max_steps",
+  "steps": 80,
+  "tool_calls": 67,
+  "failed_tool_calls": 7,
+  "tokens": 547391,
+  "known_input_tokens": 517452,
+  "known_output_tokens": 29939,
+  "first_target_edit_step": 24,
+  "input_to_first_edit": 153805,
+  "changed_paths": [
+    "boltons/listutils.py"
+  ],
+  "plan_complete": false,
+  "current_checks_passed": false,
+  "independent_verifier_passed": false,
+  "replay_consistent": true,
+  "service_errors": 0,
+  "plan_updates": 12,
+  "action_review_requests": 5,
+  "progress_review_requests": 6,
+  "actual_check_batches": 6,
+  "check_cache_reuses": 0,
+  "active_seconds": 206.923,
+  "record": "experiments/2026-10-09-s-convergence/live/records/real_010"
+}

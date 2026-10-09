@@ -1,0 +1,14 @@
+{
+  "source_trace": "experiments/2026-10-09-s-convergence/live/records/real_010/trace.jsonl",
+  "handoff_review_due_at_step": 62,
+  "review_deduplicated": true,
+  "later_window_without_active_source_read": true,
+  "passed_barrel_behavior_in_review_and_final_context": true,
+  "indexed_order_and_compaction_observations_retained": true,
+  "all_six_edit_refs_retained": true,
+  "step_60_reproducer_also_fails_on_builtin_list": "pop from empty list",
+  "automatic_rollback_invalidates_checks_and_proofs": true,
+  "replay_consistent": true,
+  "live_model_calls": 0,
+  "latest_changes_live_retested": false
+}

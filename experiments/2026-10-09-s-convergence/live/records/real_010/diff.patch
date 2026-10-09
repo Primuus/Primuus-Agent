@@ -1,0 +1,128 @@
+diff --git a/boltons/listutils.py b/boltons/listutils.py
+index d05d09d..34ed6e2 100644
+--- a/boltons/listutils.py
++++ b/boltons/listutils.py
+@@ -108,6 +108,8 @@ class BarrelList(list):
+     def _translate_index(self, index):
+         if index < 0:
+             index += len(self)
++        if index < 0 or index >= len(self):
++            return None, None
+         rel_idx, lists = index, self.lists
+         for list_idx in range(len(lists)):
+             len_list = len(lists[list_idx])
+@@ -118,6 +120,11 @@ class BarrelList(list):
+             return None, None
+         return list_idx, rel_idx
+ 
++    def _prune_lists(self):
++        "Drop empty sublists, always keeping at least one."
++        if len(self.lists) > 1:
++            self.lists[:] = [sub for sub in self.lists if sub] or [[]]
++
+     def _balance_list(self, list_idx):
+         if list_idx < 0:
+             list_idx += len(self.lists)
+@@ -136,12 +143,19 @@ class BarrelList(list):
+         if len(self.lists) == 1:
+             self.lists[0].insert(index, item)
+             self._balance_list(0)
+-        else:
+-            list_idx, rel_idx = self._translate_index(index)
+-            if list_idx is None:
+-                list_idx, rel_idx = 0, 0
+-            self.lists[list_idx].insert(rel_idx, item)
+-            self._balance_list(list_idx)
++            return
++        index = operator.index(index)
++        if index < 0:
++            index += len(self)
++            if index < 0:
++                index = 0
++        elif index >= len(self):
++            self.lists[-1].append(item)
++            self._balance_list(-1)
++            return
++        list_idx, rel_idx = self._translate_index(index)
++        self.lists[list_idx].insert(rel_idx, item)
++        self._balance_list(list_idx)
+         return
+ 
+     def append(self, item):
+@@ -156,6 +170,11 @@ class BarrelList(list):
+             return self.lists[0].pop()
+         index = a and a[0]
+         if index == () or index is None or index == -1:
++            # Empty sublists can be left behind by other operations (e.g.
++            # deleting the sole element of the tail sublist), so drop them
++            # before indexing the tail.
++            self._prune_lists()
++            lists = self.lists
+             ret = lists[-1].pop()
+             if len(lists) > 1 and not lists[-1]:
+                 lists.pop()
+@@ -165,6 +184,7 @@ class BarrelList(list):
+                 raise IndexError()
+             ret = lists[list_idx].pop(rel_idx)
+             self._balance_list(list_idx)
++            self._prune_lists()
+         return ret
+ 
+     def iter_slice(self, start, stop, step=None):
+@@ -193,15 +213,36 @@ class BarrelList(list):
+             self.lists[0][:] = new_list
+             self._balance_list(0)
+             return
++        length = len(self)
+         if start is None:
+             start = 0
++        else:
++            start = operator.index(start)
+         if stop is None:
+-            stop = len(self)
++            stop = length
++        else:
++            stop = operator.index(stop)
++        # Clamp the bounds the same way a built-in list slice would, so that
++        # out-of-range and negative bounds do not raise IndexError.
++        if start < 0:
++            start = max(start + length, 0)
++        elif start > length:
++            start = length
++        if stop < 0:
++            stop = max(stop + length, 0)
++        elif stop > length:
++            stop = length
++        if stop <= start:
++            return
+         start_list_idx, start_rel_idx = self._translate_index(start)
+-        stop_list_idx, stop_rel_idx = self._translate_index(stop)
+-        if start_list_idx is None:
+-            raise IndexError()
+-        if stop_list_idx is None:
++        if stop == length:
++            # _translate_index() treats len(self) as out of range, but a slice
++            # stop at the end is perfectly valid: it means "end of last list".
++            stop_list_idx = len(self.lists) - 1
++            stop_rel_idx = len(self.lists[-1])
++        else:
++            stop_list_idx, stop_rel_idx = self._translate_index(stop)
++        if start_list_idx is None or stop_list_idx is None:
+             raise IndexError()
+ 
+         if start_list_idx == stop_list_idx:
+@@ -209,10 +250,13 @@ class BarrelList(list):
+         elif start_list_idx < stop_list_idx:
+             del self.lists[start_list_idx + 1:stop_list_idx]
+             del self.lists[start_list_idx][start_rel_idx:]
+-            del self.lists[stop_list_idx][:stop_rel_idx]
++            # Removing the intermediate sublists collapsed the list; the
++            # original stop sublist now sits right after start_list_idx.
++            del self.lists[start_list_idx + 1][:stop_rel_idx]
+         else:
+             assert False, ('start list index should never translate to'
+                            ' greater than stop list index')
++        self._prune_lists()
+ 
+     __delslice__ = del_slice
+ 

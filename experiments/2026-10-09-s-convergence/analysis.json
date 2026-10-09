@@ -1,0 +1,78 @@
+{
+  "tested_runtime_commit": "36204ba90538cb03e47c89be07395783b41af6c4",
+  "live_attempts": 1,
+  "passed": false,
+  "stop_reason": "max_steps",
+  "known_input_tokens": 517452,
+  "known_output_tokens": 29939,
+  "total_tokens": 547391,
+  "first_edit_step": 24,
+  "formal_plan_items": 2,
+  "completed_items": 0,
+  "explicit_update_plan_calls": 0,
+  "project_check_batches": [
+    {
+      "step": 24,
+      "passed": true
+    },
+    {
+      "step": 27,
+      "passed": true
+    },
+    {
+      "step": 38,
+      "passed": true
+    },
+    {
+      "step": 42,
+      "passed": true
+    },
+    {
+      "step": 48,
+      "passed": true
+    },
+    {
+      "step": 58,
+      "passed": true
+    }
+  ],
+  "barrel_behavior_passed_step": 61,
+  "indexed_order_and_index_observations_passed_step": 67,
+  "compaction_observation_step": 70,
+  "compaction_case_size": 20000,
+  "difference_compactions": 25,
+  "intersection_compactions": 17,
+  "independent_verifier": {
+    "passed": false,
+    "failed_assertion": "len(compactions) <= 1",
+    "stdin_line": 49
+  },
+  "gaps": [
+    {
+      "name": "Unrecorded requirement transition",
+      "evidence": "At step 62 work changed from listutils to setutils, while the plan remained on BarrelList. Action review required a fresh read of the active file after step 58, preventing later reviews."
+    },
+    {
+      "name": "Stale hypotheses and omitted behavior observations",
+      "evidence": "Review at step 55 reused an older failure after step 52 passed. Final report omitted the passing step 61 boundary/empty-tail script and step 70 compaction counts."
+    },
+    {
+      "name": "Faulty behavioral reproduction",
+      "evidence": "Step 60 exhausted n=1 before its final pop assertions. Replacing the implementation with built-in list produces the same IndexError."
+    }
+  ],
+  "followup_fixes": [
+    "Review pending-file work before plan transition; periodic investigation review no longer needs a fresh active-file read.",
+    "Include recent executed shell commands, outputs, source-patch and restore timing in reviews and final context.",
+    "Retain all six current edit references in final context; keep working edit excerpts bounded.",
+    "Record automatic rollback to invalidate checks and behavior references; defer model guidance until tool replies complete."
+  ],
+  "followup_evidence": "focused-handoff-evidence.json",
+  "followup_live_retested": false,
+  "comparison": {
+    "previous_input_tokens": 623118,
+    "previous_total_tokens": 657409,
+    "note": "Single samples; task still failed, so lower token consumption does not establish improved cost per completed task."
+  },
+  "status": "S remains unaccepted; no expanded task set or additional real-model run."
+}

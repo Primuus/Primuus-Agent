@@ -219,19 +219,17 @@ class SessionRunner:
         tokens = sum((turn.response.input_tokens or 0) + (turn.response.output_tokens or 0) for turn in turns)
         repeated = any(event["event_type"] == "investigation_stalled" and event["step"] > boundary
                        for event in state.events)
-        if (work_steps < self.action_review_after_steps and tokens < self.action_review_after_tokens
-            and not repeated):
-            return False
         active = next(item for item in state.plan if item["status"] == "in_progress")
         paths = {path.removeprefix("/workspace/") for path in active.get("files", [])}
-        for turn in state.turns[source_step:]:
-            calls = {call.call_id: call for call in turn.response.tool_calls}
-            if any(result.status == "completed"
-                   and calls[result.call_id].name in ("read_file", "read_file_range")
-                   and (not paths or calls[result.call_id].arguments["path"].removeprefix("/workspace/") in paths)
-                   for result, _ in turn.observations):
-                return True
-        return False
+        pending_paths = {path.removeprefix("/workspace/") for item in state.plan
+                         if item["status"] == "pending" for path in item.get("files", [])} - paths
+        switched_files = paths and reviewed_step <= source_step and any(
+            call.name in ("read_file", "read_file_range", "write_file", "edit_file")
+            and call.arguments["path"].removeprefix("/workspace/") in pending_paths
+            for turn in turns for call in turn.response.tool_calls
+        )
+        return (work_steps >= self.action_review_after_steps or tokens >= self.action_review_after_tokens
+                or repeated or bool(switched_files))
 
     def _accept_plan(self, state: SessionState, phase: str = "plan") -> bool:
         try:
@@ -456,6 +454,7 @@ class SessionRunner:
                     if (self.recovery.enabled and checkpoint is not None
                         and self.rollback is not None and category in ("tool", "build", "test")):
                         self.rollback(checkpoint)
+                        state.record_restore(checkpoint, include_in_conversation=False)
                         state.emit("recovery_action", {
                             "kind": "snapshot_rollback", "commit": checkpoint,
                             "tool": call.name,

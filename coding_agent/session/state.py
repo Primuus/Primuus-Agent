@@ -300,15 +300,16 @@ class SessionState:
         self.emit("snapshot_created", snapshot)
         self.snapshots.append(snapshot)
 
-    def record_restore(self, commit: str) -> None:
-        self.emit("workspace_restored", {"commit": commit})
+    def record_restore(self, commit: str, *, include_in_conversation: bool = True) -> None:
+        self.emit("workspace_restored", {"commit": commit, "include_in_conversation": include_in_conversation})
         self._clear_project_checks()
         self.workspace_patch = {}
         self.continuation = {}
-        self.messages.append({
-            "role": "system",
-            "content": f"Workspace restored to snapshot {commit}. Re-inspect files before editing.",
-        })
+        if include_in_conversation:
+            self.messages.append({
+                "role": "system",
+                "content": f"Workspace restored to snapshot {commit}. Re-inspect files before editing.",
+            })
 
     def read_tool_output(self, call: ToolCall) -> ToolResult:
         args = call.arguments
@@ -426,6 +427,44 @@ class SessionState:
             return {}
         return {"step": notes_step, "working_notes": notes, "source_snapshots": snapshots}
 
+    def recent_shell_evidence(self, limit: int = 6) -> str:
+        """Bounded executed commands and outputs, independent of model plan claims."""
+        started, records = {}, []
+        patch = None
+        restored = max((index for index, event in enumerate(self.events)
+                        if event["event_type"] in ("user_message", "workspace_restored")
+                        or event["event_type"] == "recovery_action"
+                        and event["data"]["kind"] == "snapshot_rollback"), default=-1)
+        task = max((index for index, event in enumerate(self.events)
+                    if event["event_type"] == "user_message"), default=-1)
+        for index, event in enumerate(self.events):
+            kind, data = event["event_type"], event["data"]
+            if kind == "workspace_patch":
+                patch = data["sha256"]
+            elif kind == "tool_started" and data["name"] == "run_shell":
+                started[data["call_id"]] = (index, event["step"], data["arguments"]["command"], patch)
+            elif (kind == "tool_result" and data["name"] == "run_shell" and index > task
+                  and data["call_id"] in started):
+                source_index, step, command, source_patch = started[data["call_id"]]
+                relation = ("same source patch" if source_patch is not None
+                            and source_patch == self.workspace_patch.get("sha256")
+                            else "earlier or unrecorded source patch")
+                if source_index <= restored:
+                    relation += ", before latest task/restore"
+                text = command if len(command) <= 1200 else command[:900] + "\n[command excerpt]\n" + command[-200:]
+                records.append(
+                    f"Shell call {data['call_id']} at step {step} ({relation}): "
+                    f"{data['status']}, exit={data['exit_code']}\nCommand:\n{text}\n"
+                    f"Observed output:\n{data['output'][-400:]}\nObserved error:\n{(data['error'] or '')[-400:]}"
+                )
+        selected, size = [], 0
+        for record in reversed(records[-limit:]):
+            if size + len(record) > 6000:
+                break
+            selected.append(record)
+            size += len(record)
+        return "\n\n".join(reversed(selected)) or "No executed Shell commands for this task."
+
     def task_summary(self, retained: list[dict[str, Any]] | None = None, *, include_source: bool = True,
                      active_only: bool = False) -> str:
         """Retain action evidence and source references; label agent intent as unverified."""
@@ -437,6 +476,8 @@ class SessionState:
                              if event["event_type"] == "workspace_restored"
                              or event["event_type"] == "recovery_action"
                              and event["data"]["kind"] == "snapshot_rollback"), default=-1)
+        patch_step = max((event["step"] for event in self.events
+                          if event["event_type"] == "workspace_patch"), default=0)
         active_paths = {path.removeprefix("/workspace/") for item in self.plan
                         if item["status"] == "in_progress" for path in item.get("files", [])}
         requirement_step = self.requirement_started_step if active_only else task_step
@@ -486,7 +527,8 @@ class SessionState:
                 ):
                     continue
                 if not passed:
-                    failures[result.call_id] = f"{call.name} {args.get('path', '')} (call {result.call_id}): {result.status}, exit={result.exit_code}; {(result.error or result.output)[:250]}"
+                    relation = "before latest patch observation" if step < patch_step else "at/after latest patch observation"
+                    failures[result.call_id] = f"{call.name} {args.get('path', '')} at step {step} ({relation}, call {result.call_id}): {result.status}, exit={result.exit_code}; {(result.error or result.output)[:250]}"
                 elif call.name in ("read_file", "read_file_range"):
                     if result.call_id in retained_ids:
                         continue
@@ -503,7 +545,8 @@ class SessionState:
                 elif call.name == "run_shell":
                     command = args["command"]
                     commands.pop(command, None)
-                    commands[command] = f"Ran {command[:160]} (call {result.call_id}): exit={result.exit_code}\n{result.output[-300:]}"
+                    relation = "before latest patch observation" if step < patch_step else "at/after latest patch observation"
+                    commands[command] = f"Ran {command[:160]} at step {step} ({relation}, call {result.call_id}): exit={result.exit_code}\n{result.output[-300:]}"
         target_paths = {path.removeprefix('/workspace/') for item in self.plan for path in item.get('files', [])}
         recent_sources = [(location, source) for location, source in sources.items()
                           if source[1] > edited_at.get(source[0], -1)]
@@ -516,10 +559,11 @@ class SessionState:
             source_lines.append(reference)
         behavior_evidence = [behaviors[reference] for item in self.plan for reference in item.get("evidence", [])
                              if reference in behaviors] if not active_only else []
+        edit_limit = 4 if active_only else 8
         sections = ["Current workspace changed paths: " + str(self.workspace_patch.get("changed_paths", "not recorded")),
                     "Observed edit actions since the latest restore (historical excerpts, not a complete current diff):",
                     *[f"{path}: {len(records)} successful edit actions.\n" + "\n".join(
-                        records if len(records) <= 4 else [records[0], *records[-3:]]
+                        records if len(records) <= edit_limit else [records[0], *records[-(edit_limit - 1):]]
                     ) for path, records in changes.items()],
                     *([] if changes else ["No successful edit recorded since the latest restore."]),
                     *([
@@ -649,10 +693,11 @@ class SessionState:
                 state.workspace_patch = {}
                 state.continuation = {}
                 pending_checks = []
-                state.messages.append({
-                    "role": "system",
-                    "content": f"Workspace restored to snapshot {data['commit']}. Re-inspect files before editing.",
-                })
+                if data.get("include_in_conversation", True):
+                    state.messages.append({
+                        "role": "system",
+                        "content": f"Workspace restored to snapshot {data['commit']}. Re-inspect files before editing.",
+                    })
             elif kind == "task_finished":
                 state.stop_reason = data["stop_reason"]
         return state

@@ -145,6 +145,9 @@ def build_final_context(state: SessionState) -> list[dict[str, Any]]:
             "Give a brief final report using the observed actions below. Compare each user requirement "
             "with the actual changes. List changes, check results, and unfinished or unverified work. "
             "Existing checks passing does not establish that the requested behavior was fixed. "
+            "Compare command inputs, outputs, and their source-patch/restore timing. A failed script "
+            "may contain a faulty setup; its exit status alone does not establish a target-code defect. "
+            "No source edit does not establish that a requirement was never investigated or checked. "
             "Do not call tools or claim edits without evidence."
         )},
         {"role": "user", "content": task},
@@ -153,6 +156,8 @@ def build_final_context(state: SessionState) -> list[dict[str, Any]]:
             + "\n" + _plan_context(state)
             + "\nCurrent patch checks:\n" + checks
         )},
+        {"role": "system", "content": "Executed recent Shell evidence (historical, not current project checks):\n"
+         + state.recent_shell_evidence()},
     ]
 
 
@@ -177,13 +182,16 @@ def build_progress_context(state: SessionState, *, before_edit: bool = False) ->
     if before_edit:
         instruction = (
             "The current requirement has spent several work turns investigating without a new patch, "
-            "or repeated already observed source reads. Review only the current "
+            "repeated already observed source reads, or work has moved to a pending file without a plan update. "
+            "Review only the current "
             "requirement and choose the next concrete action. Return only JSON with status "
             "(must be in_progress), hypothesis (unverified interpretation), and next_action. "
             "If observed behavior and source support a fix, name the specific edit to make now. "
             "Otherwise identify one missing fact and a narrow source range or reproduction to obtain it. "
             "If focused observations already show the implementation meets this requirement, choose "
             "update_plan with those observations to complete it and select the next requirement. "
+            "Reconcile work on a pending requirement with the plan before continuing that work. "
+            "Compare recent successful behavior checks with old failures using command inputs and patch timing. "
             "Do not restart broad investigation or consult guessed upstream history. Passing existing "
             "tests does not override a reproduced failure of the user's requirements. Keep all other "
             "requirements unchanged. This action review must keep the current status in_progress."
@@ -224,4 +232,6 @@ def build_progress_context(state: SessionState, *, before_edit: bool = False) ->
          + ("\nObserved source excerpts (remaining lines available via read_tool_output):\n"
             + "\n".join(sources) if before_edit else "")},
         {"role": "user", "content": task},
+        {"role": "system", "content": "Executed recent Shell evidence (historical, not current project checks):\n"
+         + state.recent_shell_evidence()},
     ]

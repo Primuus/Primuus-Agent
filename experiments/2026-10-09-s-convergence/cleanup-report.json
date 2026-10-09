@@ -1,0 +1,10 @@
+{
+  "temporary_scripts_remaining": [],
+  "temporary_workspaces_remaining": [],
+  "agent_containers_remaining": [],
+  "credential_like_artifact_files": [],
+  "scanned_artifact_files": 16,
+  "real_model_attempts": 1,
+  "latest_followup_real_model_attempts": 0,
+  "production_depends_on_temporary_scripts": false
+}

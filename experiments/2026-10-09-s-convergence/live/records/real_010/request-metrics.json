@@ -1,0 +1,722 @@
+[
+  {
+    "phase": "plan",
+    "input_bytes": 1644,
+    "estimated_input_tokens": 987,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 1848,
+    "remaining_tokens": null,
+    "step": 1
+  },
+  {
+    "phase": "work",
+    "input_bytes": 8008,
+    "estimated_input_tokens": 4805,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 2371,
+    "remaining_tokens": null,
+    "step": 2
+  },
+  {
+    "phase": "work",
+    "input_bytes": 12780,
+    "estimated_input_tokens": 7668,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 2416,
+    "remaining_tokens": null,
+    "step": 3
+  },
+  {
+    "phase": "work",
+    "input_bytes": 13317,
+    "estimated_input_tokens": 7991,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 2416,
+    "remaining_tokens": null,
+    "step": 4
+  },
+  {
+    "phase": "work",
+    "input_bytes": 22835,
+    "estimated_input_tokens": 13702,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 2469,
+    "remaining_tokens": null,
+    "step": 5
+  },
+  {
+    "phase": "work",
+    "input_bytes": 23449,
+    "estimated_input_tokens": 14070,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 2520,
+    "remaining_tokens": null,
+    "step": 6
+  },
+  {
+    "phase": "plan_action",
+    "input_bytes": 7537,
+    "estimated_input_tokens": 4523,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 2571,
+    "remaining_tokens": null,
+    "step": 7
+  },
+  {
+    "phase": "work",
+    "input_bytes": 29527,
+    "estimated_input_tokens": 17717,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 2643,
+    "remaining_tokens": null,
+    "step": 8
+  },
+  {
+    "phase": "work",
+    "input_bytes": 30092,
+    "estimated_input_tokens": 18056,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 2942,
+    "remaining_tokens": null,
+    "step": 9
+  },
+  {
+    "phase": "work",
+    "input_bytes": 31406,
+    "estimated_input_tokens": 18844,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3194,
+    "remaining_tokens": null,
+    "step": 10
+  },
+  {
+    "phase": "work",
+    "input_bytes": 23865,
+    "estimated_input_tokens": 14320,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3158,
+    "remaining_tokens": null,
+    "step": 11
+  },
+  {
+    "phase": "work",
+    "input_bytes": 27504,
+    "estimated_input_tokens": 16503,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3208,
+    "remaining_tokens": null,
+    "step": 12
+  },
+  {
+    "phase": "work",
+    "input_bytes": 30372,
+    "estimated_input_tokens": 18224,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3178,
+    "remaining_tokens": null,
+    "step": 13
+  },
+  {
+    "phase": "plan_action",
+    "input_bytes": 8895,
+    "estimated_input_tokens": 5338,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 3212,
+    "remaining_tokens": null,
+    "step": 14
+  },
+  {
+    "phase": "work",
+    "input_bytes": 32182,
+    "estimated_input_tokens": 19310,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3273,
+    "remaining_tokens": null,
+    "step": 15
+  },
+  {
+    "phase": "work",
+    "input_bytes": 31641,
+    "estimated_input_tokens": 18986,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3325,
+    "remaining_tokens": null,
+    "step": 16
+  },
+  {
+    "phase": "work",
+    "input_bytes": 36435,
+    "estimated_input_tokens": 21862,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3325,
+    "remaining_tokens": null,
+    "step": 17
+  },
+  {
+    "phase": "work",
+    "input_bytes": 38224,
+    "estimated_input_tokens": 22935,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3385,
+    "remaining_tokens": null,
+    "step": 18
+  },
+  {
+    "phase": "work",
+    "input_bytes": 31092,
+    "estimated_input_tokens": 18656,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3526,
+    "remaining_tokens": null,
+    "step": 19
+  },
+  {
+    "phase": "plan_action",
+    "input_bytes": 10460,
+    "estimated_input_tokens": 6276,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 3727,
+    "remaining_tokens": null,
+    "step": 20
+  },
+  {
+    "phase": "work",
+    "input_bytes": 34796,
+    "estimated_input_tokens": 20878,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3666,
+    "remaining_tokens": null,
+    "step": 21
+  },
+  {
+    "phase": "work",
+    "input_bytes": 26350,
+    "estimated_input_tokens": 15810,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3670,
+    "remaining_tokens": null,
+    "step": 22
+  },
+  {
+    "phase": "work",
+    "input_bytes": 28235,
+    "estimated_input_tokens": 16942,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3669,
+    "remaining_tokens": null,
+    "step": 23
+  },
+  {
+    "phase": "work",
+    "input_bytes": 34747,
+    "estimated_input_tokens": 20849,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3668,
+    "remaining_tokens": null,
+    "step": 24
+  },
+  {
+    "phase": "plan_progress",
+    "input_bytes": 4865,
+    "estimated_input_tokens": 2920,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 3864,
+    "remaining_tokens": null,
+    "step": 25
+  },
+  {
+    "phase": "work",
+    "input_bytes": 31343,
+    "estimated_input_tokens": 18807,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3856,
+    "remaining_tokens": null,
+    "step": 26
+  },
+  {
+    "phase": "work",
+    "input_bytes": 34086,
+    "estimated_input_tokens": 20452,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3907,
+    "remaining_tokens": null,
+    "step": 27
+  },
+  {
+    "phase": "plan_progress",
+    "input_bytes": 5132,
+    "estimated_input_tokens": 3080,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 4088,
+    "remaining_tokens": null,
+    "step": 28
+  },
+  {
+    "phase": "work",
+    "input_bytes": 19201,
+    "estimated_input_tokens": 11522,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4056,
+    "remaining_tokens": null,
+    "step": 29
+  },
+  {
+    "phase": "work",
+    "input_bytes": 21345,
+    "estimated_input_tokens": 12808,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4105,
+    "remaining_tokens": null,
+    "step": 30
+  },
+  {
+    "phase": "work",
+    "input_bytes": 22401,
+    "estimated_input_tokens": 13442,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4156,
+    "remaining_tokens": null,
+    "step": 31
+  },
+  {
+    "phase": "work",
+    "input_bytes": 25390,
+    "estimated_input_tokens": 15234,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4207,
+    "remaining_tokens": null,
+    "step": 32
+  },
+  {
+    "phase": "work",
+    "input_bytes": 28735,
+    "estimated_input_tokens": 17242,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4071,
+    "remaining_tokens": null,
+    "step": 33
+  },
+  {
+    "phase": "work",
+    "input_bytes": 29669,
+    "estimated_input_tokens": 17802,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 3973,
+    "remaining_tokens": null,
+    "step": 34
+  },
+  {
+    "phase": "plan_action",
+    "input_bytes": 9007,
+    "estimated_input_tokens": 5405,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 3980,
+    "remaining_tokens": null,
+    "step": 35
+  },
+  {
+    "phase": "work",
+    "input_bytes": 31451,
+    "estimated_input_tokens": 18872,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4005,
+    "remaining_tokens": null,
+    "step": 36
+  },
+  {
+    "phase": "work",
+    "input_bytes": 24962,
+    "estimated_input_tokens": 14978,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4056,
+    "remaining_tokens": null,
+    "step": 37
+  },
+  {
+    "phase": "work",
+    "input_bytes": 29516,
+    "estimated_input_tokens": 17710,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4107,
+    "remaining_tokens": null,
+    "step": 38
+  },
+  {
+    "phase": "plan_progress",
+    "input_bytes": 6274,
+    "estimated_input_tokens": 3765,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 4234,
+    "remaining_tokens": null,
+    "step": 39
+  },
+  {
+    "phase": "work",
+    "input_bytes": 33833,
+    "estimated_input_tokens": 20301,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4263,
+    "remaining_tokens": null,
+    "step": 40
+  },
+  {
+    "phase": "work",
+    "input_bytes": 34450,
+    "estimated_input_tokens": 20670,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4263,
+    "remaining_tokens": null,
+    "step": 41
+  },
+  {
+    "phase": "work",
+    "input_bytes": 26691,
+    "estimated_input_tokens": 16016,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4314,
+    "remaining_tokens": null,
+    "step": 42
+  },
+  {
+    "phase": "plan_progress",
+    "input_bytes": 5492,
+    "estimated_input_tokens": 3296,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 4426,
+    "remaining_tokens": null,
+    "step": 43
+  },
+  {
+    "phase": "work",
+    "input_bytes": 28004,
+    "estimated_input_tokens": 16803,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4431,
+    "remaining_tokens": null,
+    "step": 44
+  },
+  {
+    "phase": "work",
+    "input_bytes": 30385,
+    "estimated_input_tokens": 18232,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4299,
+    "remaining_tokens": null,
+    "step": 45
+  },
+  {
+    "phase": "work",
+    "input_bytes": 32871,
+    "estimated_input_tokens": 19724,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4204,
+    "remaining_tokens": null,
+    "step": 46
+  },
+  {
+    "phase": "work",
+    "input_bytes": 19961,
+    "estimated_input_tokens": 11978,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4299,
+    "remaining_tokens": null,
+    "step": 47
+  },
+  {
+    "phase": "work",
+    "input_bytes": 27299,
+    "estimated_input_tokens": 16380,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4306,
+    "remaining_tokens": null,
+    "step": 48
+  },
+  {
+    "phase": "plan_progress",
+    "input_bytes": 6539,
+    "estimated_input_tokens": 3924,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 4345,
+    "remaining_tokens": null,
+    "step": 49
+  },
+  {
+    "phase": "work",
+    "input_bytes": 27708,
+    "estimated_input_tokens": 16625,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4293,
+    "remaining_tokens": null,
+    "step": 50
+  },
+  {
+    "phase": "work",
+    "input_bytes": 29911,
+    "estimated_input_tokens": 17948,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4345,
+    "remaining_tokens": null,
+    "step": 51
+  },
+  {
+    "phase": "work",
+    "input_bytes": 32615,
+    "estimated_input_tokens": 19570,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4395,
+    "remaining_tokens": null,
+    "step": 52
+  },
+  {
+    "phase": "work",
+    "input_bytes": 22208,
+    "estimated_input_tokens": 13325,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4333,
+    "remaining_tokens": null,
+    "step": 53
+  },
+  {
+    "phase": "work",
+    "input_bytes": 26381,
+    "estimated_input_tokens": 15830,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4384,
+    "remaining_tokens": null,
+    "step": 54
+  },
+  {
+    "phase": "plan_action",
+    "input_bytes": 9969,
+    "estimated_input_tokens": 5982,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 4435,
+    "remaining_tokens": null,
+    "step": 55
+  },
+  {
+    "phase": "work",
+    "input_bytes": 29072,
+    "estimated_input_tokens": 17444,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4606,
+    "remaining_tokens": null,
+    "step": 56
+  },
+  {
+    "phase": "work",
+    "input_bytes": 30803,
+    "estimated_input_tokens": 18483,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4630,
+    "remaining_tokens": null,
+    "step": 57
+  },
+  {
+    "phase": "work",
+    "input_bytes": 33331,
+    "estimated_input_tokens": 20000,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4634,
+    "remaining_tokens": null,
+    "step": 58
+  },
+  {
+    "phase": "plan_progress",
+    "input_bytes": 6477,
+    "estimated_input_tokens": 3887,
+    "max_output_tokens": 1536,
+    "reserved_tokens": 4460,
+    "remaining_tokens": null,
+    "step": 59
+  },
+  {
+    "phase": "work",
+    "input_bytes": 20631,
+    "estimated_input_tokens": 12380,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4422,
+    "remaining_tokens": null,
+    "step": 60
+  },
+  {
+    "phase": "work",
+    "input_bytes": 22937,
+    "estimated_input_tokens": 13763,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4435,
+    "remaining_tokens": null,
+    "step": 61
+  },
+  {
+    "phase": "work",
+    "input_bytes": 25336,
+    "estimated_input_tokens": 15202,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4464,
+    "remaining_tokens": null,
+    "step": 62
+  },
+  {
+    "phase": "work",
+    "input_bytes": 29705,
+    "estimated_input_tokens": 17824,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4518,
+    "remaining_tokens": null,
+    "step": 63
+  },
+  {
+    "phase": "work",
+    "input_bytes": 28825,
+    "estimated_input_tokens": 17296,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4570,
+    "remaining_tokens": null,
+    "step": 64
+  },
+  {
+    "phase": "work",
+    "input_bytes": 30603,
+    "estimated_input_tokens": 18363,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4621,
+    "remaining_tokens": null,
+    "step": 65
+  },
+  {
+    "phase": "work",
+    "input_bytes": 31484,
+    "estimated_input_tokens": 18891,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4672,
+    "remaining_tokens": null,
+    "step": 66
+  },
+  {
+    "phase": "work",
+    "input_bytes": 34093,
+    "estimated_input_tokens": 20457,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4723,
+    "remaining_tokens": null,
+    "step": 67
+  },
+  {
+    "phase": "work",
+    "input_bytes": 22867,
+    "estimated_input_tokens": 13721,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4692,
+    "remaining_tokens": null,
+    "step": 68
+  },
+  {
+    "phase": "work",
+    "input_bytes": 25576,
+    "estimated_input_tokens": 15346,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4694,
+    "remaining_tokens": null,
+    "step": 69
+  },
+  {
+    "phase": "work",
+    "input_bytes": 26748,
+    "estimated_input_tokens": 16049,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4695,
+    "remaining_tokens": null,
+    "step": 70
+  },
+  {
+    "phase": "work",
+    "input_bytes": 29343,
+    "estimated_input_tokens": 17607,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4681,
+    "remaining_tokens": null,
+    "step": 71
+  },
+  {
+    "phase": "work",
+    "input_bytes": 33985,
+    "estimated_input_tokens": 20392,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4624,
+    "remaining_tokens": null,
+    "step": 72
+  },
+  {
+    "phase": "work",
+    "input_bytes": 22591,
+    "estimated_input_tokens": 13556,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4706,
+    "remaining_tokens": null,
+    "step": 73
+  },
+  {
+    "phase": "work",
+    "input_bytes": 26688,
+    "estimated_input_tokens": 16013,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4704,
+    "remaining_tokens": null,
+    "step": 74
+  },
+  {
+    "phase": "work",
+    "input_bytes": 32594,
+    "estimated_input_tokens": 19557,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4702,
+    "remaining_tokens": null,
+    "step": 75
+  },
+  {
+    "phase": "work",
+    "input_bytes": 32255,
+    "estimated_input_tokens": 19354,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4573,
+    "remaining_tokens": null,
+    "step": 76
+  },
+  {
+    "phase": "work",
+    "input_bytes": 26995,
+    "estimated_input_tokens": 16198,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4573,
+    "remaining_tokens": null,
+    "step": 77
+  },
+  {
+    "phase": "work",
+    "input_bytes": 31726,
+    "estimated_input_tokens": 19036,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4575,
+    "remaining_tokens": null,
+    "step": 78
+  },
+  {
+    "phase": "work",
+    "input_bytes": 33898,
+    "estimated_input_tokens": 20339,
+    "max_output_tokens": 8192,
+    "reserved_tokens": 4576,
+    "remaining_tokens": null,
+    "step": 79
+  },
+  {
+    "phase": "step_report",
+    "input_bytes": 5988,
+    "estimated_input_tokens": 3593,
+    "max_output_tokens": 1024,
+    "reserved_tokens": 0,
+    "remaining_tokens": null,
+    "step": 80
+  }
+]
