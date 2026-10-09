@@ -321,6 +321,7 @@ class RepositorySession:
                     context_tool_output_chars=self.config.get("context_tool_output_chars", 4000),
                     max_output_tokens=self.config["model"].get("max_output_tokens", 8192),
                     action_review_after_tokens=self.config.get("action_review_after_tokens", 40000),
+                    action_review_after_steps=self.config.get("action_review_after_steps", 6),
                     recovery=RecoveryPolicy.from_config(self.config),
                     checkpoint=self._snapshot,
                     rollback=self.repository.restore,

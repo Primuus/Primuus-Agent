@@ -157,25 +157,31 @@ def build_progress_context(state: SessionState, *, before_edit: bool = False) ->
         "Review only the current requirement after project checks. Return only JSON with status "
         "(in_progress or completed), hypothesis (unverified interpretation), and next_action "
         "(one concrete next step). Existing project checks passing alone do not prove the requested "
-        "behavior. Mark completed only when actual edits and focused behavioral evidence address "
-        "this requirement. Otherwise select a focused reproduction or supported edit, not another "
+        "behavior. Mark completed only when focused behavioral evidence addresses this requirement. "
+        "An implementation may already satisfy it; confirm that behavior and proceed without inventing a defect. "
+        "Otherwise select a focused reproduction or supported edit, not another "
         "broad inspection. Keep other requirements unchanged. Avoid extending to unrelated edge "
         "cases unless the observed patch caused a regression. This is a plan update, not a final answer."
     )
     sources = []
     if before_edit:
         instruction = (
-            f"Investigation has used {state.known_tokens} known tokens without a patch. Review only the current "
+            "The current requirement has spent several work turns investigating without a new patch, "
+            "or repeated already observed source reads. Review only the current "
             "requirement and choose the next concrete action. Return only JSON with status "
             "(must be in_progress), hypothesis (unverified interpretation), and next_action. "
             "If observed behavior and source support a fix, name the specific edit to make now. "
             "Otherwise identify one missing fact and a narrow source range or reproduction to obtain it. "
+            "If focused observations already show the implementation meets this requirement, choose "
+            "update_plan with those observations to complete it and select the next requirement. "
             "Do not restart broad investigation or consult guessed upstream history. Passing existing "
             "tests does not override a reproduced failure of the user's requirements. Keep all other "
-            "requirements unchanged. No edit has been made, so do not claim completion."
+            "requirements unchanged. This action review must keep the current status in_progress."
         )
-        boundary = max(event["step"] for event in state.events if event["event_type"] in (
-            "user_message", "workspace_patch", "workspace_restored",
+        boundary = max(state.requirement_started_step, max(
+            event["step"] for event in state.events if event["event_type"] in (
+                "user_message", "workspace_patch", "workspace_restored",
+            )
         ))
         paths = {path.removeprefix("/workspace/") for path in active.get("files", [])}
         seen, available = set(), 4000

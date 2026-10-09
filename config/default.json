@@ -3,6 +3,7 @@
   "repository_max_steps": 80,
   "max_tokens": null,
   "action_review_after_tokens": 40000,
+  "action_review_after_steps": 6,
   "context_max_chars": 24000,
   "context_keep_messages": 8,
   "context_tool_output_chars": 4000,

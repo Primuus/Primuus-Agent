@@ -57,6 +57,22 @@ class SessionState:
         return all(item["status"] == "completed" for item in self.plan)
 
     @property
+    def requirement_started_step(self) -> int:
+        active = next(((index, item["description"]) for index, item in enumerate(self.plan)
+                       if item["status"] == "in_progress"), None)
+        started = self.steps
+        for event in reversed(self.events):
+            if event["event_type"] in ("user_message", "workspace_restored"):
+                return max(started, event["step"])
+            if event["event_type"] == "plan_updated":
+                selected = next(((index, item["description"]) for index, item in enumerate(event["data"]["items"])
+                                 if item["status"] == "in_progress"), None)
+                if selected != active:
+                    break
+                started = event["step"]
+        return started
+
+    @property
     def known_tokens(self) -> int:
         return sum(
             (turn.response.input_tokens or 0) + (turn.response.output_tokens or 0)

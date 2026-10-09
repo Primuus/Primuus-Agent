@@ -1,0 +1,10 @@
+{
+  "source_trace": "experiments/2026-10-08-unlimited-tokens/records/real_010/trace.jsonl",
+  "second_requirement_review_due_at_step": 42,
+  "accepted_review_step": 43,
+  "later_window_review": true,
+  "next_requirement_resets_window": true,
+  "restore_excludes_stale_source": true,
+  "replay_consistent": true,
+  "live_model_calls": 0
+}

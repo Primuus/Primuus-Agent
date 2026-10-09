@@ -40,6 +40,7 @@ class SessionRunner:
         context_tool_output_chars: int = 4000,
         max_output_tokens: int = 8192,
         action_review_after_tokens: int = 40000,
+        action_review_after_steps: int = 6,
     ) -> None:
         self.model = model
         self.execute = execute
@@ -61,6 +62,7 @@ class SessionRunner:
         self.context_tool_output_chars = context_tool_output_chars
         self.max_output_tokens = max_output_tokens
         self.action_review_after_tokens = action_review_after_tokens
+        self.action_review_after_steps = action_review_after_steps
 
     def _estimate_input(self, state: SessionState, messages: list[dict], tools: list[dict]) -> tuple[int, int]:
         size = len(json.dumps({"messages": messages, "tools": tools}, ensure_ascii=False).encode("utf-8"))
@@ -200,22 +202,27 @@ class SessionRunner:
         return checked is not None and checked["step"] > updated
 
     def _action_due(self, state: SessionState) -> bool:
-        if (state.known_tokens < self.action_review_after_tokens
-            or state.workspace_patch.get("changed_paths")
-            or not any(item["status"] == "in_progress" for item in state.plan)):
+        if not any(item["status"] == "in_progress" for item in state.plan):
             return False
-        task_step = next(event["step"] for event in reversed(state.events)
-                         if event["event_type"] == "user_message")
+        source_step = max(state.requirement_started_step, max(
+            (event["step"] for event in state.events
+             if event["event_type"] in ("workspace_patch", "workspace_restored")), default=0,
+        ))
         action_steps = {event["step"] for event in state.events
                         if event["event_type"] == "model_request" and event["data"]["phase"] == "plan_action"}
-        if any(event["event_type"] == "plan_updated" and event["step"] in action_steps
-               and event["step"] > task_step for event in state.events):
+        reviewed_step = max((event["step"] for event in state.events
+                             if event["event_type"] == "plan_updated" and event["step"] in action_steps), default=0)
+        boundary = max(source_step, reviewed_step)
+        turns = state.turns[boundary:]
+        work_steps = sum(bool(turn.response.tool_calls) for turn in turns)
+        tokens = sum((turn.response.input_tokens or 0) + (turn.response.output_tokens or 0) for turn in turns)
+        repeated = any(event["event_type"] == "investigation_stalled" and event["step"] > boundary
+                       for event in state.events)
+        if (work_steps < self.action_review_after_steps and tokens < self.action_review_after_tokens
+            and not repeated):
             return False
         active = next(item for item in state.plan if item["status"] == "in_progress")
         paths = {path.removeprefix("/workspace/") for path in active.get("files", [])}
-        source_step = max(event["step"] for event in state.events if event["event_type"] in (
-            "user_message", "workspace_patch", "workspace_restored",
-        ))
         for turn in state.turns[source_step:]:
             calls = {call.call_id: call for call in turn.response.tool_calls}
             if any(result.status == "completed"
