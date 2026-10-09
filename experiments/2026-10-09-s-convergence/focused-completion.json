@@ -1,0 +1,13 @@
+{
+  "completed": true,
+  "existing_behavior_without_edit": true,
+  "completion_requires_executed_behavior_refs": true,
+  "unknown_and_stale_refs_rejected": true,
+  "checks_refreshed_after_last_shell": true,
+  "actual_check_batches": 2,
+  "final_check_reused": true,
+  "failed_current_checks_not_ready": true,
+  "replay_consistent": true,
+  "live_model_calls": 0,
+  "temporary_workspace_deleted": true
+}

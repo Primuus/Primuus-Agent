@@ -231,6 +231,7 @@ class RepositorySession:
                     if set(call.arguments) != {"items"}:
                         raise ValueError("update_plan requires only items")
                     validate_plan(items)
+                    self.state.validate_plan_completion(items)
                 except ValueError as error:
                     return ToolResult(call.call_id, call.name, "error", "", str(error), None, 0)
                 completed_before = sum(item["status"] == "completed" for item in self.state.plan)

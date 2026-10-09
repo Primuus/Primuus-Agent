@@ -138,6 +138,8 @@ REPOSITORY_TOOL_SPECS.append({
                         "files": {"type": "array", "items": {"type": "string"}},
                         "hypothesis": {"type": "string", "description": "Working interpretation; not a verified fact"},
                         "next_action": {"type": "string"},
+                        "evidence": {"type": "array", "items": {"type": "string"},
+                                     "description": "Successful focused behavior run_shell call_ids on the current patch; required when marking a requirement completed"},
                     },
                     "required": ["description", "status"],
                     "additionalProperties": False,

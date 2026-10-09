@@ -156,9 +156,9 @@ class SessionRunner:
             messages, tools, phase = build_progress_context(state, before_edit=True), [], "plan_action"
             output_limit = min(output_limit, 1536)
         estimate, size = self._estimate_input(state, messages, tools)
-        ready = (bool(state.project_checks) and state.project_check_patch_sha256 is not None
-                 and all(check["status"] == "completed" and check["exit_code"] == 0 for check in state.project_checks)
-                 and state.plan_complete)
+        ready = bool(state.plan) and state.plan_complete and (
+            not state.project_check_commands or state.current_checks_passed
+        )
         remaining = self.max_tokens - state.known_tokens if self.max_tokens is not None else None
         final_messages = build_final_context(state) if self.budget_guidance else []
         final_limit = min(self.max_output_tokens, 1024)
@@ -170,12 +170,13 @@ class SessionRunner:
             self.max_steps - state.steps == 1
             or remaining is not None and output_limit < final_limit
         )
-        if closing:
+        if self.budget_guidance and (ready or closing):
             phase = "final" if ready else (
                 "step_report" if self.max_steps - state.steps == 1 else "budget_report"
             )
             messages, tools = final_messages, []
-            messages[0]["content"] += " The work allowance is ending; report any remaining work explicitly."
+            if closing and not ready:
+                messages[0]["content"] += " The work allowance is ending; report any remaining work explicitly."
             output_limit = final_limit
             estimate, size = self._estimate_input(state, messages, tools)
             reserve = 0
@@ -238,6 +239,7 @@ class SessionRunner:
             if content is None:
                 raise ValueError("Planning requires a JSON response without tool calls")
             items = parse_initial_plan(content) if phase == "plan" else apply_progress(state.plan, content)
+            state.validate_plan_completion(items)
             if phase == "plan_action" and any(item["status"] != previous["status"]
                                               for item, previous in zip(items, state.plan)):
                 raise ValueError("An action review without edits must keep the current requirement in_progress")
@@ -298,6 +300,22 @@ class SessionRunner:
             if self.max_tokens is not None and state.known_tokens >= self.max_tokens:
                 state.finish("token_budget")
                 return state
+            if (self.budget_guidance and state.plan and state.plan_complete and self.verify is not None
+                and state.project_check_commands
+                and (not state.project_checks
+                     or state.project_check_patch_sha256 != state.workspace_patch.get("sha256"))):
+                try:
+                    checked = self.verify()
+                except VerifierError:
+                    state.record_failure("verification", {"reason": "verifier_error"})
+                    state.finish("verifier_error")
+                    return state
+                state.add_verification(state.turns[-1], checked)
+                if not checked.passed:
+                    state.add_workflow_guidance(
+                        "Final project checks failed. Repair the reported behavior and rerun run_checks "
+                        "before finishing. Output: " + (checked.output + " " + (checked.error or ""))[:4000]
+                    )
             if (self.budget_guidance and not budget_warning_sent
                 and self.max_tokens is not None
                 and state.known_tokens >= self.max_tokens / 3):

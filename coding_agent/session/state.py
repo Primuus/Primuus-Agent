@@ -57,6 +57,13 @@ class SessionState:
         return all(item["status"] == "completed" for item in self.plan)
 
     @property
+    def current_checks_passed(self) -> bool:
+        return (bool(self.project_checks) and self.project_check_patch_sha256 is not None
+                and self.project_check_patch_sha256 == self.workspace_patch.get("sha256")
+                and all(check["status"] == "completed" and check["exit_code"] == 0
+                        for check in self.project_checks))
+
+    @property
     def requirement_started_step(self) -> int:
         active = next(((index, item["description"]) for index, item in enumerate(self.plan)
                        if item["status"] == "in_progress"), None)
@@ -248,6 +255,36 @@ class SessionState:
     def update_plan(self, items: list[dict[str, Any]]) -> None:
         self.emit("plan_updated", {"items": items})
         self.plan = items
+
+    def validate_plan_completion(self, items: list[dict[str, Any]]) -> None:
+        """A newly completed requirement must cite successful behavior commands."""
+        completed = {item["description"] for item in self.plan if item["status"] == "completed"}
+        boundary = -1
+        observations = {}
+        for index, event in enumerate(self.events):
+            kind, data = event["event_type"], event["data"]
+            if kind in ("user_message", "workspace_restored"):
+                boundary = index
+            elif kind == "tool_result":
+                observations[data["call_id"]] = (index, event["step"], data)
+                if data["name"] in ("write_file", "edit_file") and data["status"] == "completed":
+                    boundary = index
+        patch_step = max((event["step"] for event in self.events
+                          if event["event_type"] == "workspace_patch"), default=0)
+        for item in items:
+            if item["status"] != "completed" or item["description"] in completed:
+                continue
+            references = item.get("evidence", [])
+            if not references:
+                raise ValueError("Completing a requirement needs evidence: cite successful focused run_shell call_ids")
+            for reference in references:
+                observation = observations.get(reference)
+                if observation is None:
+                    raise ValueError(f"Unknown behavior evidence call_id: {reference}")
+                index, step, result = observation
+                if (index <= boundary or step < patch_step or result["name"] != "run_shell"
+                    or result["status"] != "completed" or result["exit_code"] != 0):
+                    raise ValueError(f"Behavior evidence {reference} must be a successful run_shell after the latest change or restore")
 
     def add_snapshot(self, commit: str, label: str) -> None:
         snapshot = {"commit": commit, "label": label, "plan": self.plan.copy()}

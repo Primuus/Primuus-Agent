@@ -11,13 +11,15 @@ def validate_plan(items: Any) -> None:
     if type(items) is not list or not items or any(
         type(item) is not dict
         or not {"description", "status"} <= set(item) <= {
-            "description", "status", "files", "hypothesis", "next_action"
+            "description", "status", "files", "hypothesis", "next_action", "evidence"
         }
         or type(item["description"]) is not str
         or item["status"] not in ("pending", "in_progress", "completed")
         or any(type(item[key]) is not str for key in ("hypothesis", "next_action") if key in item)
         or "files" in item and (type(item["files"]) is not list
                                 or any(type(path) is not str for path in item["files"]))
+        or "evidence" in item and (type(item["evidence"]) is not list
+                                   or any(type(reference) is not str for reference in item["evidence"]))
         for item in items
     ):
         raise ValueError("Invalid plan fields")
@@ -41,10 +43,13 @@ def parse_initial_plan(content: str) -> list[dict[str, Any]]:
 
 def apply_progress(plan: list[dict[str, Any]], content: str) -> list[dict[str, Any]]:
     data = json.loads(content)
-    if (type(data) is not dict or set(data) != {"status", "hypothesis", "next_action"}
+    if (type(data) is not dict or not {"status", "hypothesis", "next_action"} <= set(data)
+        <= {"status", "hypothesis", "next_action", "evidence"}
         or data["status"] not in ("in_progress", "completed")
-        or any(type(data[key]) is not str for key in ("hypothesis", "next_action"))):
-        raise ValueError("Progress requires status, hypothesis and next_action for the current requirement")
+        or any(type(data[key]) is not str for key in ("hypothesis", "next_action"))
+        or "evidence" in data and (type(data["evidence"]) is not list
+                                   or any(type(reference) is not str for reference in data["evidence"]))):
+        raise ValueError("Progress requires status, hypothesis, next_action and optional evidence call_ids")
     items = [dict(item) for item in plan]
     active = next(index for index, item in enumerate(items) if item["status"] == "in_progress")
     items[active].update(data)
