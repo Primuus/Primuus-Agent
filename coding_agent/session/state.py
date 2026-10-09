@@ -254,6 +254,15 @@ class SessionState:
 
     def update_plan(self, items: list[dict[str, Any]]) -> None:
         self.emit("plan_updated", {"items": items})
+        self._set_plan(items)
+
+    def _set_plan(self, items: list[dict[str, Any]]) -> None:
+        previous = next(((index, item["description"]) for index, item in enumerate(self.plan)
+                         if item["status"] == "in_progress"), None)
+        current = next(((index, item["description"]) for index, item in enumerate(items)
+                        if item["status"] == "in_progress"), None)
+        if current != previous:
+            self.continuation = {}
         self.plan = items
 
     def validate_plan_completion(self, items: list[dict[str, Any]]) -> None:
@@ -375,6 +384,8 @@ class SessionState:
         boundary = max((event["step"] for event in self.events if event["event_type"] in {
             "user_message", "workspace_patch", "workspace_restored",
         }), default=0)
+        if any(item["status"] == "in_progress" for item in self.plan):
+            boundary = max(boundary, self.requirement_started_step)
         discarded_ids = {call["id"] for message in discarded for call in message.get("tool_calls", [])}
         retained_ids = {message["tool_call_id"] for message in retained if message["role"] == "tool"}
         notes = self.continuation.get("working_notes", "")
@@ -415,7 +426,8 @@ class SessionState:
             return {}
         return {"step": notes_step, "working_notes": notes, "source_snapshots": snapshots}
 
-    def task_summary(self, retained: list[dict[str, Any]] | None = None, *, include_source: bool = True) -> str:
+    def task_summary(self, retained: list[dict[str, Any]] | None = None, *, include_source: bool = True,
+                     active_only: bool = False) -> str:
         """Retain action evidence and source references; label agent intent as unverified."""
         retained = retained or []
         retained_ids = {message["tool_call_id"] for message in retained if message["role"] == "tool"}
@@ -425,7 +437,10 @@ class SessionState:
                              if event["event_type"] == "workspace_restored"
                              or event["event_type"] == "recovery_action"
                              and event["data"]["kind"] == "snapshot_rollback"), default=-1)
-        sources, changes, commands, failures, check_commands = {}, {}, {}, {}, {}
+        active_paths = {path.removeprefix("/workspace/") for item in self.plan
+                        if item["status"] == "in_progress" for path in item.get("files", [])}
+        requirement_step = self.requirement_started_step if active_only else task_step
+        sources, changes, commands, failures, check_commands, behaviors = {}, {}, {}, {}, {}, {}
         for event in self.events:
             if event["event_type"] == "project_check_completed" and event["step"] > task_step:
                 for check in event["data"]["checks"]:
@@ -448,6 +463,11 @@ class SessionState:
                 call = calls[result.call_id]
                 args = call.arguments
                 passed = result.status == "completed" and result.exit_code in (None, 0)
+                if call.name == "run_shell":
+                    behaviors[result.call_id] = (
+                        f"Behavior call {result.call_id}: {args['command'][:160]}; "
+                        f"{result.status}, exit={result.exit_code}\n{result.output[-200:]}"
+                    )
                 if call.name == "run_shell" and any(check in args["command"] for check in self.project_check_commands):
                     check_commands[args["command"]] = (
                         f"Ran {args['command'][:160]} (call {result.call_id}): "
@@ -457,6 +477,13 @@ class SessionState:
                 if passed and call.name in ("write_file", "edit_file"):
                     edited_at[args["path"].removeprefix("/workspace/")] = step
                 if step <= restored_step:
+                    continue
+                if active_only and (
+                    call.name in ("read_file", "read_file_range", "write_file", "edit_file")
+                    and active_paths and args["path"].removeprefix("/workspace/") not in active_paths
+                    or call.name not in ("read_file", "read_file_range", "write_file", "edit_file")
+                    and step <= requirement_step
+                ):
                     continue
                 if not passed:
                     failures[result.call_id] = f"{call.name} {args.get('path', '')} (call {result.call_id}): {result.status}, exit={result.exit_code}; {(result.error or result.output)[:250]}"
@@ -471,7 +498,7 @@ class SessionState:
                     replacement = args["new_text"] if call.name == "edit_file" else args["content"]
                     changes.setdefault(path, []).append(
                         f"Observed successful {call.name} on {path} at step {step} (call {result.call_id}); "
-                        f"replacement excerpt:\n{replacement[:250]}"
+                        f"replacement excerpt:\n{replacement[:150 if active_only else 250]}"
                     )
                 elif call.name == "run_shell":
                     command = args["command"]
@@ -487,19 +514,25 @@ class SessionState:
             if include_source and path in target_paths and len(output) <= 1200:
                 reference += ":\n" + output
             source_lines.append(reference)
+        behavior_evidence = [behaviors[reference] for item in self.plan for reference in item.get("evidence", [])
+                             if reference in behaviors] if not active_only else []
         sections = ["Current workspace changed paths: " + str(self.workspace_patch.get("changed_paths", "not recorded")),
                     "Observed edit actions since the latest restore (historical excerpts, not a complete current diff):",
                     *[f"{path}: {len(records)} successful edit actions.\n" + "\n".join(
                         records if len(records) <= 4 else [records[0], *records[-3:]]
                     ) for path, records in changes.items()],
                     *([] if changes else ["No successful edit recorded since the latest restore."]),
+                    *([
+                        "Completed requirement behavior evidence (historical calls, not current project checks):\n"
+                        + "\n".join(behavior_evidence)
+                    ] if behavior_evidence else []),
                     "Observed configured-check command invocations (separate from current patch checks):\n"
                     + ("\n".join(check_commands.values()) or "None recorded."),
                     "Recent commands:\n" + "\n".join(list(commands.values())[-2:]),
                     "Recent failures:\n" + "\n".join(list(failures.values())[-2:]),
                     "Source evidence (saved snapshots; refresh live files after changes):",
                     *source_lines]
-        if intent:
+        if intent and not active_only:
             sections.append("Last agent intent (unverified):\n" + intent)
         lines = []
         for section in sections:
@@ -584,7 +617,7 @@ class SessionState:
                 state.workspace_patch = data
                 state.continuation = {}
             elif kind == "plan_updated":
-                state.plan = data["items"]
+                state._set_plan(data["items"])
             elif kind == "context_compacted":
                 state.summary = data["summary"]
                 state.messages = data["messages"]

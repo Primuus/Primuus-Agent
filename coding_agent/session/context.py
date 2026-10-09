@@ -1,6 +1,7 @@
 """Build model context from a session's conversation."""
 
 from typing import Any
+import json
 
 from coding_agent.session.state import SessionState
 
@@ -28,6 +29,17 @@ SYSTEM_PROMPT = (
     "live source before editing if it has changed. Earlier summaries retain observed actions "
     "and source references; agent hypotheses and intent are unverified."
 )
+
+
+def _plan_context(state: SessionState) -> str:
+    lines = ["Requirements and agent hypotheses (verify against observations):"]
+    for item in state.plan:
+        if item["status"] == "in_progress":
+            lines.append("Work on this requirement now: " + json.dumps(item, ensure_ascii=False, separators=(",", ":")))
+        else:
+            lines.append(item["status"] + ": " + item["description"]
+                         + ("; behavior calls: " + ", ".join(item["evidence"]) if item.get("evidence") else ""))
+    return "\n".join(lines)
 
 
 def build_context(state: SessionState) -> list[dict[str, Any]]:
@@ -61,8 +73,6 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
                 f"{entry['content']}"
             ),
         })
-    if state.plan:
-        messages.append({"role": "system", "content": "Agent plan and hypotheses (verify against observations): " + str(state.plan)})
     if state.project_checks and state.project_check_patch_sha256 is not None:
         messages.append({
             "role": "system",
@@ -72,11 +82,15 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
             ),
         })
     if state.summary:
-        messages.append({"role": "system", "content": "Earlier session summary: " + state.summary})
+        messages.append({"role": "system", "content": "Observed current requirement history:\n"
+                         + state.task_summary(state.messages, include_source=False, active_only=True)})
     if state.continuation:
+        active_paths = {path.removeprefix("/workspace/") for item in state.plan
+                        if item["status"] == "in_progress" for path in item.get("files", [])}
         sources = "\n".join(
             f"{source['path']} (saved call {source['call_id']}, arguments {source['arguments']}):\n{source['output']}"
             for source in state.continuation["source_snapshots"]
+            if not active_paths or source["path"] in active_paths
         )
         messages.append({"role": "system", "content": (
             "Continuation from discarded turns. Agent working notes are unverified hypotheses, "
@@ -93,17 +107,7 @@ def build_context(state: SessionState) -> list[dict[str, Any]]:
     ):
         messages.append({"role": "user", "content": latest_task})
     if state.plan:
-        active = next((item for item in state.plan if item["status"] == "in_progress"), None)
-        if active is not None:
-            messages.append({"role": "system", "content": (
-                "Work on this requirement now: " + active["description"]
-                + "\nTarget files (verify their paths): " + str(active.get("files", []))
-                + "\nWorking hypothesis (unverified): " + active.get("hypothesis", "")
-                + "\nNext action: " + active.get("next_action", "Locate the code, make a supported edit, then check it.")
-                + "\nUse focused source ranges. Once its failure and implementation are understood, "
-                "make the minimal patch before investigating a different independent requirement. "
-                "After its behavior is checked, update_plan to complete it and select the next requirement."
-            )})
+        messages.append({"role": "system", "content": _plan_context(state)})
     return [*messages, *state.messages]
 
 
@@ -146,7 +150,7 @@ def build_final_context(state: SessionState) -> list[dict[str, Any]]:
         {"role": "user", "content": task},
         {"role": "system", "content": (
             "Observed task history:\n" + state.task_summary(include_source=False)
-            + "\nCurrent plan: " + str(state.plan)
+            + "\n" + _plan_context(state)
             + "\nCurrent patch checks:\n" + checks
         )},
     ]
@@ -213,7 +217,7 @@ def build_progress_context(state: SessionState, *, before_edit: bool = False) ->
         *[{"role": "system", "content": f"{source['kind']} instructions from {source['path']}:\n{source['content']}"}
           for source in state.context_sources],
         {"role": "system", "content": "Current requirement: " + str(active)
-         + "\nObserved actions:\n" + state.task_summary(include_source=False)
+         + "\nObserved current requirement actions:\n" + state.task_summary(include_source=False, active_only=True)
          + "\nCurrent patch checks: " + str([{key: check[key] for key in ("command", "status", "exit_code")}
                                                for check in state.project_checks])
          + "\nLatest working notes (unverified):\n" + notes[-1200:]

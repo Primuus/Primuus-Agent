@@ -1,0 +1,26 @@
+{
+  "baseline_commit": "c764326",
+  "source_trace": "experiments/2026-10-08-unlimited-tokens/records/real_010/trace.jsonl",
+  "samples": [
+    {
+      "step": 20,
+      "before_bytes": 24768,
+      "after_bytes": 22875,
+      "reduction_percent": 7.64
+    },
+    {
+      "step": 42,
+      "before_bytes": 29812,
+      "after_bytes": 28251,
+      "reduction_percent": 5.24
+    }
+  ],
+  "raw_messages_and_reasoning_unchanged": true,
+  "inactive_edit_excerpts_omitted_from_work_context": true,
+  "tool_call_groups_preserved": true,
+  "switch_discards_old_continuation": true,
+  "all_four_edits_preserved_in_final_context": true,
+  "replay_consistent": true,
+  "measurement": "Serialized request bytes at fixed historical trace prefixes; not total task input-token savings",
+  "live_model_calls": 0
+}
