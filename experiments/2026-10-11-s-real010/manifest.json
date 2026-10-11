@@ -1,0 +1,357 @@
+{
+  "phase": 2,
+  "frozen_at": "2026-10-11T09:10:05.780384+00:00",
+  "runtime_commit": "12da26bafdc20970c3e0ab764cd032806fd5d7c9",
+  "runtime_source_tree": "3b86fb0e7fc28b59eeba6241e432ef2bf5edddf3",
+  "runtime_file_sha256": {
+    "coding_agent/session/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "coding_agent/session/app.py": "6becba697474be34ceb7358e8f49f8717bf1b8a27570bcc0da98d3b2172febba",
+    "coding_agent/session/context.py": "0efedc1ee4fb283129008fd0bd94aceffa985515d2d8a5d1b260042934e88f67",
+    "coding_agent/session/hooks.py": "f615689d3e696f5203406ee2ac03b1880617ae495b0594f3ea7ca38995565203",
+    "coding_agent/session/journal.py": "43a30da7f68bc580f04e9bb5a781bced8df8d679356356a995dea151988a8d45",
+    "coding_agent/session/mcp.py": "c2cff3f02ec02b75c786e8fb97068761d486588c747038d8dd52599e4cd60ebb",
+    "coding_agent/session/memory.py": "f78dae4da9f262b342f6614ed9b752798ce856241f4e234b15a780c345f2230d",
+    "coding_agent/session/parallel.py": "fa67c7d11c1f430dc613a78b2461a55f466a0c62df14459adf04ac7ab499141a",
+    "coding_agent/session/permissions.py": "eaf719fdd23c0d6a8ffdb2aba7a0213b9b8b8a8423e4019ec1078115c22d4208",
+    "coding_agent/session/planning.py": "0be7826f4cd2df4afddf2e1f9e9270626bcafb58c3b1bd25a85f27d5f68a1db9",
+    "coding_agent/session/recovery.py": "cf9fc7ec9a0cd53003d98dd27baf0b4f8d8b671a055e34cc5305323e19c40f6e",
+    "coding_agent/session/repository.py": "d3cb44067a47269fce6f779768c80e3b1fe8925d96f5205e09f58d7a04f8e3cb",
+    "coding_agent/session/runner.py": "e846b540950e6b8e0a90f3a2213f17aa36b55eabe522cdfdf7beee21dabd1655",
+    "coding_agent/session/state.py": "6daa3be950d96c180d7dc469e197de8b32f10867f335357fc673d28dc6ec5338",
+    "coding_agent/session/workspace.py": "60d3e03ad65cef817f0070b702a63fe8dbc19f19591c50965b7db50bbbc7632c"
+  },
+  "baseline_live_manifest": "experiments/2026-10-09-s-convergence/live/manifest.json",
+  "latest_live_tested_runtime_commit": "36204ba90538cb03e47c89be07395783b41af6c4",
+  "config": {
+    "max_steps": 80,
+    "repository_max_steps": 80,
+    "max_tokens": null,
+    "context_max_chars": 24000,
+    "context_keep_messages": 8,
+    "context_tool_output_chars": 4000,
+    "project_instruction_files": [
+      "AGENTS.md"
+    ],
+    "skills": [],
+    "hooks": {
+      "before_tool": [],
+      "after_tool": []
+    },
+    "mcp_servers": [],
+    "memory": {
+      "mode": "off",
+      "max_entries": 3,
+      "max_chars": 2500
+    },
+    "recovery": {
+      "enabled": true,
+      "model_retries": 2,
+      "tool_retries": 1,
+      "validation_retries": 1,
+      "repeat_blocks": 2
+    },
+    "task_timeout_seconds": 1800,
+    "tool_timeout_seconds": 60,
+    "verifier_timeout_seconds": 30,
+    "model": {
+      "backend": "openai_compatible",
+      "name": "deepseek-flash",
+      "base_url": "https://api.deepseek.com",
+      "max_output_tokens": 8192,
+      "reasoning_effort": "low",
+      "final_reasoning_effort": "none"
+    },
+    "sandbox": {
+      "image": "sha256:4217cbc4df372b696f659c9f25d32dccbc52b4c33ddb8e8c2008c0aa8ae1f163",
+      "workspace": "/workspace",
+      "cpus": 1.0,
+      "memory_mb": 512,
+      "network_enabled": false
+    },
+    "results_dir": "runs",
+    "action_review_after_tokens": 40000,
+    "action_review_after_steps": 6
+  },
+  "tool_specs": [
+    {
+      "name": "read_file",
+      "description": "Read a UTF-8 file in the workspace",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "write_file",
+      "description": "Write a UTF-8 file in the workspace",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "content"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "run_shell",
+      "description": "Run a shell command in the workspace",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "command"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "read_tool_output",
+      "description": "Read a saved tool result by call_id and inclusive line range. Source output is a historical snapshot, not the live file.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "call_id": {
+            "type": "string"
+          },
+          "start_line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "end_line": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "call_id",
+          "start_line",
+          "end_line"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_files",
+      "description": "List repository files, including untracked files, up to 300 paths",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_text",
+      "description": "Search literal text within a file or directory, optionally filtering file paths by glob",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string",
+            "description": "File or directory; defaults to the workspace"
+          },
+          "include": {
+            "type": "string",
+            "description": "File path glob, for example *.py or src/**/*.py"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "read_file_range",
+      "description": "Read inclusive line range from a UTF-8 file; prefer focused ranges of 40-60 lines",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "start_line": {
+            "type": "integer"
+          },
+          "end_line": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path",
+          "start_line",
+          "end_line"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "edit_file",
+      "description": "Replace one exact text span in a UTF-8 file",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "old_text": {
+            "type": "string"
+          },
+          "new_text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "old_text",
+          "new_text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "git_status",
+      "description": "Show the repository's short Git status",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "git_diff",
+      "description": "Show tracked changes relative to the session's base commit",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "run_checks",
+      "description": "Run the configured project check suite. Reuse passing results for the same patch and execution environment; set force=true to execute it again. Use this instead of appending configured checks to reproduction shell commands.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "force": {
+            "type": "boolean",
+            "description": "Execute checks even when current passing results are cached"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_plan",
+      "description": "Track each requirement, target files, working hypothesis and next action for a multi-step task",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "in_progress",
+                    "completed"
+                  ]
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "hypothesis": {
+                  "type": "string",
+                  "description": "Working interpretation; not a verified fact"
+                },
+                "next_action": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Successful focused behavior run_shell call_ids on the current patch; required when marking a requirement completed"
+                }
+              },
+              "required": [
+                "description",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "tool_specs_sha256": "dbf3d9ad65dcda89191313c91013303134357dc6a1c4ae82838a8bd4db0bdd67",
+  "tasks": [
+    {
+      "id": "real_010",
+      "fixture": "real_010",
+      "base_commit": "efff866a3b66fdafc817894390742e1d8bc025e5",
+      "instruction": "`boltons.listutils.BarrelList` should match built-in list indexing and insertion at either boundary, including after its data has split across internal sublists. Empty tail sublists must not break `pop()`. `boltons.setutils.IndexedSet` should preserve ordering and indexes after bulk difference and intersection updates; large removals should not trigger repeated full compactions.",
+      "check": "python -m pytest -q tests/test_listutils.py tests/test_setutils.py",
+      "verifier_code": "import sys\nfrom pathlib import Path\n\nsys.path.insert(0, str(Path.cwd()))\nfrom boltons.listutils import BarrelList\nfrom boltons.setutils import IndexedSet\n\nitems = BarrelList(range(30000))\nitems.pop(0)\nitems.insert(0, 0)\nassert len(items.lists) > 1\ntry:\n    items[len(items)]\nexcept IndexError:\n    pass\nelse:\n    raise AssertionError(\"out-of-bounds index returned a value\")\nitems.insert(len(items), \"end\")\nassert items[-1] == \"end\"\nitems.insert(len(items) + 20, \"past end\")\nassert items[-1] == \"past end\"\nitems.insert(-len(items) - 20, \"start\")\nassert items[0] == \"start\"\nfor _ in range(len(items.lists[-1])):\n    items.pop(len(items) - 1)\nexpected = items[-1]\nassert items.pop() == expected\n\nindexed = IndexedSet(range(1000))\nindexed.difference_update(set(range(0, 1000, 2)))\nassert list(indexed) == list(range(1, 1000, 2))\nassert indexed.index(501) == 250\nindexed.add(0)\nassert indexed[-1] == 0\nindexed = IndexedSet(range(1000))\nindexed.intersection_update(set(range(500, 2000)))\nassert list(indexed) == list(range(500, 1000))\n\ncompactions = []\noriginal = IndexedSet._compact\ndef count_compaction(self):\n    compactions.append(1)\n    return original(self)\nIndexedSet._compact = count_compaction\ntry:\n    indexed = IndexedSet(range(5000))\n    indexed.difference_update(set(range(0, 5000, 2)))\n    assert list(indexed) == list(range(1, 5000, 2))\n    assert len(compactions) <= 1\nfinally:\n    IndexedSet._compact = original\n",
+      "repository": "https://github.com/mahmoud/boltons",
+      "source_archive_sha256": "591fc1ea7b3d625e3a3f79b0f6b341c8a19ed6fa1fe2f5d86d0379a481e22b6a",
+      "generated_files": {},
+      "target_source_files": [
+        "boltons/listutils.py",
+        "boltons/setutils.py"
+      ],
+      "expected_tree": "d90cb092a448ae03c271ca7062350345c98f98c2"
+    }
+  ],
+  "task_fixture_sha256": "59e653fc39ee0cfab32dd6e2d4ffb26ed043b65b9fb06da72bbce7f3abcef96f",
+  "maximum_runs": 1,
+  "failure_stop_threshold": 1,
+  "pass_gate": "completed + all requirements with current valid behavior evidence + current passing configured checks + independent verifier + replay consistency",
+  "execution_path": "RepositorySession with production repository tools, hidden verifier run independently after the session",
+  "failure_policy": "Stop task-set expansion after failure. Attribute a demonstrated invariant violation to Runtime, and algorithm/understanding failure with intact invariants to model capability.",
+  "token_policy": "No cumulative token limit for correctness. Derive a later experiment-only bounded budget from a real success cost.",
+  "validation_scope": "Focused contract checks plus one scripted production RepositorySession, not the full S regression suite.",
+  "focused_validation": "experiments/2026-10-11-s-invariants/focused-validation.json"
+}

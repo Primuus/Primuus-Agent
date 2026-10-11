@@ -1,0 +1,9 @@
+{
+  "checked_at": "2026-10-11T09:26:25.713479+00:00",
+  "temporary_driver_deleted": true,
+  "temporary_workspaces_remaining": [],
+  "agent_containers_remaining": [],
+  "frozen_runtime_unchanged": true,
+  "production_depends_on_driver": false,
+  "credential_patterns_found_in_artifacts": false
+}

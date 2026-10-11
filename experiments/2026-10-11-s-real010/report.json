@@ -1,0 +1,48 @@
+{
+  "status": "stopped_after_gate_failure",
+  "runs": [
+    {
+      "task": "real_010",
+      "runtime_commit": "12da26bafdc20970c3e0ab764cd032806fd5d7c9",
+      "session_id": "83727b7d1f43",
+      "fixture_tree": "d90cb092a448ae03c271ca7062350345c98f98c2",
+      "passed": false,
+      "stop_reason": "model_error",
+      "steps": 60,
+      "tool_calls": 52,
+      "failed_tool_calls": 4,
+      "tokens": null,
+      "known_input_tokens": 386819,
+      "known_output_tokens": 27318,
+      "first_target_edit_step": 28,
+      "input_to_first_edit": 173592,
+      "changed_paths": [
+        "boltons/listutils.py"
+      ],
+      "plan_complete": false,
+      "current_checks_passed": false,
+      "independent_verifier_passed": false,
+      "replay_consistent": true,
+      "replay_differences": [],
+      "service_errors": 1,
+      "plan_updates": 10,
+      "action_review_requests": 5,
+      "progress_review_requests": 3,
+      "request_phases": {
+        "plan": 1,
+        "work": 52,
+        "plan_action": 5,
+        "plan_progress": 3
+      },
+      "actual_check_batches": 3,
+      "check_cache_reuses": 0,
+      "active_seconds": 170.08,
+      "record": "experiments/2026-10-11-s-real010/records/real_010"
+    }
+  ],
+  "actual_runs": 1,
+  "passes": 0,
+  "failures": 1,
+  "maximum_runs": 1,
+  "temporary_workspaces_deleted": true
+}

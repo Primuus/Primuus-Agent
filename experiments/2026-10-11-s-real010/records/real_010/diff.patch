@@ -1,0 +1,72 @@
+diff --git a/boltons/listutils.py b/boltons/listutils.py
+index d05d09d..acaa827 100644
+--- a/boltons/listutils.py
++++ b/boltons/listutils.py
+@@ -108,13 +108,15 @@ class BarrelList(list):
+     def _translate_index(self, index):
+         if index < 0:
+             index += len(self)
++            if index < 0:
++                return None, None
+         rel_idx, lists = index, self.lists
+         for list_idx in range(len(lists)):
+             len_list = len(lists[list_idx])
+             if rel_idx < len_list:
+                 break
+             rel_idx -= len_list
+-        if rel_idx < 0:
++        else:
+             return None, None
+         return list_idx, rel_idx
+ 
+@@ -136,12 +138,20 @@ class BarrelList(list):
+         if len(self.lists) == 1:
+             self.lists[0].insert(index, item)
+             self._balance_list(0)
++            return
++        if index < 0:
++            index += len(self)
++            if index < 0:
++                index = 0
++        if index >= len(self):
++            list_idx = len(self.lists) - 1
++            rel_idx = len(self.lists[list_idx])
+         else:
+             list_idx, rel_idx = self._translate_index(index)
+             if list_idx is None:
+                 list_idx, rel_idx = 0, 0
+-            self.lists[list_idx].insert(rel_idx, item)
+-            self._balance_list(list_idx)
++        self.lists[list_idx].insert(rel_idx, item)
++        self._balance_list(list_idx)
+         return
+ 
+     def append(self, item):
+@@ -152,19 +162,21 @@ class BarrelList(list):
+ 
+     def pop(self, *a):
+         lists = self.lists
+-        if len(lists) == 1 and not a:
+-            return self.lists[0].pop()
+-        index = a and a[0]
+-        if index == () or index is None or index == -1:
++        while len(lists) > 1 and not lists[-1]:
++            lists.pop()
++        if not a:
++            return lists[-1].pop()
++        index = a[0]
++        if index is None or index == -1:
+             ret = lists[-1].pop()
+-            if len(lists) > 1 and not lists[-1]:
+-                lists.pop()
+         else:
+             list_idx, rel_idx = self._translate_index(index)
+             if list_idx is None:
+                 raise IndexError()
+             ret = lists[list_idx].pop(rel_idx)
+             self._balance_list(list_idx)
++            while len(lists) > 1 and not lists[-1]:
++                lists.pop()
+         return ret
+ 
+     def iter_slice(self, start, stop, step=None):
