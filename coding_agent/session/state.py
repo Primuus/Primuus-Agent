@@ -1,6 +1,7 @@
 """Session state reconstructed from an append-only event journal."""
 
 from dataclasses import asdict, dataclass, field
+from copy import deepcopy
 from datetime import datetime, timezone
 import json
 from typing import Any, Callable
@@ -54,7 +55,12 @@ class SessionState:
 
     @property
     def plan_complete(self) -> bool:
-        return all(item["status"] == "completed" for item in self.plan)
+        return all(item["status"] == "completed" and self.behavior_evidence_error(item) is None
+                   for item in self.plan)
+
+    @property
+    def completion_ready(self) -> bool:
+        return self.plan_complete and (not self.project_check_commands or self.current_checks_passed)
 
     @property
     def current_checks_passed(self) -> bool:
@@ -142,12 +148,16 @@ class SessionState:
         self.project_checks = checks
         self.project_check_patch_sha256 = patch_sha256
 
-    def record_workspace_patch(self, paths: list[str], digest: str) -> None:
+    def record_workspace_patch(self, paths: list[str], digest: str,
+                               file_digests: dict[str, str] | None = None) -> None:
         patch = {"changed_paths": paths, "sha256": digest}
+        if file_digests is not None:
+            patch["file_sha256"] = file_digests
         if patch != self.workspace_patch:
             self.emit("workspace_patch", patch)
             self.workspace_patch = patch
             self.continuation = {}
+            self.invalidate_plan_evidence()
 
     def _accept_turn(self, response: ModelResponse, duration_ms: int, timestamp: str,
                      include_in_conversation: bool = True) -> Turn:
@@ -266,34 +276,76 @@ class SessionState:
         self.plan = items
 
     def validate_plan_completion(self, items: list[dict[str, Any]]) -> None:
-        """A newly completed requirement must cite successful behavior commands."""
-        completed = {item["description"] for item in self.plan if item["status"] == "completed"}
+        """Every completed requirement must still have valid behavior evidence."""
+        for item in items:
+            if item["status"] == "completed":
+                error = self.behavior_evidence_error(item)
+                if error is not None:
+                    raise ValueError(error)
+
+    def behavior_evidence_error(self, item: dict[str, Any]) -> str | None:
+        references = item.get("evidence", [])
+        if not references:
+            return "Completing a requirement needs evidence: cite successful focused run_shell call_ids"
+        paths = {path.removeprefix("/workspace/") for path in item.get("files", [])}
         boundary = -1
-        observations = {}
+        started, observations = {}, {}
+        previous_patch = {}
         for index, event in enumerate(self.events):
             kind, data = event["event_type"], event["data"]
             if kind in ("user_message", "workspace_restored"):
                 boundary = index
+                if kind == "workspace_restored":
+                    previous_patch = {}
+            elif kind == "tool_started":
+                started[data["call_id"]] = (index, data)
             elif kind == "tool_result":
-                observations[data["call_id"]] = (index, event["step"], data)
+                observations[data["call_id"]] = data
                 if data["name"] in ("write_file", "edit_file") and data["status"] == "completed":
+                    call = started[data["call_id"]][1]
+                    if not paths or call["arguments"]["path"].removeprefix("/workspace/") in paths:
+                        boundary = index
+            elif kind == "workspace_patch":
+                if "file_sha256" in data and "file_sha256" in previous_patch:
+                    before, after = previous_patch["file_sha256"], data["file_sha256"]
+                    changed = {path for path in before.keys() | after.keys() if before.get(path) != after.get(path)}
+                    if not paths or paths & changed:
+                        boundary = index
+                elif data["sha256"] != previous_patch.get("sha256"):
+                    # Older journals record only the whole patch; their evidence cannot be scoped by file.
                     boundary = index
-        patch_step = max((event["step"] for event in self.events
-                          if event["event_type"] == "workspace_patch"), default=0)
-        for item in items:
-            if item["status"] != "completed" or item["description"] in completed:
-                continue
-            references = item.get("evidence", [])
-            if not references:
-                raise ValueError("Completing a requirement needs evidence: cite successful focused run_shell call_ids")
-            for reference in references:
-                observation = observations.get(reference)
-                if observation is None:
-                    raise ValueError(f"Unknown behavior evidence call_id: {reference}")
-                index, step, result = observation
-                if (index <= boundary or step < patch_step or result["name"] != "run_shell"
-                    or result["status"] != "completed" or result["exit_code"] != 0):
-                    raise ValueError(f"Behavior evidence {reference} must be a successful run_shell after the latest change or restore")
+                previous_patch = data
+        for reference in references:
+            if reference not in observations or reference not in started:
+                return f"Unknown executed behavior evidence call_id: {reference}"
+            result = observations[reference]
+            source_index, call = started[reference]
+            if (source_index <= boundary or call["name"] != "run_shell" or result["name"] != "run_shell"
+                or result["status"] != "completed" or result["exit_code"] != 0):
+                return f"Behavior evidence {reference} must be a successful run_shell after the latest relevant change or restore"
+        return None
+
+    def invalidate_plan_evidence(self) -> None:
+        """Reopen completed requirements whose source or restore boundary changed."""
+        invalid = {index: error for index, item in enumerate(self.plan)
+                   if item["status"] == "completed"
+                   and (error := self.behavior_evidence_error(item)) is not None}
+        if not invalid:
+            return
+        items = [dict(item) for item in self.plan]
+        for index, error in invalid.items():
+            items[index]["status"] = "pending"
+            items[index].pop("evidence", None)
+            items[index]["next_action"] = "Repeat the focused behavior check; previous evidence is stale. " + error
+        active = next(index for index, item in enumerate(items) if item["status"] != "completed")
+        for index, item in enumerate(items):
+            if item["status"] != "completed":
+                item["status"] = "in_progress" if index == active else "pending"
+        self.emit("plan_updated", {"items": items, "evidence_invalidated": [
+            {"description": self.plan[index]["description"], "evidence": self.plan[index].get("evidence", []),
+             "reason": error} for index, error in invalid.items()
+        ]})
+        self._set_plan(items)
 
     def add_snapshot(self, commit: str, label: str) -> None:
         snapshot = {"commit": commit, "label": label, "plan": self.plan.copy()}
@@ -305,6 +357,7 @@ class SessionState:
         self._clear_project_checks()
         self.workspace_patch = {}
         self.continuation = {}
+        self.invalidate_plan_evidence()
         if include_in_conversation:
             self.messages.append({
                 "role": "system",
@@ -372,7 +425,7 @@ class SessionState:
         summary = self.task_summary(messages) if start else self.summary
         continuation = self._build_continuation(discarded, messages) if start else self.continuation
         self.emit("context_compacted", {
-            "summary": summary, "messages": messages,
+            "summary": summary, "messages": deepcopy(messages),
             "continuation": continuation,
             "discarded_messages": start, "trimmed_outputs": trimmed,
         })
@@ -664,7 +717,7 @@ class SessionState:
                 state._set_plan(data["items"])
             elif kind == "context_compacted":
                 state.summary = data["summary"]
-                state.messages = data["messages"]
+                state.messages = deepcopy(data["messages"])
                 state.continuation = data.get("continuation", {})
             elif kind == "snapshot_created":
                 state.snapshots.append(data)

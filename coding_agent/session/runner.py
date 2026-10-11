@@ -156,9 +156,7 @@ class SessionRunner:
             messages, tools, phase = build_progress_context(state, before_edit=True), [], "plan_action"
             output_limit = min(output_limit, 1536)
         estimate, size = self._estimate_input(state, messages, tools)
-        ready = bool(state.plan) and state.plan_complete and (
-            not state.project_check_commands or state.current_checks_passed
-        )
+        ready = bool(state.plan) and state.completion_ready
         remaining = self.max_tokens - state.known_tokens if self.max_tokens is not None else None
         final_messages = build_final_context(state) if self.budget_guidance else []
         final_limit = min(self.max_output_tokens, 1024)
@@ -223,10 +221,11 @@ class SessionRunner:
         paths = {path.removeprefix("/workspace/") for path in active.get("files", [])}
         pending_paths = {path.removeprefix("/workspace/") for item in state.plan
                          if item["status"] == "pending" for path in item.get("files", [])} - paths
+        handoff_turns = state.turns[max(state.requirement_started_step, reviewed_step):]
         switched_files = paths and reviewed_step <= source_step and any(
             call.name in ("read_file", "read_file_range", "write_file", "edit_file")
             and call.arguments["path"].removeprefix("/workspace/") in pending_paths
-            for turn in turns for call in turn.response.tool_calls
+            for turn in handoff_turns for call in turn.response.tool_calls
         )
         return (work_steps >= self.action_review_after_steps or tokens >= self.action_review_after_tokens
                 or repeated or bool(switched_files))
@@ -258,6 +257,7 @@ class SessionRunner:
         else:
             state.emit("session_resumed", {})
             state.stop_reason = None
+        state.invalidate_plan_evidence()
         started = monotonic()
         validation_retries = 0
         budget_warning_sent = False
@@ -281,7 +281,7 @@ class SessionRunner:
                 state.record_failure("verification", {"reason": "verifier_error"})
                 state.finish("verifier_error")
                 return state
-            if state.turns[-1].verification.passed:
+            if state.turns[-1].verification.passed and state.completion_ready:
                 state.finish(self.verification_success_reason)
                 return state
             state.record_failure("verification", {"reason": "check_failed"})
@@ -292,6 +292,7 @@ class SessionRunner:
             state.emit("recovery_action", {"kind": "validation_retry", "attempt": 1})
             state.add_guidance("Final project check failed. Inspect the failure, fix the code, and rerun checks before finishing.")
         for _ in range(max(0, self.max_steps - state.steps)):
+            state.invalidate_plan_evidence()
             if monotonic() - started >= self.timeout_seconds:
                 state.finish("timeout")
                 return state
@@ -377,7 +378,7 @@ class SessionRunner:
                     state.finish("final_unverified")
                     return state
                 if self.verify is None:
-                    state.finish("completed")
+                    state.finish("completed" if state.completion_ready else "final_unverified")
                     return state
                 try:
                     state.add_verification(turn, self.verify())
@@ -385,7 +386,7 @@ class SessionRunner:
                     state.record_failure("verification", {"reason": "verifier_error"})
                     state.finish("verifier_error")
                     return state
-                if turn.verification.passed:
+                if turn.verification.passed and state.completion_ready:
                     state.finish(self.verification_success_reason)
                     return state
                 state.record_failure("verification", {"reason": "check_failed"})
@@ -497,7 +498,7 @@ class SessionRunner:
                     state.record_failure("verification", {"reason": "verifier_error"})
                     state.finish("verifier_error")
                     return state
-                if turn.verification.passed:
+                if turn.verification.passed and state.completion_ready:
                     state.finish("verified")
                     return state
         state.finish("max_steps")

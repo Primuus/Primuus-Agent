@@ -1,0 +1,48 @@
+{
+  "preceding_commit_accepts_completed_evidence_after_restore": true,
+  "unrelated_b_edit_keeps_a_evidence": true,
+  "shell_source_change_reopens_a_and_records_stale_reference": true,
+  "old_completion_rejected_and_fresh_behavior_can_complete": true,
+  "restore_reopens_completed_requirement_and_replays": true,
+  "interrupted_shell_cannot_supply_behavior_evidence": true,
+  "pending_file_edit_still_triggers_handoff_review_after_patch_change": true,
+  "passing_verifier_cannot_finish_an_incomplete_plan": true,
+  "missing_behavior_blocks_completion_and_is_labeled_in_final_context": true,
+  "edit_then_behavior_in_one_tool_batch_remains_valid": true,
+  "production_session_behavior_handoff_compaction_refresh_and_final": {
+    "stop_reason": "completed",
+    "steps": 8,
+    "actual_project_check_batches": 2,
+    "final_check_cache_reused": true,
+    "a_required_no_edit": true,
+    "replay_consistent": true,
+    "image": "sha256:c3cf9543635bdbfd1f3b836293e8ce819a602535722cff16aba611e9be1ef098"
+  },
+  "production_snapshot_restore_reopens_completion_with_replay": true,
+  "temporary_workspace_removed": true,
+  "real_model_calls": 0,
+  "code_sha256": {
+    "coding_agent/session/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "coding_agent/session/app.py": "6becba697474be34ceb7358e8f49f8717bf1b8a27570bcc0da98d3b2172febba",
+    "coding_agent/session/context.py": "0efedc1ee4fb283129008fd0bd94aceffa985515d2d8a5d1b260042934e88f67",
+    "coding_agent/session/hooks.py": "f615689d3e696f5203406ee2ac03b1880617ae495b0594f3ea7ca38995565203",
+    "coding_agent/session/journal.py": "43a30da7f68bc580f04e9bb5a781bced8df8d679356356a995dea151988a8d45",
+    "coding_agent/session/mcp.py": "c2cff3f02ec02b75c786e8fb97068761d486588c747038d8dd52599e4cd60ebb",
+    "coding_agent/session/memory.py": "f78dae4da9f262b342f6614ed9b752798ce856241f4e234b15a780c345f2230d",
+    "coding_agent/session/parallel.py": "fa67c7d11c1f430dc613a78b2461a55f466a0c62df14459adf04ac7ab499141a",
+    "coding_agent/session/permissions.py": "eaf719fdd23c0d6a8ffdb2aba7a0213b9b8b8a8423e4019ec1078115c22d4208",
+    "coding_agent/session/planning.py": "0be7826f4cd2df4afddf2e1f9e9270626bcafb58c3b1bd25a85f27d5f68a1db9",
+    "coding_agent/session/recovery.py": "cf9fc7ec9a0cd53003d98dd27baf0b4f8d8b671a055e34cc5305323e19c40f6e",
+    "coding_agent/session/repository.py": "d3cb44067a47269fce6f779768c80e3b1fe8925d96f5205e09f58d7a04f8e3cb",
+    "coding_agent/session/runner.py": "e846b540950e6b8e0a90f3a2213f17aa36b55eabe522cdfdf7beee21dabd1655",
+    "coding_agent/session/state.py": "6daa3be950d96c180d7dc469e197de8b32f10867f335357fc673d28dc6ec5338",
+    "coding_agent/session/workspace.py": "60d3e03ad65cef817f0070b702a63fe8dbc19f19591c50965b7db50bbbc7632c"
+  },
+  "baseline_commit": "8cea937",
+  "validation_scope": "Focused contract checks plus one scripted production RepositorySession, not the full S regression suite.",
+  "cleanup": {
+    "temporary_driver_deleted": true,
+    "temporary_workspace_directories": [],
+    "production_depends_on_temporary_driver": false
+  }
+}

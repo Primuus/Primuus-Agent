@@ -1,6 +1,7 @@
 """Persistent, isolated Git workspace for a coding session."""
 
 from dataclasses import dataclass
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -53,6 +54,13 @@ class RepositoryWorkspace:
             ["git", "-C", str(self.workspace), "diff", "--name-only", self.base_commit, "--"],
             check=True, capture_output=True, text=True,
         ).stdout.splitlines()
+
+    def file_patch_digests(self, paths: list[str]) -> dict[str, str]:
+        """Fingerprint each changed file, including deletions and mode changes."""
+        return {path: hashlib.sha256(subprocess.run(
+            ["git", "-C", str(self.workspace), "diff", "--binary", "--no-ext-diff",
+             self.base_commit, "--", path], check=True, capture_output=True,
+        ).stdout).hexdigest() for path in paths}
 
     def snapshot(self, label: str) -> str:
         index = self.session_dir / f"snapshot-{uuid4().hex}.index"

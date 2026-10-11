@@ -137,6 +137,12 @@ class RepositorySession:
         if checks and checks != self.state.project_check_commands:
             self.state.set_project_check_suite(checks)
         checks = self.state.project_check_commands
+        def observe_patch(patch: str) -> None:
+            paths = self.repository.changed_files()
+            self.state.record_workspace_patch(paths, hashlib.sha256(patch.encode()).hexdigest(),
+                                              self.repository.file_patch_digests(paths))
+
+        observe_patch(self.repository.diff())
         last_user = max(
             (index for index, event in enumerate(self.state.events)
              if event["event_type"] == "user_message"), default=-1,
@@ -151,7 +157,7 @@ class RepositorySession:
             and self.state.turns and not self.state.turns[-1].response.tool_calls
             and last_model >= last_user and not checks
             and last_phase not in PLAN_PHASES
-            and self.state.plan_complete
+            and self.state.completion_ready
             and (self.state.turns[-1].verification is None
                  or self.state.turns[-1].verification.passed)):
             self.state.finish("completed")
@@ -244,8 +250,15 @@ class RepositorySession:
                 self.config.get("hooks", {}), execute_tool, permitted.execute, self.state,
             )
 
+            def execute_observed(call: ToolCall) -> ToolResult:
+                result = hooks.execute(call)
+                if (call.name in WRITE_TOOLS | mcp.write_tools
+                    or any(self.config.get("hooks", {}).values())):
+                    observe_patch(self.repository.diff())
+                return result
+
             last_observed_patch = self.repository.diff()
-            self.state.record_workspace_patch(self.repository.changed_files(), hashlib.sha256(last_observed_patch.encode()).hexdigest())
+            observe_patch(last_observed_patch)
 
             def verify_checks(force: bool = False) -> VerificationResult:
                 nonlocal last_checked_patch, last_check_result
@@ -276,6 +289,8 @@ class RepositorySession:
                         })
                         break
                 patch_unchanged = self.repository.diff() == patch
+                if not patch_unchanged:
+                    observe_patch(self.repository.diff())
                 errors = [record["error"] for record in check_results if record["error"]]
                 if not patch_unchanged:
                     errors.append("Project checks changed the patch; review the changes and rerun checks.")
@@ -296,7 +311,7 @@ class RepositorySession:
             def verify_changed_workspace() -> VerificationResult | None:
                 nonlocal last_observed_patch, last_check_result
                 patch = self.repository.diff()
-                self.state.record_workspace_patch(self.repository.changed_files(), hashlib.sha256(patch.encode()).hexdigest())
+                observe_patch(patch)
                 if patch == last_observed_patch:
                     return None
                 last_observed_patch = patch
@@ -313,7 +328,7 @@ class RepositorySession:
 
             try:
                 self.state = SessionRunner(
-                    self.model, hooks.execute, verify_checks if checks else None,
+                    self.model, execute_observed, verify_checks if checks else None,
                     self.config["max_steps"], self.config["task_timeout_seconds"],
                     REPOSITORY_TOOL_SPECS + mcp.tool_specs,
                     max_tokens=self.config.get("max_tokens"),

@@ -1,0 +1,263 @@
+{
+  "session_id": "d47db20b6e26",
+  "source_repository": "/tmp/primuus-s-invariants-c9g3lx0f/source",
+  "workspace": "/tmp/primuus-s-invariants-c9g3lx0f/sessions/d47db20b6e26/workspace",
+  "base_commit": "0880aa02b47942c5877844e28998f0deb07193a5",
+  "model_id": "deterministic-s-invariants",
+  "approval_mode": "auto",
+  "memory_mode": "off",
+  "memory_ids": [],
+  "stop_reason": "completed",
+  "steps": 8,
+  "tool_calls": 6,
+  "failed_tool_calls": 0,
+  "tokens": 120,
+  "retries": 0,
+  "recoveries": 0,
+  "manual_interventions": 0,
+  "active_seconds": 1.203,
+  "final_message": "A already correct. B updated and behavior checks passed.",
+  "changed_paths": [
+    "b.py"
+  ],
+  "plan_complete": true,
+  "plan": [
+    {
+      "description": "A behavior",
+      "status": "completed",
+      "files": [
+        "a.py"
+      ],
+      "hypothesis": "",
+      "next_action": "Check A",
+      "evidence": [
+        "live-proof-a"
+      ]
+    },
+    {
+      "description": "B behavior",
+      "status": "completed",
+      "files": [
+        "b.py"
+      ],
+      "hypothesis": "",
+      "next_action": "Check B",
+      "evidence": [
+        "live-proof-b"
+      ]
+    }
+  ],
+  "snapshots": [
+    {
+      "commit": "0880aa02b47942c5877844e28998f0deb07193a5",
+      "label": "initial",
+      "plan": []
+    },
+    {
+      "commit": "d411a92ffa309dfdd6fd3fca9d4373d222a959ef",
+      "label": "before run_shell at step 2",
+      "plan": [
+        {
+          "description": "A behavior",
+          "status": "in_progress",
+          "files": [
+            "a.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check A"
+        },
+        {
+          "description": "B behavior",
+          "status": "pending",
+          "files": [
+            "b.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check B"
+        }
+      ]
+    },
+    {
+      "commit": "b828c64c3df813fdac8e7e2bae976b5d9377b94a",
+      "label": "plan milestone",
+      "plan": [
+        {
+          "description": "A behavior",
+          "status": "completed",
+          "files": [
+            "a.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check A",
+          "evidence": [
+            "live-proof-a"
+          ]
+        },
+        {
+          "description": "B behavior",
+          "status": "in_progress",
+          "files": [
+            "b.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check B"
+        }
+      ]
+    },
+    {
+      "commit": "c386cd60082f52c2f62a9f2d49cd6d6a4301d777",
+      "label": "before edit_file at step 4",
+      "plan": [
+        {
+          "description": "A behavior",
+          "status": "completed",
+          "files": [
+            "a.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check A",
+          "evidence": [
+            "live-proof-a"
+          ]
+        },
+        {
+          "description": "B behavior",
+          "status": "in_progress",
+          "files": [
+            "b.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check B"
+        }
+      ]
+    },
+    {
+      "commit": "f2f37d7953644e4e0f5594d3edb9cc0b6eebc769",
+      "label": "before run_shell at step 4",
+      "plan": [
+        {
+          "description": "A behavior",
+          "status": "completed",
+          "files": [
+            "a.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check A",
+          "evidence": [
+            "live-proof-a"
+          ]
+        },
+        {
+          "description": "B behavior",
+          "status": "in_progress",
+          "files": [
+            "b.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check B"
+        }
+      ]
+    },
+    {
+      "commit": "231f8542830771d4f42bd69f690c31a7ebec52d7",
+      "label": "before run_shell at step 6",
+      "plan": [
+        {
+          "description": "A behavior",
+          "status": "completed",
+          "files": [
+            "a.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check A",
+          "evidence": [
+            "live-proof-a"
+          ]
+        },
+        {
+          "description": "B behavior",
+          "status": "in_progress",
+          "files": [
+            "b.py"
+          ],
+          "hypothesis": "Check B behavior",
+          "next_action": "Run focused B check"
+        }
+      ]
+    },
+    {
+      "commit": "277554b7a1a8e023e472526880b29a6fce6d4d36",
+      "label": "plan milestone",
+      "plan": [
+        {
+          "description": "A behavior",
+          "status": "completed",
+          "files": [
+            "a.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check A",
+          "evidence": [
+            "live-proof-a"
+          ]
+        },
+        {
+          "description": "B behavior",
+          "status": "completed",
+          "files": [
+            "b.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check B",
+          "evidence": [
+            "live-proof-b"
+          ]
+        }
+      ]
+    },
+    {
+      "commit": "4012078512c45c09a403ab6ccc527d6e02619ec3",
+      "label": "after step 8",
+      "plan": [
+        {
+          "description": "A behavior",
+          "status": "completed",
+          "files": [
+            "a.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check A",
+          "evidence": [
+            "live-proof-a"
+          ]
+        },
+        {
+          "description": "B behavior",
+          "status": "completed",
+          "files": [
+            "b.py"
+          ],
+          "hypothesis": "",
+          "next_action": "Check B",
+          "evidence": [
+            "live-proof-b"
+          ]
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "command": "python -c 'from a import value as a; from b import value as b; assert a >= 1 and b >= 0'",
+      "category": null,
+      "status": "completed",
+      "exit_code": 0,
+      "output": "",
+      "error": null
+    }
+  ],
+  "checks_patch_sha256": "009036425cc56d21c60673387e692540a656e7622835cc56e33e751feb3d03f0",
+  "checks_current": true,
+  "diff_path": "/tmp/primuus-s-invariants-c9g3lx0f/sessions/d47db20b6e26/diff.patch",
+  "trace_path": "/tmp/primuus-s-invariants-c9g3lx0f/sessions/d47db20b6e26/trace.jsonl"
+}

@@ -39,6 +39,10 @@ def _plan_context(state: SessionState) -> str:
         else:
             lines.append(item["status"] + ": " + item["description"]
                          + ("; behavior calls: " + ", ".join(item["evidence"]) if item.get("evidence") else ""))
+            if item["status"] == "completed":
+                error = state.behavior_evidence_error(item)
+                lines.append("Behavior evidence: " + ("valid for the current requirement source" if error is None
+                                                       else "stale or missing; " + error))
     return "\n".join(lines)
 
 
@@ -154,6 +158,7 @@ def build_final_context(state: SessionState) -> list[dict[str, Any]]:
         {"role": "system", "content": (
             "Observed task history:\n" + state.task_summary(include_source=False)
             + "\n" + _plan_context(state)
+            + "\nCurrent patch checks valid and passing: " + str(state.current_checks_passed)
             + "\nCurrent patch checks:\n" + checks
         )},
         {"role": "system", "content": "Executed recent Shell evidence (historical, not current project checks):\n"
